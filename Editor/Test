@@ -1,0 +1,1000 @@
+{
+    "value0": 27,
+    "value1": 10,
+    "value2": 0,
+    "value3": 1,
+    "value4": 2,
+    "value5": 8,
+    "value6": 4,
+    "value7": 1048581,
+    "value8": 6,
+    "value9": 7,
+    "value10": 1048579,
+    "value11": 9,
+    "value12": 11534351,
+    "value13": 1048599,
+    "value14": 1048588,
+    "value15": 1048589,
+    "value16": 1048590,
+    "value17": 1048601,
+    "value18": 4194324,
+    "value19": 1048587,
+    "value20": 1048586,
+    "value21": 1048600,
+    "value22": 2097168,
+    "value23": 2097174,
+    "value24": 3145749,
+    "value25": 6291475,
+    "value26": 5242898,
+    "value27": 2097169,
+    "value28": 6291482,
+    "value29": 9,
+    "value30": 1,
+    "value31": {
+        "position": {
+            "x": 0.0,
+            "y": 50.0,
+            "z": 0.0
+        },
+        "rotation": {
+            "x": -0.7071068286895752,
+            "y": -0.0,
+            "z": 0.0,
+            "w": 0.7071068286895752
+        },
+        "scale": {
+            "x": 1.0,
+            "y": 1.0,
+            "z": 1.0
+        },
+        "dirty": false
+    },
+    "value32": 2,
+    "value33": {
+        "position": {
+            "x": -79.14513397216797,
+            "y": 0.9821720123291016,
+            "z": -20.58449935913086
+        },
+        "rotation": {
+            "x": -0.16910193860530854,
+            "y": -0.11677725613117218,
+            "z": -0.1836695671081543,
+            "w": 0.9612663984298706
+        },
+        "scale": {
+            "x": 1.0,
+            "y": 1.0,
+            "z": 1.0
+        },
+        "dirty": false
+    },
+    "value34": 8,
+    "value35": {
+        "position": {
+            "x": -77.68780517578125,
+            "y": 0.908447265625,
+            "z": -6.139820575714111
+        },
+        "rotation": {
+            "x": 0.7862885594367981,
+            "y": -0.19415029883384705,
+            "z": -0.5865451097488403,
+            "w": 0.004573117010295391
+        },
+        "scale": {
+            "x": 1.0,
+            "y": 1.0,
+            "z": 1.0
+        },
+        "dirty": false
+    },
+    "value36": 4,
+    "value37": {
+        "position": {
+            "x": 0.0,
+            "y": 10.0,
+            "z": -45.0
+        },
+        "rotation": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0,
+            "w": 1.0
+        },
+        "scale": {
+            "x": 100.0,
+            "y": 10.0,
+            "z": 1.0
+        },
+        "dirty": false
+    },
+    "value38": 1048581,
+    "value39": {
+        "position": {
+            "x": 0.0,
+            "y": 10.0,
+            "z": 45.0
+        },
+        "rotation": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0,
+            "w": 1.0
+        },
+        "scale": {
+            "x": 100.0,
+            "y": 10.0,
+            "z": 1.0
+        },
+        "dirty": false
+    },
+    "value40": 6,
+    "value41": {
+        "position": {
+            "x": -85.0,
+            "y": 10.0,
+            "z": -46.441001892089847
+        },
+        "rotation": {
+            "x": 0.0,
+            "y": 0.7071067690849304,
+            "z": 0.0,
+            "w": 0.7071067690849304
+        },
+        "scale": {
+            "x": 100.0,
+            "y": 10.0,
+            "z": 1.0
+        },
+        "dirty": false
+    },
+    "value42": 7,
+    "value43": {
+        "position": {
+            "x": 85.0,
+            "y": 10.0,
+            "z": -46.441001892089847
+        },
+        "rotation": {
+            "x": 0.0,
+            "y": 0.7071067690849304,
+            "z": 0.0,
+            "w": 0.7071067690849304
+        },
+        "scale": {
+            "x": 100.0,
+            "y": 10.0,
+            "z": 1.0
+        },
+        "dirty": false
+    },
+    "value44": 1048579,
+    "value45": {
+        "position": {
+            "x": 1.9002032279968262,
+            "y": -100.0,
+            "z": -16.44209098815918
+        },
+        "rotation": {
+            "x": 0.002575772814452648,
+            "y": 2.075007665691686e-10,
+            "z": 0.00024999197921715677,
+            "w": 0.9999966621398926
+        },
+        "scale": {
+            "x": 100.0,
+            "y": 100.0,
+            "z": 100.0
+        },
+        "dirty": false
+    },
+    "value46": 9,
+    "value47": {
+        "position": {
+            "x": -10.757810592651368,
+            "y": 1.7770150899887086,
+            "z": 33.38996887207031
+        },
+        "rotation": {
+            "x": -0.005516478326171637,
+            "y": -0.23605753481388093,
+            "z": -0.0008193397079594433,
+            "w": 0.9717230796813965
+        },
+        "scale": {
+            "x": 0.25,
+            "y": 0.25,
+            "z": 0.25
+        },
+        "dirty": false
+    },
+    "value48": 7,
+    "value49": 8,
+    "value50": {
+        "shape": {
+            "value0": 2,
+            "value1": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
+            }
+        },
+        "movementType": 2,
+        "layer": 3,
+        "linearVelocity": {
+            "x": -2.5556108951568605,
+            "y": -0.021221688017249109,
+            "z": 3.87441349029541
+        },
+        "angularVelocity": {
+            "x": 3.8756797313690187,
+            "y": -2.262247085571289,
+            "z": 2.5440549850463869
+        },
+        "friction": 0.5,
+        "restitution": 0.5,
+        "id": {
+            "value0": 16777221
+        },
+        "forceUpdateShape": false
+    },
+    "value51": 4,
+    "value52": {
+        "shape": {
+            "value0": 1,
+            "value1": {
+                "x": 100.0,
+                "y": 10.0,
+                "z": 1.0
+            }
+        },
+        "movementType": 0,
+        "layer": 2,
+        "linearVelocity": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+        },
+        "angularVelocity": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+        },
+        "friction": 0.5,
+        "restitution": 0.5,
+        "id": {
+            "value0": 16777220
+        },
+        "forceUpdateShape": false
+    },
+    "value53": 1048581,
+    "value54": {
+        "shape": {
+            "value0": 1,
+            "value1": {
+                "x": 100.0,
+                "y": 10.0,
+                "z": 1.0
+            }
+        },
+        "movementType": 0,
+        "layer": 2,
+        "linearVelocity": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+        },
+        "angularVelocity": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+        },
+        "friction": 0.5,
+        "restitution": 0.5,
+        "id": {
+            "value0": 16777219
+        },
+        "forceUpdateShape": false
+    },
+    "value55": 6,
+    "value56": {
+        "shape": {
+            "value0": 1,
+            "value1": {
+                "x": 100.0,
+                "y": 10.0,
+                "z": 1.0
+            }
+        },
+        "movementType": 0,
+        "layer": 2,
+        "linearVelocity": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+        },
+        "angularVelocity": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+        },
+        "friction": 0.5,
+        "restitution": 0.5,
+        "id": {
+            "value0": 16777218
+        },
+        "forceUpdateShape": false
+    },
+    "value57": 7,
+    "value58": {
+        "shape": {
+            "value0": 1,
+            "value1": {
+                "x": 100.0,
+                "y": 10.0,
+                "z": 1.0
+            }
+        },
+        "movementType": 0,
+        "layer": 2,
+        "linearVelocity": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+        },
+        "angularVelocity": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+        },
+        "friction": 0.5,
+        "restitution": 0.5,
+        "id": {
+            "value0": 16777217
+        },
+        "forceUpdateShape": false
+    },
+    "value59": 1048579,
+    "value60": {
+        "shape": {
+            "value0": 1,
+            "value1": {
+                "x": 100.0,
+                "y": 100.0,
+                "z": 100.0
+            }
+        },
+        "movementType": 0,
+        "layer": 2,
+        "linearVelocity": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+        },
+        "angularVelocity": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+        },
+        "friction": 0.5,
+        "restitution": 0.5,
+        "id": {
+            "value0": 16777216
+        },
+        "forceUpdateShape": false
+    },
+    "value61": 9,
+    "value62": {
+        "shape": {
+            "value0": 2,
+            "value1": {
+                "x": 0.25,
+                "y": 0.25,
+                "z": 0.25
+            }
+        },
+        "movementType": 2,
+        "layer": 3,
+        "linearVelocity": {
+            "x": -0.026415806263685228,
+            "y": 0.00047740121954120696,
+            "z": 0.06137769669294357
+        },
+        "angularVelocity": {
+            "x": -0.002357488963752985,
+            "y": -0.13044628500938416,
+            "z": -3.5149184895999499e-7
+        },
+        "friction": 0.5,
+        "restitution": 0.5,
+        "id": {
+            "value0": 16777222
+        },
+        "forceUpdateShape": false
+    },
+    "value63": 3,
+    "value64": 8,
+    "value65": {},
+    "value66": 2,
+    "value67": {},
+    "value68": 9,
+    "value69": {},
+    "value70": 8,
+    "value71": 2,
+    "value72": {
+        "gltf": "basic_shapes.glb",
+        "name": "UVSphere",
+        "materialOverrideName": "",
+        "localTransform": {
+            "value0": {
+                "x": 0.9052571058273315,
+                "y": -0.31361624598503115,
+                "z": 0.28662586212158205,
+                "w": 0.0
+            },
+            "value1": {
+                "x": 0.3926052749156952,
+                "y": 0.8753400444984436,
+                "z": -0.2822071611881256,
+                "w": 0.0
+            },
+            "value2": {
+                "x": -0.1623903512954712,
+                "y": 0.36800089478492739,
+                "z": 0.9155352115631104,
+                "w": 0.0
+            },
+            "value3": {
+                "x": -79.14513397216797,
+                "y": 0.9821720123291016,
+                "z": -20.58449935913086,
+                "w": 1.0
+            }
+        },
+        "visible": true
+    },
+    "value73": 4,
+    "value74": {
+        "gltf": "basic_shapes.glb",
+        "name": "Cube",
+        "materialOverrideName": "Carbon",
+        "localTransform": {
+            "value0": {
+                "x": 100.0,
+                "y": 0.0,
+                "z": 0.0,
+                "w": 0.0
+            },
+            "value1": {
+                "x": 0.0,
+                "y": 10.0,
+                "z": 0.0,
+                "w": 0.0
+            },
+            "value2": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0,
+                "w": 0.0
+            },
+            "value3": {
+                "x": 0.0,
+                "y": 10.0,
+                "z": -45.0,
+                "w": 1.0
+            }
+        },
+        "visible": true
+    },
+    "value75": 1048581,
+    "value76": {
+        "gltf": "basic_shapes.glb",
+        "name": "Cube",
+        "materialOverrideName": "Carbon",
+        "localTransform": {
+            "value0": {
+                "x": 100.0,
+                "y": 0.0,
+                "z": 0.0,
+                "w": 0.0
+            },
+            "value1": {
+                "x": 0.0,
+                "y": 10.0,
+                "z": 0.0,
+                "w": 0.0
+            },
+            "value2": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0,
+                "w": 0.0
+            },
+            "value3": {
+                "x": 0.0,
+                "y": 10.0,
+                "z": 45.0,
+                "w": 1.0
+            }
+        },
+        "visible": true
+    },
+    "value77": 6,
+    "value78": {
+        "gltf": "basic_shapes.glb",
+        "name": "Cube",
+        "materialOverrideName": "Carbon",
+        "localTransform": {
+            "value0": {
+                "x": 0.0000059604644775390629,
+                "y": 0.0,
+                "z": -99.99999237060547,
+                "w": 0.0
+            },
+            "value1": {
+                "x": 0.0,
+                "y": 10.0,
+                "z": 0.0,
+                "w": 0.0
+            },
+            "value2": {
+                "x": 0.9999999403953552,
+                "y": 0.0,
+                "z": 5.960464477539063e-8,
+                "w": 0.0
+            },
+            "value3": {
+                "x": -85.0,
+                "y": 10.0,
+                "z": -46.441001892089847,
+                "w": 1.0
+            }
+        },
+        "visible": true
+    },
+    "value79": 7,
+    "value80": {
+        "gltf": "basic_shapes.glb",
+        "name": "Cube",
+        "materialOverrideName": "Carbon",
+        "localTransform": {
+            "value0": {
+                "x": 0.0000059604644775390629,
+                "y": 0.0,
+                "z": -99.99999237060547,
+                "w": 0.0
+            },
+            "value1": {
+                "x": 0.0,
+                "y": 10.0,
+                "z": 0.0,
+                "w": 0.0
+            },
+            "value2": {
+                "x": 0.9999999403953552,
+                "y": 0.0,
+                "z": 5.960464477539063e-8,
+                "w": 0.0
+            },
+            "value3": {
+                "x": 85.0,
+                "y": 10.0,
+                "z": -46.441001892089847,
+                "w": 1.0
+            }
+        },
+        "visible": true
+    },
+    "value81": 8,
+    "value82": {
+        "gltf": "basic_shapes.glb",
+        "name": "UVSphere",
+        "materialOverrideName": "Error",
+        "localTransform": {
+            "value0": {
+                "x": 0.23654097318649293,
+                "y": -0.310681015253067,
+                "z": -0.9206116795539856,
+                "w": 0.0
+            },
+            "value1": {
+                "x": -0.2999516427516937,
+                "y": -0.924569845199585,
+                "z": 0.23494739830493928,
+                "w": 0.0
+            },
+            "value2": {
+                "x": -0.9241631627082825,
+                "y": 0.22056423127651215,
+                "z": -0.31188809871673586,
+                "w": 0.0
+            },
+            "value3": {
+                "x": -77.68780517578125,
+                "y": 0.908447265625,
+                "z": -6.139820575714111,
+                "w": 1.0
+            }
+        },
+        "visible": true
+    },
+    "value83": 1048579,
+    "value84": {
+        "gltf": "basic_shapes.glb",
+        "name": "Cube",
+        "materialOverrideName": "Sand",
+        "localTransform": {
+            "value0": {
+                "x": 99.99998474121094,
+                "y": 0.04999822750687599,
+                "z": 0.00012874300591647625,
+                "w": 0.0
+            },
+            "value1": {
+                "x": -0.04999822750687599,
+                "y": 99.9986572265625,
+                "z": 0.5151528120040894,
+                "w": 0.0
+            },
+            "value2": {
+                "x": 0.00012882599548902363,
+                "y": -0.5151528120040894,
+                "z": 99.99867248535156,
+                "w": 0.0
+            },
+            "value3": {
+                "x": 1.9002032279968262,
+                "y": -100.0,
+                "z": -16.44209098815918,
+                "w": 1.0
+            }
+        },
+        "visible": true
+    },
+    "value85": 9,
+    "value86": {
+        "gltf": "basic_shapes.glb",
+        "name": "UVSphere",
+        "materialOverrideName": "Error",
+        "localTransform": {
+            "value0": {
+                "x": 0.22213807702064515,
+                "y": 0.000253017497016117,
+                "z": 0.1146935373544693,
+                "w": 0.0
+            },
+            "value1": {
+                "x": 0.0010491887805983425,
+                "y": 0.24998444318771363,
+                "z": -0.002583538880571723,
+                "w": 0.0
+            },
+            "value2": {
+                "x": -0.11468902230262757,
+                "y": 0.002776950364932418,
+                "z": 0.22212320566177369,
+                "w": 0.0
+            },
+            "value3": {
+                "x": -10.757810592651368,
+                "y": 1.7770150899887086,
+                "z": 33.38996887207031,
+                "w": 1.0
+            }
+        },
+        "visible": true
+    },
+    "value87": 1,
+    "value88": 0,
+    "value89": {
+        "keyStates": [
+            {
+                "key": 87,
+                "value": 0
+            },
+            {
+                "key": 65,
+                "value": 0
+            },
+            {
+                "key": 83,
+                "value": 0
+            },
+            {
+                "key": 340,
+                "value": 0
+            },
+            {
+                "key": 84,
+                "value": 0
+            },
+            {
+                "key": 68,
+                "value": 0
+            },
+            {
+                "key": 32,
+                "value": 0
+            },
+            {
+                "key": 69,
+                "value": 0
+            },
+            {
+                "key": 297,
+                "value": 0
+            },
+            {
+                "key": 293,
+                "value": 0
+            },
+            {
+                "key": 292,
+                "value": 0
+            }
+        ],
+        "mouseButtonStates": [
+            {
+                "key": 0,
+                "value": 1
+            },
+            {
+                "key": 1,
+                "value": 0
+            },
+            {
+                "key": 2,
+                "value": 0
+            }
+        ],
+        "mouseX": 98.0,
+        "mouseY": 377.0,
+        "lastMouseX": 98.0,
+        "lastMouseY": 377.0,
+        "scrollX": 0.0,
+        "scrollY": -1.0,
+        "cursorHidden": false
+    },
+    "value90": 1,
+    "value91": 1,
+    "value92": 0,
+    "value93": 1,
+    "value94": 1,
+    "value95": {
+        "fov": 85.0,
+        "nearPlane": 0.009999999776482582,
+        "farPlane": 1000.0,
+        "pitch": -1.1118823289871216,
+        "yaw": -3.107225179672241,
+        "type": 1,
+        "interpolate": true
+    },
+    "value96": 0,
+    "value97": 0,
+    "value98": 1,
+    "value99": 8,
+    "value100": 1,
+    "value101": 8,
+    "value102": {
+        "canAttack": true,
+        "attackCooldown": 1.0,
+        "attackCooldownTimer": 1.0
+    },
+    "value103": 1,
+    "value104": 9,
+    "value105": {
+        "damage": 10
+    },
+    "value106": 0,
+    "value107": 1,
+    "value108": 9,
+    "value109": 1,
+    "value110": 2,
+    "value111": 0,
+    "value112": 1,
+    "value113": 8,
+    "value114": {
+        "speed": 2000.0,
+        "maxSpeed": 2000.0
+    },
+    "value115": 0,
+    "value116": 1,
+    "value117": 8,
+    "value118": {
+        "direction": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+        },
+        "faceDirection": true
+    },
+    "SystemManager": {
+        "systems": [
+            {
+                "value0": true,
+                "value1": "Imp::InputSystem"
+            },
+            {
+                "value0": true,
+                "value1": "PlayerControllerSystem"
+            },
+            {
+                "value0": false,
+                "value1": "CameraControllerSystem"
+            },
+            {
+                "value0": true,
+                "value1": "AimingSystem"
+            },
+            {
+                "value0": true,
+                "value1": "ShootingSystem"
+            },
+            {
+                "value0": true,
+                "value1": "Imp::TransformSystem"
+            },
+            {
+                "value0": true,
+                "value1": "Imp::CameraSystem"
+            },
+            {
+                "value0": true,
+                "value1": "Imp::RenderSystem"
+            },
+            {
+                "value0": true,
+                "value1": "EditorGuiSystem"
+            },
+            {
+                "value0": true,
+                "value1": "Imp::EndRenderSystem"
+            },
+            {
+                "value0": true,
+                "value1": "ProjectileSystem"
+            }
+        ],
+        "preFixedSystems": [
+            {
+                "value0": true,
+                "value1": "MovementSystem"
+            },
+            {
+                "value0": true,
+                "value1": "AISystem"
+            },
+            {
+                "value0": true,
+                "value1": "Imp::PrePhysicsSystem"
+            }
+        ],
+        "fixedSystems": [
+            {
+                "value0": true,
+                "value1": "Imp::PhysicsSystem"
+            }
+        ],
+        "postFixedSystems": [
+            {
+                "value0": true,
+                "value1": "Imp::PostPhysicsSystem"
+            }
+        ],
+        "systemMetaMap": [
+            {
+                "key": "Imp::TransformSystem",
+                "value": {
+                    "value0": 5,
+                    "value1": 0
+                }
+            },
+            {
+                "key": "Imp::InputSystem",
+                "value": {
+                    "value0": 0,
+                    "value1": 0
+                }
+            },
+            {
+                "key": "Imp::PrePhysicsSystem",
+                "value": {
+                    "value0": 2,
+                    "value1": 2
+                }
+            },
+            {
+                "key": "EditorGuiSystem",
+                "value": {
+                    "value0": 8,
+                    "value1": 0
+                }
+            },
+            {
+                "key": "CameraControllerSystem",
+                "value": {
+                    "value0": 2,
+                    "value1": 0
+                }
+            },
+            {
+                "key": "Imp::PhysicsSystem",
+                "value": {
+                    "value0": 0,
+                    "value1": 1
+                }
+            },
+            {
+                "key": "Imp::PostPhysicsSystem",
+                "value": {
+                    "value0": 0,
+                    "value1": 3
+                }
+            },
+            {
+                "key": "PlayerControllerSystem",
+                "value": {
+                    "value0": 1,
+                    "value1": 0
+                }
+            },
+            {
+                "key": "Imp::CameraSystem",
+                "value": {
+                    "value0": 6,
+                    "value1": 0
+                }
+            },
+            {
+                "key": "Imp::EndRenderSystem",
+                "value": {
+                    "value0": 9,
+                    "value1": 0
+                }
+            },
+            {
+                "key": "Imp::RenderSystem",
+                "value": {
+                    "value0": 7,
+                    "value1": 0
+                }
+            },
+            {
+                "key": "MovementSystem",
+                "value": {
+                    "value0": 0,
+                    "value1": 2
+                }
+            },
+            {
+                "key": "ShootingSystem",
+                "value": {
+                    "value0": 4,
+                    "value1": 0
+                }
+            },
+            {
+                "key": "ProjectileSystem",
+                "value": {
+                    "value0": 10,
+                    "value1": 0
+                }
+            },
+            {
+                "key": "AimingSystem",
+                "value": {
+                    "value0": 3,
+                    "value1": 0
+                }
+            },
+            {
+                "key": "AISystem",
+                "value": {
+                    "value0": 1,
+                    "value1": 2
+                }
+            }
+        ]
+    }
+}

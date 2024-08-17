@@ -1,0 +1,336 @@
+{
+    "value0": 3,
+    "value1": 3,
+    "value2": 0,
+    "value3": 1,
+    "value4": 2,
+    "value5": 2,
+    "value6": 1,
+    "value7": {
+        "position": {
+            "x": 2.658707618713379,
+            "y": 22.898283004760743,
+            "z": 12.126530647277832
+        },
+        "rotation": {
+            "x": 0.47655633091926577,
+            "y": -0.03471957519650459,
+            "z": -0.01883941888809204,
+            "w": -0.87825608253479
+        },
+        "scale": {
+            "x": 1.0,
+            "y": 1.0,
+            "z": 1.0
+        },
+        "dirty": false
+    },
+    "value8": 2,
+    "value9": {
+        "position": {
+            "x": 1.0,
+            "y": 1.0,
+            "z": 1.0
+        },
+        "rotation": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0,
+            "w": 1.0
+        },
+        "scale": {
+            "x": 10.0,
+            "y": 1.0,
+            "z": 10.0
+        },
+        "dirty": false
+    },
+    "value10": 0,
+    "value11": 0,
+    "value12": 1,
+    "value13": 2,
+    "value14": {
+        "gltf": "Meshes/basic_rusty_meshes.glb",
+        "name": "Cube",
+        "localTransform": {
+            "value0": {
+                "x": 10.0,
+                "y": 0.0,
+                "z": 0.0,
+                "w": 0.0
+            },
+            "value1": {
+                "x": 0.0,
+                "y": 1.0,
+                "z": 0.0,
+                "w": 0.0
+            },
+            "value2": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 10.0,
+                "w": 0.0
+            },
+            "value3": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0,
+                "w": 1.0
+            }
+        },
+        "materialOverrideName": "",
+        "visible": true
+    },
+    "value15": 1,
+    "value16": 0,
+    "value17": {
+        "keyStates": [
+            {
+                "key": 87,
+                "value": 0
+            },
+            {
+                "key": 65,
+                "value": 0
+            },
+            {
+                "key": 340,
+                "value": 0
+            },
+            {
+                "key": 83,
+                "value": 0
+            },
+            {
+                "key": 68,
+                "value": 0
+            },
+            {
+                "key": 259,
+                "value": 0
+            },
+            {
+                "key": 48,
+                "value": 0
+            },
+            {
+                "key": 32,
+                "value": 0
+            },
+            {
+                "key": 293,
+                "value": 0
+            },
+            {
+                "key": 46,
+                "value": 0
+            },
+            {
+                "key": 49,
+                "value": 0
+            },
+            {
+                "key": 257,
+                "value": 0
+            },
+            {
+                "key": 84,
+                "value": 0
+            },
+            {
+                "key": 69,
+                "value": 0
+            },
+            {
+                "key": 71,
+                "value": 0
+            },
+            {
+                "key": 77,
+                "value": 0
+            },
+            {
+                "key": 67,
+                "value": 0
+            },
+            {
+                "key": 297,
+                "value": 0
+            },
+            {
+                "key": 292,
+                "value": 0
+            }
+        ],
+        "mouseButtonStates": [
+            {
+                "key": 0,
+                "value": 1
+            },
+            {
+                "key": 1,
+                "value": 0
+            },
+            {
+                "key": 2,
+                "value": 0
+            }
+        ],
+        "mouseX": 87.0,
+        "mouseY": 371.0,
+        "lastMouseX": 87.0,
+        "lastMouseY": 371.0,
+        "scrollX": 0.0,
+        "scrollY": -1.0,
+        "cursorHidden": false
+    },
+    "value18": 1,
+    "value19": 1,
+    "value20": 0,
+    "value21": 1,
+    "value22": 1,
+    "value23": {
+        "fov": 80.0,
+        "nearPlane": 0.009999999776482582,
+        "farPlane": 1000.0,
+        "pitch": -0.9943138360977173,
+        "yaw": -6.204161643981934,
+        "type": 1
+    },
+    "value24": 0,
+    "value25": 0,
+    "value26": 0,
+    "value27": 0,
+    "value28": 0,
+    "SystemManager": {
+        "systems": [
+            {
+                "value0": true,
+                "value1": "Imp::InputSystem"
+            },
+            {
+                "value0": false,
+                "value1": "Imp::ResourceSystem"
+            },
+            {
+                "value0": true,
+                "value1": "Imp::TransformSystem"
+            },
+            {
+                "value0": true,
+                "value1": "Imp::CameraSystem"
+            },
+            {
+                "value0": true,
+                "value1": "CameraControllerSystem"
+            },
+            {
+                "value0": true,
+                "value1": "Imp::RenderSystem"
+            },
+            {
+                "value0": true,
+                "value1": "EditorGuiSystem"
+            },
+            {
+                "value0": true,
+                "value1": "Imp::EndRenderSystem"
+            }
+        ],
+        "preFixedSystems": [],
+        "fixedSystems": [
+            {
+                "value0": true,
+                "value1": "Imp::PrePhysicsSystem"
+            },
+            {
+                "value0": true,
+                "value1": "Imp::PhysicsSystem"
+            },
+            {
+                "value0": true,
+                "value1": "Imp::PostPhysicsSystem"
+            }
+        ],
+        "postFixedSystems": [],
+        "systemMetaMap": [
+            {
+                "key": "Imp::TransformSystem",
+                "value": {
+                    "value0": 2,
+                    "value1": 0
+                }
+            },
+            {
+                "key": "Imp::InputSystem",
+                "value": {
+                    "value0": 0,
+                    "value1": 0
+                }
+            },
+            {
+                "key": "Imp::ResourceSystem",
+                "value": {
+                    "value0": 1,
+                    "value1": 0
+                }
+            },
+            {
+                "key": "Imp::EndRenderSystem",
+                "value": {
+                    "value0": 7,
+                    "value1": 0
+                }
+            },
+            {
+                "key": "Imp::CameraSystem",
+                "value": {
+                    "value0": 3,
+                    "value1": 0
+                }
+            },
+            {
+                "key": "EditorGuiSystem",
+                "value": {
+                    "value0": 6,
+                    "value1": 0
+                }
+            },
+            {
+                "key": "Imp::PrePhysicsSystem",
+                "value": {
+                    "value0": 0,
+                    "value1": 1
+                }
+            },
+            {
+                "key": "CameraControllerSystem",
+                "value": {
+                    "value0": 4,
+                    "value1": 0
+                }
+            },
+            {
+                "key": "Imp::PhysicsSystem",
+                "value": {
+                    "value0": 1,
+                    "value1": 1
+                }
+            },
+            {
+                "key": "Imp::PostPhysicsSystem",
+                "value": {
+                    "value0": 2,
+                    "value1": 1
+                }
+            },
+            {
+                "key": "Imp::RenderSystem",
+                "value": {
+                    "value0": 5,
+                    "value1": 0
+                }
+            }
+        ]
+    }
+}

@@ -1,0 +1,741 @@
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Renderer\src\DebugMessenger.cpp:55[0m
+{ General }: 
+	messageIDName   = <Loader Message>
+	messageIdNumber = 0
+	message         = <Inserted device layer "VK_LAYER_KHRONOS_validation" (C:\VulkanSDK\1.3.283.0\Bin\.\VkLayer_khronos_validation.dll)>
+	Objects:
+		Object 0
+			objectType   = Instance
+			objectHandle = 2519532728288
+
+{ General }: 
+	messageIDName   = <Loader Message>
+	messageIdNumber = 0
+	message         = <Inserted device layer "VK_LAYER_OBS_HOOK" (C:\ProgramData\obs-studio-hook\.\graphics-hook64.dll)>
+	Objects:
+		Object 0
+			objectType   = Instance
+			objectHandle = 2519532728288
+
+{ General }: 
+	messageIDName   = <Loader Message>
+	messageIdNumber = 0
+	message         = <Inserted device layer "VK_LAYER_NV_optimus" (C:\WINDOWS\System32\DriverStore\FileRepository\nv_dispi.inf_amd64_5714f0dca6485379\.\nvoglv64.dll)>
+	Objects:
+		Object 0
+			objectType   = Instance
+			objectHandle = 2519532728288
+
+{ General }: 
+	messageIDName   = <Loader Message>
+	messageIdNumber = 0
+	message         = <vkCreateDevice layer callstack setup to:>
+	Objects:
+		Object 0
+			objectType   = Instance
+			objectHandle = 2519532728288
+
+{ General }: 
+	messageIDName   = <Loader Message>
+	messageIdNumber = 0
+	message         = <   <Application>>
+	Objects:
+		Object 0
+			objectType   = Instance
+			objectHandle = 2519532728288
+
+{ General }: 
+	messageIDName   = <Loader Message>
+	messageIdNumber = 0
+	message         = <     ||>
+	Objects:
+		Object 0
+			objectType   = Instance
+			objectHandle = 2519532728288
+
+{ General }: 
+	messageIDName   = <Loader Message>
+	messageIdNumber = 0
+	message         = <   <Loader>>
+	Objects:
+		Object 0
+			objectType   = Instance
+			objectHandle = 2519532728288
+
+{ General }: 
+	messageIDName   = <Loader Message>
+	messageIdNumber = 0
+	message         = <     ||>
+	Objects:
+		Object 0
+			objectType   = Instance
+			objectHandle = 2519532728288
+
+{ General }: 
+	messageIDName   = <Loader Message>
+	messageIdNumber = 0
+	message         = <   VK_LAYER_NV_optimus>
+	Objects:
+		Object 0
+			objectType   = Instance
+			objectHandle = 2519532728288
+
+{ General }: 
+	messageIDName   = <Loader Message>
+	messageIdNumber = 0
+	message         = <           Type: Implicit>
+	Objects:
+		Object 0
+			objectType   = Instance
+			objectHandle = 2519532728288
+
+{ General }: 
+	messageIDName   = <Loader Message>
+	messageIdNumber = 0
+	message         = <               Disable Env Var:  DISABLE_LAYER_NV_OPTIMUS_1>
+	Objects:
+		Object 0
+			objectType   = Instance
+			objectHandle = 2519532728288
+
+{ General }: 
+	messageIDName   = <Loader Message>
+	messageIdNumber = 0
+	message         = <           Manifest: C:\WINDOWS\System32\DriverStore\FileRepository\nv_dispi.inf_amd64_5714f0dca6485379\nv-vk64.json>
+	Objects:
+		Object 0
+			objectType   = Instance
+			objectHandle = 2519532728288
+
+{ General }: 
+	messageIDName   = <Loader Message>
+	messageIdNumber = 0
+	message         = <           Library:  C:\WINDOWS\System32\DriverStore\FileRepository\nv_dispi.inf_amd64_5714f0dca6485379\.\nvoglv64.dll>
+	Objects:
+		Object 0
+			objectType   = Instance
+			objectHandle = 2519532728288
+
+{ General }: 
+	messageIDName   = <Loader Message>
+	messageIdNumber = 0
+	message         = <     ||>
+	Objects:
+		Object 0
+			objectType   = Instance
+			objectHandle = 2519532728288
+
+{ General }: 
+	messageIDName   = <Loader Message>
+	messageIdNumber = 0
+	message         = <   VK_LAYER_OBS_HOOK>
+	Objects:
+		Object 0
+			objectType   = Instance
+			objectHandle = 2519532728288
+
+{ General }: 
+	messageIDName   = <Loader Message>
+	messageIdNumber = 0
+	message         = <           Type: Implicit>
+	Objects:
+		Object 0
+			objectType   = Instance
+			objectHandle = 2519532728288
+
+{ General }: 
+	messageIDName   = <Loader Message>
+	messageIdNumber = 0
+	message         = <               Disable Env Var:  DISABLE_VULKAN_OBS_CAPTURE>
+	Objects:
+		Object 0
+			objectType   = Instance
+			objectHandle = 2519532728288
+
+{ General }: 
+	messageIDName   = <Loader Message>
+	messageIdNumber = 0
+	message         = <           Manifest: C:\ProgramData\obs-studio-hook\obs-vulkan64.json>
+	Objects:
+		Object 0
+			objectType   = Instance
+			objectHandle = 2519532728288
+
+{ General }: 
+	messageIDName   = <Loader Message>
+	messageIdNumber = 0
+	message         = <           Library:  C:\ProgramData\obs-studio-hook\.\graphics-hook64.dll>
+	Objects:
+		Object 0
+			objectType   = Instance
+			objectHandle = 2519532728288
+
+{ General }: 
+	messageIDName   = <Loader Message>
+	messageIdNumber = 0
+	message         = <     ||>
+	Objects:
+		Object 0
+			objectType   = Instance
+			objectHandle = 2519532728288
+
+{ General }: 
+	messageIDName   = <Loader Message>
+	messageIdNumber = 0
+	message         = <   VK_LAYER_KHRONOS_validation>
+	Objects:
+		Object 0
+			objectType   = Instance
+			objectHandle = 2519532728288
+
+{ General }: 
+	messageIDName   = <Loader Message>
+	messageIdNumber = 0
+	message         = <           Type: Explicit>
+	Objects:
+		Object 0
+			objectType   = Instance
+			objectHandle = 2519532728288
+
+{ General }: 
+	messageIDName   = <Loader Message>
+	messageIdNumber = 0
+	message         = <           Manifest: C:\VulkanSDK\1.3.283.0\Bin\VkLayer_khronos_validation.json>
+	Objects:
+		Object 0
+			objectType   = Instance
+			objectHandle = 2519532728288
+
+{ General }: 
+	messageIDName   = <Loader Message>
+	messageIdNumber = 0
+	message         = <           Library:  C:\VulkanSDK\1.3.283.0\Bin\.\VkLayer_khronos_validation.dll>
+	Objects:
+		Object 0
+			objectType   = Instance
+			objectHandle = 2519532728288
+
+{ General }: 
+	messageIDName   = <Loader Message>
+	messageIdNumber = 0
+	message         = <     ||>
+	Objects:
+		Object 0
+			objectType   = Instance
+			objectHandle = 2519532728288
+
+{ General }: 
+	messageIDName   = <Loader Message>
+	messageIdNumber = 0
+	message         = <   <Device>>
+	Objects:
+		Object 0
+			objectType   = Instance
+			objectHandle = 2519532728288
+
+{ General }: 
+	messageIDName   = <Loader Message>
+	messageIdNumber = 0
+	message         = <       Using "NVIDIA GeForce RTX 4080 SUPER" with driver: "C:\WINDOWS\System32\DriverStore\FileRepository\nv_dispi.inf_amd64_5714f0dca6485379\.\nvoglv64.dll">
+	Objects:
+		Object 0
+			objectType   = Instance
+			objectHandle = 2519532728288
+
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\src\Impetus.cpp:267[0m
+Impetus Created
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\src\Impetus.cpp:283[0m
+Initializing
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\src\CameraSystem.cpp:33[0m
+Creating Camera
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Renderer\src\MeshLoader.cpp:166[0m
+Loading GLTF: C:\Users\Joshua Ross\source\repos\Impetus\Editor\Meshes\basic_shapes.glb
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Editor\EditorGuiSystem.cpp:727[0m
+File: basic_shapes.glb Loaded in: 5087ms
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Renderer\src\MeshLoader.cpp:166[0m
+Loading GLTF: C:\Users\Joshua Ross\source\repos\Impetus\Editor\Meshes\structure.glb
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Editor\EditorGuiSystem.cpp:727[0m
+File: structure.glb Loaded in: 2970ms
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\src\Impetus.cpp:319[0m
+Running
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\src\SystemManager.cpp:269[0m
+Setting status of Imp::ResourceSystem to false
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\src\Impetus.cpp:167[0m
+Loading: C:\Users\Joshua Ross\source\repos\Impetus\Editor\Test3
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\src\InputSystem.cpp:200[0m
+Input System Cleaned
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\src\InputSystem.cpp:201[0m
+keyStates.size: 0, MouseButtonStates.size: 0
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\src\SceneArchive.cpp:100[0m
+Successfully loaded components: 
+[32m	struct Imp::TransformComponent[0m
+[32m	struct Imp::PhysicsBodyComponent[0m
+[32m	struct Imp::CollisionInfoComponent[0m
+[32m	struct Imp::ModelComponent[0m
+[32m	struct Imp::InputStateComponent[0m
+[32m	ActiveCamera[0m
+[32m	struct Imp::RelationshipComponent[0m
+[32m	struct Imp::CameraComponent[0m
+[32m	CameraLookAt[0m
+[32m	struct HealthComponent[0m
+[32m	Player[0m
+[32m	struct AttackComponent[0m
+[32m	struct DamageComponent[0m
+[32m	Enemy[0m
+[32m	Projectile[0m
+[32m	AimTarget[0m
+[32m	struct TargetComponent[0m
+[32m	struct SpeedComponent[0m
+[32m	struct CameraFollowComponent[0m
+[32m	struct MoveDirectionComponent[0m
+
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\src\SystemManager.cpp:372[0m
+Reloading system: Imp::TransformSystem at index 5
+Reloading system: Imp::InputSystem at index 0
+Reloading system: Imp::PrePhysicsSystem at index 2
+Reloading system: EditorGuiSystem at index 8
+Reloading system: CameraControllerSystem at index 2
+Reloading system: Imp::PhysicsSystem at index 0
+Reloading system: Imp::PostPhysicsSystem at index 0
+Reloading system: PlayerControllerSystem at index 1
+Reloading system: Imp::CameraSystem at index 6
+Reloading system: Imp::EndRenderSystem at index 9
+Reloading system: Imp::RenderSystem at index 7
+Reloading system: MovementSystem at index 0
+Reloading system: ShootingSystem at index 4
+Reloading system: ProjectileSystem at index 10
+Reloading system: AimingSystem at index 3
+Reloading system: AISystem at index 1
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\src\BodyActivationListener.cpp:5[0m
+A body got activated
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\include\CoreSystems\PhysicsSystem.cpp:56[0m
+New Physics Body ID: 0
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\include\CoreSystems\PhysicsSystem.cpp:71[0m
+Entity 59768852 Constructed Physics Body 16777216 with:
+	Shape: Sphere
+	Movement: Dynamic
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\src\BodyActivationListener.cpp:5[0m
+A body got activated
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\include\CoreSystems\PhysicsSystem.cpp:56[0m
+New Physics Body ID: 1
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\include\CoreSystems\PhysicsSystem.cpp:71[0m
+Entity 34603017 Constructed Physics Body 16777217 with:
+	Shape: Sphere
+	Movement: Dynamic
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\src\BodyActivationListener.cpp:5[0m
+A body got activated
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\include\CoreSystems\PhysicsSystem.cpp:56[0m
+New Physics Body ID: 2
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\include\CoreSystems\PhysicsSystem.cpp:71[0m
+Entity 31457295 Constructed Physics Body 16777218 with:
+	Shape: Sphere
+	Movement: Dynamic
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\src\BodyActivationListener.cpp:5[0m
+A body got activated
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\include\CoreSystems\PhysicsSystem.cpp:56[0m
+New Physics Body ID: 3
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\include\CoreSystems\PhysicsSystem.cpp:71[0m
+Entity 6291467 Constructed Physics Body 16777219 with:
+	Shape: Sphere
+	Movement: Dynamic
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\include\CoreSystems\PhysicsSystem.cpp:56[0m
+New Physics Body ID: 4
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\include\CoreSystems\PhysicsSystem.cpp:71[0m
+Entity 1048579 Constructed Physics Body 16777220 with:
+	Shape: Box
+	Movement: Static
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\include\CoreSystems\PhysicsSystem.cpp:56[0m
+New Physics Body ID: 5
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\include\CoreSystems\PhysicsSystem.cpp:71[0m
+Entity 7 Constructed Physics Body 16777221 with:
+	Shape: Box
+	Movement: Static
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\include\CoreSystems\PhysicsSystem.cpp:56[0m
+New Physics Body ID: 6
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\include\CoreSystems\PhysicsSystem.cpp:71[0m
+Entity 6 Constructed Physics Body 16777222 with:
+	Shape: Box
+	Movement: Static
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\include\CoreSystems\PhysicsSystem.cpp:56[0m
+New Physics Body ID: 7
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\include\CoreSystems\PhysicsSystem.cpp:71[0m
+Entity 1048581 Constructed Physics Body 16777223 with:
+	Shape: Box
+	Movement: Static
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\include\CoreSystems\PhysicsSystem.cpp:56[0m
+New Physics Body ID: 8
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\include\CoreSystems\PhysicsSystem.cpp:71[0m
+Entity 4 Constructed Physics Body 16777224 with:
+	Shape: Box
+	Movement: Static
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\src\BodyActivationListener.cpp:5[0m
+A body got activated
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\include\CoreSystems\PhysicsSystem.cpp:56[0m
+New Physics Body ID: 9
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\include\CoreSystems\PhysicsSystem.cpp:71[0m
+Entity 8 Constructed Physics Body 16777225 with:
+	Shape: Sphere
+	Movement: Dynamic
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\src\BodyActivationListener.cpp:10[0m
+A body got deactivated
+A body got deactivated
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\src\BodyActivationListener.cpp:5[0m
+A body got activated
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\include\CoreSystems\PhysicsSystem.cpp:56[0m
+New Physics Body ID: 1
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\include\CoreSystems\PhysicsSystem.cpp:71[0m
+Entity 35651593 Constructed Physics Body 33554433 with:
+	Shape: Sphere
+	Movement: Dynamic
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\src\BodyActivationListener.cpp:10[0m
+A body got deactivated
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\src\BodyActivationListener.cpp:5[0m
+A body got activated
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\include\CoreSystems\PhysicsSystem.cpp:56[0m
+New Physics Body ID: 1
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\include\CoreSystems\PhysicsSystem.cpp:71[0m
+Entity 36700169 Constructed Physics Body 50331649 with:
+	Shape: Sphere
+	Movement: Dynamic
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\src\BodyActivationListener.cpp:5[0m
+A body got activated
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\include\CoreSystems\PhysicsSystem.cpp:56[0m
+New Physics Body ID: 0
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\include\CoreSystems\PhysicsSystem.cpp:71[0m
+Entity 60817428 Constructed Physics Body 33554432 with:
+	Shape: Sphere
+	Movement: Dynamic
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\src\BodyActivationListener.cpp:5[0m
+A body got activated
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\include\CoreSystems\PhysicsSystem.cpp:56[0m
+New Physics Body ID: 10
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\include\CoreSystems\PhysicsSystem.cpp:71[0m
+Entity 23068682 Constructed Physics Body 16777226 with:
+	Shape: Sphere
+	Movement: Dynamic
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\src\BodyActivationListener.cpp:5[0m
+A body got activated
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\include\CoreSystems\PhysicsSystem.cpp:56[0m
+New Physics Body ID: 11
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\include\CoreSystems\PhysicsSystem.cpp:71[0m
+Entity 15728668 Constructed Physics Body 16777227 with:
+	Shape: Sphere
+	Movement: Dynamic
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\src\BodyActivationListener.cpp:10[0m
+A body got deactivated
+A body got deactivated
+A body got deactivated
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\src\BodyActivationListener.cpp:5[0m
+A body got activated
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\include\CoreSystems\PhysicsSystem.cpp:56[0m
+New Physics Body ID: 0
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\include\CoreSystems\PhysicsSystem.cpp:71[0m
+Entity 61866004 Constructed Physics Body 50331648 with:
+	Shape: Sphere
+	Movement: Dynamic
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\src\BodyActivationListener.cpp:5[0m
+A body got activated
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\include\CoreSystems\PhysicsSystem.cpp:56[0m
+New Physics Body ID: 10
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\include\CoreSystems\PhysicsSystem.cpp:71[0m
+Entity 24117258 Constructed Physics Body 33554442 with:
+	Shape: Sphere
+	Movement: Dynamic
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\src\BodyActivationListener.cpp:5[0m
+A body got activated
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\include\CoreSystems\PhysicsSystem.cpp:56[0m
+New Physics Body ID: 1
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\include\CoreSystems\PhysicsSystem.cpp:71[0m
+Entity 37748745 Constructed Physics Body 67108865 with:
+	Shape: Sphere
+	Movement: Dynamic
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\src\BodyActivationListener.cpp:10[0m
+A body got deactivated
+A body got deactivated
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\src\BodyActivationListener.cpp:5[0m
+A body got activated
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\include\CoreSystems\PhysicsSystem.cpp:56[0m
+New Physics Body ID: 0
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\include\CoreSystems\PhysicsSystem.cpp:71[0m
+Entity 62914580 Constructed Physics Body 67108864 with:
+	Shape: Sphere
+	Movement: Dynamic
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\src\BodyActivationListener.cpp:5[0m
+A body got activated
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\include\CoreSystems\PhysicsSystem.cpp:56[0m
+New Physics Body ID: 11
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\include\CoreSystems\PhysicsSystem.cpp:71[0m
+Entity 16777244 Constructed Physics Body 33554443 with:
+	Shape: Sphere
+	Movement: Dynamic
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\src\BodyActivationListener.cpp:10[0m
+A body got deactivated
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\src\BodyActivationListener.cpp:5[0m
+A body got activated
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\include\CoreSystems\PhysicsSystem.cpp:56[0m
+New Physics Body ID: 10
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\include\CoreSystems\PhysicsSystem.cpp:71[0m
+Entity 25165834 Constructed Physics Body 50331658 with:
+	Shape: Sphere
+	Movement: Dynamic
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\src\BodyActivationListener.cpp:10[0m
+A body got deactivated
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\src\BodyActivationListener.cpp:5[0m
+A body got activated
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\include\CoreSystems\PhysicsSystem.cpp:56[0m
+New Physics Body ID: 1
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\include\CoreSystems\PhysicsSystem.cpp:71[0m
+Entity 38797321 Constructed Physics Body 83886081 with:
+	Shape: Sphere
+	Movement: Dynamic
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\src\BodyActivationListener.cpp:10[0m
+A body got deactivated
+A body got deactivated
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\src\BodyActivationListener.cpp:5[0m
+A body got activated
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\include\CoreSystems\PhysicsSystem.cpp:56[0m
+New Physics Body ID: 0
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\include\CoreSystems\PhysicsSystem.cpp:71[0m
+Entity 63963156 Constructed Physics Body 83886080 with:
+	Shape: Sphere
+	Movement: Dynamic
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\src\BodyActivationListener.cpp:10[0m
+A body got deactivated
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\src\BodyActivationListener.cpp:5[0m
+A body got activated
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\include\CoreSystems\PhysicsSystem.cpp:56[0m
+New Physics Body ID: 0
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\include\CoreSystems\PhysicsSystem.cpp:71[0m
+Entity 65011732 Constructed Physics Body 100663296 with:
+	Shape: Sphere
+	Movement: Dynamic
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\src\BodyActivationListener.cpp:10[0m
+A body got deactivated
+A body got deactivated
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\src\BodyActivationListener.cpp:5[0m
+A body got activated
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\include\CoreSystems\PhysicsSystem.cpp:56[0m
+New Physics Body ID: 0
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\include\CoreSystems\PhysicsSystem.cpp:71[0m
+Entity 66060308 Constructed Physics Body 117440512 with:
+	Shape: Sphere
+	Movement: Dynamic
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\src\BodyActivationListener.cpp:10[0m
+A body got deactivated
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\src\BodyActivationListener.cpp:5[0m
+A body got activated
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\include\CoreSystems\PhysicsSystem.cpp:56[0m
+New Physics Body ID: 0
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\include\CoreSystems\PhysicsSystem.cpp:71[0m
+Entity 67108884 Constructed Physics Body 134217728 with:
+	Shape: Sphere
+	Movement: Dynamic
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\src\BodyActivationListener.cpp:10[0m
+A body got deactivated
+A body got deactivated
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\src\BodyActivationListener.cpp:5[0m
+A body got activated
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\include\CoreSystems\PhysicsSystem.cpp:56[0m
+New Physics Body ID: 0
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\include\CoreSystems\PhysicsSystem.cpp:71[0m
+Entity 68157460 Constructed Physics Body 150994944 with:
+	Shape: Sphere
+	Movement: Dynamic
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\src\BodyActivationListener.cpp:10[0m
+A body got deactivated
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\src\BodyActivationListener.cpp:5[0m
+A body got activated
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\include\CoreSystems\PhysicsSystem.cpp:56[0m
+New Physics Body ID: 0
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\include\CoreSystems\PhysicsSystem.cpp:71[0m
+Entity 69206036 Constructed Physics Body 167772160 with:
+	Shape: Sphere
+	Movement: Dynamic
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\src\BodyActivationListener.cpp:10[0m
+A body got deactivated
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\src\BodyActivationListener.cpp:5[0m
+A body got activated
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\include\CoreSystems\PhysicsSystem.cpp:56[0m
+New Physics Body ID: 0
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\include\CoreSystems\PhysicsSystem.cpp:71[0m
+Entity 70254612 Constructed Physics Body 184549376 with:
+	Shape: Sphere
+	Movement: Dynamic
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\src\BodyActivationListener.cpp:10[0m
+A body got deactivated
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\src\BodyActivationListener.cpp:5[0m
+A body got activated
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\include\CoreSystems\PhysicsSystem.cpp:56[0m
+New Physics Body ID: 0
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\include\CoreSystems\PhysicsSystem.cpp:71[0m
+Entity 71303188 Constructed Physics Body 201326592 with:
+	Shape: Sphere
+	Movement: Dynamic
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\src\BodyActivationListener.cpp:10[0m
+A body got deactivated
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\src\BodyActivationListener.cpp:5[0m
+A body got activated
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\include\CoreSystems\PhysicsSystem.cpp:56[0m
+New Physics Body ID: 0
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\include\CoreSystems\PhysicsSystem.cpp:71[0m
+Entity 72351764 Constructed Physics Body 218103808 with:
+	Shape: Sphere
+	Movement: Dynamic
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\src\BodyActivationListener.cpp:10[0m
+A body got deactivated
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\src\BodyActivationListener.cpp:5[0m
+A body got activated
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\include\CoreSystems\PhysicsSystem.cpp:56[0m
+New Physics Body ID: 0
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\include\CoreSystems\PhysicsSystem.cpp:71[0m
+Entity 73400340 Constructed Physics Body 234881024 with:
+	Shape: Sphere
+	Movement: Dynamic
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\src\BodyActivationListener.cpp:10[0m
+A body got deactivated
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\src\BodyActivationListener.cpp:5[0m
+A body got activated
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\include\CoreSystems\PhysicsSystem.cpp:56[0m
+New Physics Body ID: 0
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\include\CoreSystems\PhysicsSystem.cpp:71[0m
+Entity 74448916 Constructed Physics Body 251658240 with:
+	Shape: Sphere
+	Movement: Dynamic
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\src\BodyActivationListener.cpp:10[0m
+A body got deactivated
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\src\BodyActivationListener.cpp:5[0m
+A body got activated
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\include\CoreSystems\PhysicsSystem.cpp:56[0m
+New Physics Body ID: 0
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\include\CoreSystems\PhysicsSystem.cpp:71[0m
+Entity 75497492 Constructed Physics Body 268435456 with:
+	Shape: Sphere
+	Movement: Dynamic
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\src\BodyActivationListener.cpp:10[0m
+A body got deactivated
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\src\BodyActivationListener.cpp:5[0m
+A body got activated
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\include\CoreSystems\PhysicsSystem.cpp:56[0m
+New Physics Body ID: 0
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\include\CoreSystems\PhysicsSystem.cpp:71[0m
+Entity 76546068 Constructed Physics Body 285212672 with:
+	Shape: Sphere
+	Movement: Dynamic
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\src\BodyActivationListener.cpp:10[0m
+A body got deactivated
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\src\BodyActivationListener.cpp:5[0m
+A body got activated
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\include\CoreSystems\PhysicsSystem.cpp:56[0m
+New Physics Body ID: 0
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\include\CoreSystems\PhysicsSystem.cpp:71[0m
+Entity 77594644 Constructed Physics Body 301989888 with:
+	Shape: Sphere
+	Movement: Dynamic
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\src\BodyActivationListener.cpp:10[0m
+A body got deactivated
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\src\BodyActivationListener.cpp:5[0m
+A body got activated
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\include\CoreSystems\PhysicsSystem.cpp:56[0m
+New Physics Body ID: 0
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\include\CoreSystems\PhysicsSystem.cpp:71[0m
+Entity 78643220 Constructed Physics Body 318767104 with:
+	Shape: Sphere
+	Movement: Dynamic
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\src\BodyActivationListener.cpp:10[0m
+A body got deactivated
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\src\BodyActivationListener.cpp:5[0m
+A body got activated
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\include\CoreSystems\PhysicsSystem.cpp:56[0m
+New Physics Body ID: 0
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\include\CoreSystems\PhysicsSystem.cpp:71[0m
+Entity 79691796 Constructed Physics Body 335544320 with:
+	Shape: Sphere
+	Movement: Dynamic
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\src\BodyActivationListener.cpp:10[0m
+A body got deactivated
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\src\BodyActivationListener.cpp:5[0m
+A body got activated
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\include\CoreSystems\PhysicsSystem.cpp:56[0m
+New Physics Body ID: 0
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\include\CoreSystems\PhysicsSystem.cpp:71[0m
+Entity 80740372 Constructed Physics Body 352321536 with:
+	Shape: Sphere
+	Movement: Dynamic
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\src\BodyActivationListener.cpp:10[0m
+A body got deactivated
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\src\BodyActivationListener.cpp:5[0m
+A body got activated
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\include\CoreSystems\PhysicsSystem.cpp:56[0m
+New Physics Body ID: 0
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\include\CoreSystems\PhysicsSystem.cpp:71[0m
+Entity 81788948 Constructed Physics Body 369098752 with:
+	Shape: Sphere
+	Movement: Dynamic
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\src\BodyActivationListener.cpp:10[0m
+A body got deactivated
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\src\BodyActivationListener.cpp:5[0m
+A body got activated
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\include\CoreSystems\PhysicsSystem.cpp:56[0m
+New Physics Body ID: 0
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\include\CoreSystems\PhysicsSystem.cpp:71[0m
+Entity 82837524 Constructed Physics Body 385875968 with:
+	Shape: Sphere
+	Movement: Dynamic
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\src\BodyActivationListener.cpp:10[0m
+A body got deactivated
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\src\BodyActivationListener.cpp:5[0m
+A body got activated
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\include\CoreSystems\PhysicsSystem.cpp:56[0m
+New Physics Body ID: 0
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\include\CoreSystems\PhysicsSystem.cpp:71[0m
+Entity 83886100 Constructed Physics Body 402653184 with:
+	Shape: Sphere
+	Movement: Dynamic
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\src\BodyActivationListener.cpp:10[0m
+A body got deactivated
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\src\BodyActivationListener.cpp:5[0m
+A body got activated
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\include\CoreSystems\PhysicsSystem.cpp:56[0m
+New Physics Body ID: 0
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\include\CoreSystems\PhysicsSystem.cpp:71[0m
+Entity 84934676 Constructed Physics Body 419430400 with:
+	Shape: Sphere
+	Movement: Dynamic
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\src\BodyActivationListener.cpp:10[0m
+A body got deactivated
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\src\BodyActivationListener.cpp:5[0m
+A body got activated
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\include\CoreSystems\PhysicsSystem.cpp:56[0m
+New Physics Body ID: 0
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\include\CoreSystems\PhysicsSystem.cpp:71[0m
+Entity 85983252 Constructed Physics Body 436207616 with:
+	Shape: Sphere
+	Movement: Dynamic
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\src\BodyActivationListener.cpp:10[0m
+A body got deactivated
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\src\BodyActivationListener.cpp:5[0m
+A body got activated
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\include\CoreSystems\PhysicsSystem.cpp:56[0m
+New Physics Body ID: 0
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\include\CoreSystems\PhysicsSystem.cpp:71[0m
+Entity 87031828 Constructed Physics Body 452984832 with:
+	Shape: Sphere
+	Movement: Dynamic
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\src\BodyActivationListener.cpp:5[0m
+A body got activated
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\include\CoreSystems\PhysicsSystem.cpp:56[0m
+New Physics Body ID: 10
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\include\CoreSystems\PhysicsSystem.cpp:71[0m
+Entity 26214410 Constructed Physics Body 67108874 with:
+	Shape: Sphere
+	Movement: Dynamic
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\src\BodyActivationListener.cpp:10[0m
+A body got deactivated
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\src\Impetus.cpp:345[0m
+Shutting down
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\src\InputSystem.cpp:200[0m
+Input System Cleaned
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\src\InputSystem.cpp:201[0m
+keyStates.size: 0, MouseButtonStates.size: 0
+[[32mINFO[0m] [2mC:\Users\Joshua Ross\source\repos\Impetus\Engine\src\Impetus.cpp:273[0m
+Impetus Destroyed

@@ -1,0 +1,29 @@
+#version 460
+
+layout (local_size_x = 16, local_size_y = 16) in;
+
+layout(rgba16f,set = 0, binding = 0) uniform image2D image;
+
+// Push constants block
+layout(push_constant) uniform constants {
+    vec4 data1; // gridColor
+    vec4 data2; // bgColor
+    vec4 data3; // data3.x as gridSpacing
+    vec4 data4; // Unused
+} PushConstants;
+
+void main() {
+    ivec2 texelCoord = ivec2(gl_GlobalInvocationID.xy);
+    ivec2 size = imageSize(image);
+
+    if (texelCoord.x < size.x && texelCoord.y < size.y) {
+        // Determine if the current texel is on a grid line
+        int gridSpacing = int(PushConstants.data3.x + 0.5); // Properly round to nearest integer
+        bool onGrid = (texelCoord.x % gridSpacing == 0) || 
+                      (texelCoord.y % gridSpacing == 0);
+        
+        vec4 color = onGrid ? PushConstants.data1 : PushConstants.data2;
+        
+        imageStore(image, texelCoord, color);
+    }
+}

@@ -1,0 +1,22 @@
+{
+  "name": "impetus",
+  "version": "1.0.0",
+  "dependencies": [
+    "boost-pfr",
+    "cereal",
+    "entt",
+    "fastgltf",
+    "glm",
+    {
+      "name": "imgui",
+      "features": [
+        "docking-experimental",
+        "glfw-binding",
+        "vulkan-binding"
+      ]
+    },
+    "joltphysics",
+    "stb",
+    "spirv-reflect"
+  ]
+}
