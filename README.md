@@ -33,7 +33,7 @@ vcpkg and the vulkan sdk are needed to run/build the project
 	- ### Blender
    		- 3D Modelling. Mostly used to build the glb(gltf) files
 - ## Sources
-	- ### [FreePBR}(https://freepbr.com/)
+	- ### [FreePBR](https://freepbr.com/)
    		- where I got some basic textures
 	- ### [imgui_entt_entity_editor](https://github.com/Green-Sky/imgui_entt_entity_editor)
 	  	- Basis of a lot of the editor through concept. Not directly used but got a lot of core concepts
