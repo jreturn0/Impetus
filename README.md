@@ -37,4 +37,8 @@ vcpkg and the vulkan sdk are needed to run/build the project
    		- where I got some basic textures
 	- ### [imgui_entt_entity_editor](https://github.com/Green-Sky/imgui_entt_entity_editor)
 	  	- Basis of a lot of the editor through concept. Not directly used but got a lot of core concepts
+   	- ### [Vulkan Tutorial](https://vulkan-tutorial.com/)
+   	  	- Learning Vulkan and more related concepts. Used to help abstract core Vulkan concepts and items
+   	- ### [vkguide](https://vkguide.dev/)
+   	  	- Same as above. Mostly used as basis for the renderer's architecture
   
