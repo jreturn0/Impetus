@@ -11,12 +11,18 @@
       "name": "imgui",
       "features": [
         "docking-experimental",
-        "glfw-binding",
+        "sdl2-binding",
         "vulkan-binding"
       ]
     },
+    {
+      "name": "sdl2",
+      "features":[
+        "vulkan"
+      ]
+    },
+    "sdl2-image",
     "joltphysics",
-    "stb",
     "spirv-reflect"
   ]
 }

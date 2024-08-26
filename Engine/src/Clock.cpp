@@ -3,48 +3,54 @@
 #include <thread>
 
 namespace chrn = std::chrono;
-using hClock = chrn::high_resolution_clock;
-Imp::Clock::Clock(int fpsCap, double fixedFps, double maxAccum) : start(hClock::now()), last(hClock::now()), realElapsed(0.), deltaTime(0.),
-fpsCap(fpsCap), targetFrameTime(1.0l / fpsCap), fixedStep(1.0l / fixedFps), accumulatedTime(0.), maxAccumulatedTime(maxAccum), fixedFrame(true)
-{}
+Imp::Clock::Clock(unsigned short variableFpsCap, unsigned short fixedFpsCap, unsigned short maxAccumulated) :
+	variableTarget(variableFpsCap),
+	variableTargetDuration(variableTarget > 0
+						   ? Duration(1'000'000'000ll * 1000 / (1000 * variableTarget + 50))  // Adjust to simulate a tiny increase in FPS
+						   : Duration(0)),
+	fixedTarget(fixedFpsCap),
+	fixedTargetDuration(fixedTarget > 0
+						? Duration(1'000'000'000ll / fixedTarget)
+						: Duration(0)),
+	lastFrameEnd(SystemClock::now()),
+	deltaTime(0),
+	realElapsed(0),
+	accumulatedTime(0),
+	maxAccumulatedTime(Duration((1'000'000'000ll / fixedFpsCap)* maxAccumulated)),
+	fixedFrame(false)
+{
+	// Constructor body
+}
+
+
+
+
 
 
 
 void Imp::Clock::update()
 {
 	// Measure start time
-	auto frameEndTime = hClock::now();
+	TimePoint frameEndTime = SystemClock::now();
 
 	// Calculate elapsed time since last frame
-	chrn::duration<double> elapsed = frameEndTime - last;
-	deltaTime = elapsed.count();
+	deltaTime = frameEndTime - lastFrameEnd;
 
 
 	// Enforce target FPS if specified
-	if (fpsCap > 0) {
-		 double frameTimeLeft = targetFrameTime - deltaTime;
-		//sleep thread for only 85% of the frame time at to not oversleep from possibly processing time or inaccuracy
-		if (frameTimeLeft >= 0) {
-			auto sleepDuration = chrn::duration<double>(frameTimeLeft * 0.85); 
+	if (variableTarget > 0) {
+		const Duration frameTimeLeft = variableTargetDuration - deltaTime;
+		constexpr auto zero = Duration(0ll);
+		Duration sleepDuration = frameTimeLeft * 60 / 100;
+		if (sleepDuration > zero) {
 			std::this_thread::sleep_for(sleepDuration);
 		}
 
-		// Busy wait for the remaining time 
-		while (frameTimeLeft >= 0) {
-			frameEndTime = hClock::now();
-			elapsed = frameEndTime - last;
-			deltaTime = elapsed.count();
-			frameTimeLeft = targetFrameTime - deltaTime;
-		}
-
-		// Measure time again after sleeping to correct deltaTime
-		frameEndTime = hClock::now();
-		elapsed = frameEndTime - last;
-		deltaTime = elapsed.count();
+		while ((deltaTime =((frameEndTime = SystemClock::now()) - lastFrameEnd)) < variableTargetDuration) {}
 	}
 
 	// Update last frame time
-	last = frameEndTime;
+	lastFrameEnd = frameEndTime;
 	realElapsed += deltaTime;
 	// Update accumulated time
 	accumulatedTime += deltaTime;
@@ -54,13 +60,13 @@ void Imp::Clock::update()
 }
 bool Imp::Clock::isFixed() const
 {
-	return accumulatedTime >= fixedStep;
+	return accumulatedTime >= fixedTargetDuration;
 }
 
 bool Imp::Clock::fixedUpdate()
 {
-	if (accumulatedTime >= fixedStep) {
-		accumulatedTime -= fixedStep;
+	if (accumulatedTime >= fixedTargetDuration) {
+		accumulatedTime -= fixedTargetDuration;
 		return true;
 	}
 	return false;

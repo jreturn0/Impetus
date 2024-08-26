@@ -31,9 +31,9 @@ void ShootingSystem::update(entt::registry& registry, const float deltaTime)
 		auto direction = glm::normalize(aimTransform.position - playerTransform.position);
 		auto bulletSpeed = 20.f;
 		auto lookQuat = glm::quatLookAt(direction, glm::vec3(0, 1, 0));
-		registry.emplace<Imp::TransformComponent>(bullet, playerTransform.position+(direction*1.5f),lookQuat,glm::vec3{0.25f});
+		registry.emplace<Imp::TransformComponent>(bullet, playerTransform.position+(direction*2.5f),lookQuat,glm::vec3{0.25f});
 		registry.emplace<ProjectileTag>(bullet);
-		registry.emplace<DamageComponent>(bullet, 10);
+		registry.emplace<DamageComponent>(bullet, 34);
 		registry.emplace<Imp::ModelComponent>(bullet, file.data(), mesh.data(), material.data());
 		registry.emplace<Imp::CollisionInfoComponent>(bullet);
 		auto&& body =registry.emplace<Imp::PhysicsBodyComponent>(bullet, Imp::Phys::Shape{ Imp::Phys::ShapeType::Sphere,glm::vec3{0.25f}},Imp::Phys::MovementType::Dynamic,Imp::Phys::ObjectLayers::DEFAULT,direction*bulletSpeed);

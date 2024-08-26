@@ -36,7 +36,7 @@ void AimingSystem::update(entt::registry& registry, const float deltaTime)
 		auto& aimTarget = registry.get<Imp::TransformComponent>(view.front());
 
 		if (auto hit = physics.getMouseWorldPosition(input.getMousePosition(), sceneData.view, sceneData.proj, renderer.getWindow().getSize())) 
-			aimTarget.position = hit.point + hit.normal;
+			aimTarget.position = hit.point + (hit.normal*2.f);
 			//Debug::Info("Hit: {}", entt::to_integral(hit.entity));
 		
 				  });

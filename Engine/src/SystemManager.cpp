@@ -213,33 +213,52 @@ void Imp::SystemManager::updateSystems(entt::registry& registry, Clock& time, En
 			RECORD_SYSTEM_STATS_END_P(stats, name);
 		}
 	}
+	//static size_t fixedUpdates = 0;
+	//static auto timeSinceLastSecond = std::chrono::time_point<std::chrono::steady_clock>();
+	//Debug::Info("DeltaTime {}", deltaTime);
+
 	if (time.isFixed()) {
+		const float fixedStep = time.getFixedStep() ;
+		//Debug::Info("FixedStep {}", fixedStep);
+
 		for (auto& [system, status, name] : preFixedSystems) {
 			if (status) {
 				RECORD_STATS_START;
-				system->update(registry, time.getFixedStep());
+				system->update(registry, fixedStep);
 				RECORD_SYSTEM_STATS_END_P(stats, name);
 			}
 		}
-		if (time.fixedUpdate()) {
-			const float fixedDeltaTime = time.getFixedStep();
+		while (time.fixedUpdate()) {
+			
 			for (auto& [system, status, name] : fixedSystems) {
 				if (status) {
 					RECORD_STATS_START;
-					system->update(registry, fixedDeltaTime);
+					system->update(registry, fixedStep);
 					RECORD_SYSTEM_STATS_END_P(stats, name);
-
 				}
 			}
+			// Increment the fixed update counter
+		//	fixedUpdates++;
 		}
 		for (auto& [system, status, name] : postFixedSystems) {
 			if (status) {
 				RECORD_STATS_START;
-				system->update(registry, time.getFixedStep());
+				system->update(registry, fixedStep);
 				RECORD_SYSTEM_STATS_END_P(stats, name);
 			}
 		}
 
+		// Check if a second has passed since the last log
+		//auto now = std::chrono::steady_clock::now();
+		//auto duration = std::chrono::duration_cast<std::chrono::seconds>(now - timeSinceLastSecond);
+		//if (duration.count() >= 1) {
+		//	// Print the number of fixed updates in the last second
+		//	Debug::Info("Fixed updates last second: {}", fixedUpdates );
+
+		//	// Reset the counter and time for the next second
+		//	fixedUpdates = 0;
+		//	timeSinceLastSecond = now;
+		//}
 	}
 
 

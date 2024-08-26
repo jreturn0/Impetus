@@ -28,6 +28,9 @@ bool EditorGuiSystem::EntityHasComponent(entt::registry& registry, entt::entity&
 
 void EditorGuiSystem::entityIDWidget(entt::registry& registry, entt::entity& e, bool selectable)
 {
+	if (e == entt::null) {
+		return;
+	}
 	ImGui::PushID(static_cast<int>(entt::to_integral(e)));
 
 	if (registry.valid(e)) {
@@ -43,7 +46,7 @@ void EditorGuiSystem::entityIDWidget(entt::registry& registry, entt::entity& e, 
 			ImGui::Text("ID: %d", entt::to_integral(e));
 		}
 	} else {
-		ImGui::Text("Invalid entt::entity");
+		ImGui::Text("Invalid entity");
 	}
 
 	ImGui::PopID();
@@ -103,7 +106,7 @@ void EditorGuiSystem::drawEntityList(entt::registry& registry)
 
 				ImGui::Text("Orphans:");
 				for (entt::entity e : registry.template storage<entt::entity>()) {
-					if (registry.orphan(e)) {
+					if (registry.orphan(e) && registry.valid(e)) {
 
 						entityIDWidget(registry, e);
 					}
@@ -133,8 +136,8 @@ void EditorGuiSystem::drawEntityList(entt::registry& registry)
 		if (ImGui::BeginTabItem("All")) {
 			//ImGui::Text("All:");
 			for (entt::entity e : registry.template storage<entt::entity>()) {
-
-				entityIDWidget(registry, e);
+				if (registry.valid(e))
+					entityIDWidget(registry, e);
 			}
 
 			ImGui::EndTabItem();
@@ -283,25 +286,36 @@ void EditorGuiSystem::drawFileSelector(entt::registry& registry)
 		}
 
 		ImGui::Separator();
+		// Define colors for directories and files
+		constexpr auto directoryColor = ImVec4(0.25f, 0.75f, 1.0f, 1.0f); // Light blue for directories
+		constexpr auto fileColor = ImVec4(0.75f, 1.0f, 0.25f, 1.0f); // Light green for files
 
+		// Render directories with custom color
+		ImGui::PushStyleColor(ImGuiCol_Text, directoryColor); // Set color for directory
 		for (const auto& dir : fileHelp.getDirectories()) {
-			if (ImGui::Selectable((dir.string() + "/").c_str(), false, ImGuiSelectableFlags_DontClosePopups)) {
+			if (ImGui::Selectable((dir.filename().string() + "/").c_str(), false, ImGuiSelectableFlags_DontClosePopups)) {
 				fileHelp.gotoChildDirectory(dir.string());
+				break;
 			}
 		}
+		ImGui::PopStyleColor(); // Reset color
 
+		// Render files with custom color
+		ImGui::PushStyleColor(ImGuiCol_Text, fileColor); // Set color for file
 		for (const auto& file : fileHelp.getFiles()) {
-			if (ImGui::Selectable(file.string().c_str(), fileHelp.getSelectedFile() && *fileHelp.getSelectedFile() == file)) {
-				fileHelp.setSelectedFile(file.string());// = fileHelp.getFilePath(file);
+			if (ImGui::Selectable(file.filename().string().c_str(), fileHelp.getSelectedFile() && *fileHelp.getSelectedFile() == file)) {
 
-
+				fileHelp.setSelectedFile(file.string());
 				if (loadOnSelect) {
 					registry.ctx().get<CtxRef<entt::dispatcher>>().get().enqueue<LoadSceneEvent>(LoadSceneEvent{ fileHelp });
 					loadOnSelect = false;
 				}
 				showFileSelector = false; // Close the file selector when a file is selected
+				break;
 			}
 		}
+		ImGui::PopStyleColor(); // Reset color
+
 		static char fileName[128] = "";
 		if (saveOnSelect) {
 			ImGui::Separator();
@@ -328,14 +342,22 @@ void EditorGuiSystem::drawEngineStats(entt::registry& registry)
 	auto&& rStats = registry.ctx().get<CtxRef<Imp::Render::Renderer>>().get().getStats();
 	auto&& eStats = registry.ctx().get<CtxRef<Imp::EngineStats>>().get();
 
+	static size_t rollingIndex = 0;
+	static std::unordered_map<std::string_view, std::array<long long, 64>> rollingStats;
 	auto&& timeStatGuiRow = [](const std::string_view& name, const Imp::TimeStats& stats) {
+
+		rollingStats[name][rollingIndex] = stats.frameTime;
+		auto&& rolling = rollingStats[name];
+		const long long accumulatedFrameTime = std::accumulate(rolling.begin(), rolling.end(), 0ll);
+		const float averageFrameTime = static_cast<float>(accumulatedFrameTime) / rolling.size(); // in the same units as frameTime
+
 		ImGui::TableNextRow();
 		ImGui::TableSetColumnIndex(0);
 		ImGui::Text("%s", name.data());
 		ImGui::TableSetColumnIndex(1);
 		ImGui::Text("%.2f", stats.frameTime / 1000.f);
 		ImGui::TableSetColumnIndex(2);
-		ImGui::Text("%.2f", stats.avgFrameTime / 1000.f);
+		ImGui::Text("%.2f", averageFrameTime / 1000.f);
 		ImGui::TableSetColumnIndex(3);
 		ImGui::Text("%.2f", stats.minFrameTime / 1000.f);
 		ImGui::TableSetColumnIndex(4);
@@ -347,11 +369,11 @@ void EditorGuiSystem::drawEngineStats(entt::registry& registry)
 	bool endTableCalled = false;
 
 	if (ImGui::BeginTable("engine Stats", 5, flags)) {
-		ImGui::TableSetupColumn("Name", ImGuiTableColumnFlags_WidthFixed);
-		ImGui::TableSetupColumn("Cur", ImGuiTableColumnFlags_WidthFixed);
-		ImGui::TableSetupColumn("Avg", ImGuiTableColumnFlags_WidthFixed);
-		ImGui::TableSetupColumn("Min", ImGuiTableColumnFlags_WidthFixed);
-		ImGui::TableSetupColumn("Max", ImGuiTableColumnFlags_WidthFixed);
+		ImGui::TableSetupColumn("Name    ", ImGuiTableColumnFlags_WidthFixed);
+		ImGui::TableSetupColumn("Current ", ImGuiTableColumnFlags_WidthFixed);
+		ImGui::TableSetupColumn("Average ", ImGuiTableColumnFlags_WidthFixed);
+		ImGui::TableSetupColumn("Min     ", ImGuiTableColumnFlags_WidthFixed);
+		ImGui::TableSetupColumn("Max     ", ImGuiTableColumnFlags_WidthFixed);
 		ImGui::TableHeadersRow();
 
 		timeStatGuiRow("Frame", eStats.frameTime);
@@ -370,11 +392,11 @@ void EditorGuiSystem::drawEngineStats(entt::registry& registry)
 	endTableCalled = false;
 
 	if (ImGui::BeginTable("renderer Stats", 5, flags)) {
-		ImGui::TableSetupColumn("Name", ImGuiTableColumnFlags_WidthFixed);
-		ImGui::TableSetupColumn("Cur", ImGuiTableColumnFlags_WidthFixed);
-		ImGui::TableSetupColumn("Avg", ImGuiTableColumnFlags_WidthFixed);
-		ImGui::TableSetupColumn("Min", ImGuiTableColumnFlags_WidthFixed);
-		ImGui::TableSetupColumn("Max", ImGuiTableColumnFlags_WidthFixed);
+		ImGui::TableSetupColumn("Name    ", ImGuiTableColumnFlags_WidthFixed);
+		ImGui::TableSetupColumn("Current ", ImGuiTableColumnFlags_WidthFixed);
+		ImGui::TableSetupColumn("Average ", ImGuiTableColumnFlags_WidthFixed);
+		ImGui::TableSetupColumn("Min     ", ImGuiTableColumnFlags_WidthFixed);
+		ImGui::TableSetupColumn("Max     ", ImGuiTableColumnFlags_WidthFixed);
 		ImGui::TableHeadersRow();
 
 		for (auto&& [name, stats] : rStats.timeStatsMap) {
@@ -386,6 +408,7 @@ void EditorGuiSystem::drawEngineStats(entt::registry& registry)
 	if (!endTableCalled) {
 		ImGui::Text("EndTable not called for renderer Stats");
 	}
+	rollingIndex = (rollingIndex + 1) % 64;
 }
 
 void EditorGuiSystem::drawGlobalSettings(entt::registry& registry)
@@ -640,7 +663,7 @@ void EditorGuiSystem::drawAll(entt::registry& registry)
 {
 	ImGui::SetNextWindowSize(ImVec2(550, 400), ImGuiCond_FirstUseEver);
 	ImGui::SetNextWindowPos(ImVec2(0, 20), ImGuiCond_FirstUseEver);
-	auto&& renderer        = registry.ctx().get<CtxRef<Imp::Render::Renderer>>().get();
+	auto&& renderer = registry.ctx().get<CtxRef<Imp::Render::Renderer>>().get();
 	const auto& [triangleCount, drawCallCount, timeStatsMap] = renderer.getStats();
 	if (ImGui::Begin("Editor", &showWindow, ImGuiWindowFlags_MenuBar)) {
 		drawMenuBar(registry);

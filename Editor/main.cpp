@@ -24,7 +24,7 @@ int main()
 		//	std::string str;
 		//	std::cin >> str;
 		Debug::Init();
-	auto engine = Imp::Impetus(1920, 1080, "Impetus");
+	auto engine = Imp::Impetus(1920, 1080, "Impetus",60);
 		//engine.registerResourceAndLoader<MyResource, MyResourceLoader>();
 		engine.emplaceAndRegisterSystem<Imp::InputSystem>();
 		engine.emplaceAndRegisterSystem<Imp::ResourceSystem>();

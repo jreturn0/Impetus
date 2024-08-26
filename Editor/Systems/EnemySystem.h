@@ -1,5 +1,7 @@
 ﻿#pragma once
-#include "System.h"
+
+
+#include <System.h>
 
 class EnemySystem : public System
 {

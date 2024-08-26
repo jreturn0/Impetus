@@ -38,7 +38,7 @@ void main()
 	float scaleY = length(PushConstants.render_matrix[1].xyz);
 	float scaleZ = length(PushConstants.render_matrix[2].xyz);
 	float uniformScale = (scaleX + scaleY + scaleZ) / 3.0;
-	outUV = vec2(v.uv_x, v.uv_y)*uniformScale;
+	outUV = vec2(v.uv_x, v.uv_y);
 	
 	mat3 normalMatrix = mat3(transpose(inverse(mat3(PushConstants.render_matrix))));
 	outNormal = normalize( normalMatrix * v.normal);

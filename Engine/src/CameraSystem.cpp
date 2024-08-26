@@ -83,11 +83,9 @@ void Imp::CameraSystem::update(entt::registry& registry, const float deltaTime)
 
 		if (!lookAtTags.empty()) {
 			auto&& target = lookAtTags.get<TransformComponent>(lookAtTags.front());
-			const glm::mat4 view = glm::lookAt(transform.position, target.position, glm::vec3{ 0.f,1.f,0.f });
-			sceneData.view = InterpolateMatrices(sceneData.view, view, 0.1f);
+			sceneData.view = glm::lookAt(transform.position, target.position, glm::vec3{ 0.f,1.f,0.f });
 		} else {
-			glm::mat4 view = glm::lookAt(transform.position, transform.position + GetTransformForward(transform), GetTransformUp(transform));
-			sceneData.view = InterpolateMatrices(sceneData.view, view, 0.1f);
+			sceneData.view = glm::lookAt(transform.position, transform.position + GetTransformForward(transform), GetTransformUp(transform));
 
 		}
 

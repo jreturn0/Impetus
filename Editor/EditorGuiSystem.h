@@ -1,4 +1,6 @@
 ﻿#pragma once
+#include <functional>
+
 #include "InputCodes.h"
 #include "System.h"
 #include "FileDirectoryHelper.h"

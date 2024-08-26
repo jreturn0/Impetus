@@ -20,7 +20,7 @@
 #include "Debug.h"
 #include "nodes/MeshNode.h"
 
-vk::Filter extract_filter(fastgltf::Filter filter)
+vk::Filter ExtractFilter(fastgltf::Filter filter)
 {
 	switch (filter) {
 		// nearest samplers
@@ -38,7 +38,7 @@ vk::Filter extract_filter(fastgltf::Filter filter)
 	}
 }
 
-vk::SamplerMipmapMode extract_mipmap_mode(fastgltf::Filter filter)
+vk::SamplerMipmapMode ExtractMipmapMode(fastgltf::Filter filter)
 {
 	switch (filter) {
 	case fastgltf::Filter::NearestMipMapNearest:
@@ -214,13 +214,13 @@ std::optional<std::shared_ptr<Imp::Render::LoadedGLTF>> Imp::Render::MeshLoader:
 		vk::SamplerCreateInfo sampl = {};
 		sampl.maxLod = vk::LodClampNone;
 		sampl.minLod = 0;
-		sampl.addressModeU = vk::SamplerAddressMode::eRepeat;
-		sampl.addressModeV = vk::SamplerAddressMode::eRepeat;
-		sampl.addressModeW = vk::SamplerAddressMode::eRepeat;
-		sampl.magFilter = extract_filter(sampler.magFilter.value_or(fastgltf::Filter::Nearest));
-		sampl.minFilter = extract_filter(sampler.minFilter.value_or(fastgltf::Filter::Nearest));
+		//sampl.addressModeU = vk::SamplerAddressMode::eRepeat;
+		//sampl.addressModeV = vk::SamplerAddressMode::eRepeat;
+		//sampl.addressModeW = vk::SamplerAddressMode::eRepeat;
+		sampl.magFilter = ExtractFilter(sampler.magFilter.value_or(fastgltf::Filter::Nearest));
+		sampl.minFilter = ExtractFilter(sampler.minFilter.value_or(fastgltf::Filter::Nearest));
 
-		sampl.mipmapMode = extract_mipmap_mode(sampler.minFilter.value_or(fastgltf::Filter::Nearest));
+		sampl.mipmapMode = ExtractMipmapMode(sampler.minFilter.value_or(fastgltf::Filter::Nearest));
 
 		file.samplers.push_back(renderer.getDevice().getLogical().createSamplerUnique(sampl));
 	}

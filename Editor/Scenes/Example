@@ -1,0 +1,342 @@
+{
+    "value0": 3,
+    "value1": 3,
+    "value2": 0,
+    "value3": 1,
+    "value4": 2,
+    "value5": 1,
+    "value6": 1,
+    "value7": {
+        "position": {
+            "x": 45.68175506591797,
+            "y": 18.112838745117189,
+            "z": 80.22354125976563
+        },
+        "rotation": {
+            "x": -0.1329079419374466,
+            "y": -0.09651949256658554,
+            "z": -0.01300597470253706,
+            "w": 0.9863318204879761
+        },
+        "scale": {
+            "x": 1.0,
+            "y": 1.0,
+            "z": 1.0
+        },
+        "dirty": false
+    },
+    "value8": 0,
+    "value9": 0,
+    "value10": 1,
+    "value11": 2,
+    "value12": {
+        "gltf": "structure.glb",
+        "name": "Root",
+        "materialOverrideName": "",
+        "localTransform": {
+            "value0": {
+                "x": 1.0,
+                "y": 0.0,
+                "z": 0.0,
+                "w": 0.0
+            },
+            "value1": {
+                "x": 0.0,
+                "y": 1.0,
+                "z": 0.0,
+                "w": 0.0
+            },
+            "value2": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0,
+                "w": 0.0
+            },
+            "value3": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0,
+                "w": 1.0
+            }
+        },
+        "visible": true
+    },
+    "value13": 1,
+    "value14": 0,
+    "value15": {
+        "keyStates": [
+            {
+                "key": 87,
+                "value": 0
+            },
+            {
+                "key": 49,
+                "value": 0
+            },
+            {
+                "key": 65,
+                "value": 0
+            },
+            {
+                "key": 340,
+                "value": 0
+            },
+            {
+                "key": 83,
+                "value": 0
+            },
+            {
+                "key": 68,
+                "value": 0
+            },
+            {
+                "key": 32,
+                "value": 0
+            },
+            {
+                "key": 293,
+                "value": 0
+            },
+            {
+                "key": 292,
+                "value": 0
+            },
+            {
+                "key": 48,
+                "value": 0
+            },
+            {
+                "key": 46,
+                "value": 0
+            },
+            {
+                "key": 57,
+                "value": 0
+            },
+            {
+                "key": 341,
+                "value": 0
+            },
+            {
+                "key": 67,
+                "value": 0
+            },
+            {
+                "key": 86,
+                "value": 0
+            },
+            {
+                "key": 257,
+                "value": 0
+            },
+            {
+                "key": 69,
+                "value": 0
+            },
+            {
+                "key": 88,
+                "value": 0
+            },
+            {
+                "key": 77,
+                "value": 0
+            },
+            {
+                "key": 80,
+                "value": 0
+            },
+            {
+                "key": 76,
+                "value": 0
+            },
+            {
+                "key": 297,
+                "value": 0
+            }
+        ],
+        "mouseButtonStates": [
+            {
+                "key": 0,
+                "value": 1
+            },
+            {
+                "key": 1,
+                "value": 0
+            },
+            {
+                "key": 2,
+                "value": 0
+            },
+            {
+                "key": 3,
+                "value": 0
+            }
+        ],
+        "mouseX": 95.0,
+        "mouseY": 380.0,
+        "lastMouseX": 95.0,
+        "lastMouseY": 380.0,
+        "scrollX": 0.0,
+        "scrollY": -1.0,
+        "cursorHidden": false
+    },
+    "value16": 1,
+    "value17": 1,
+    "value18": 0,
+    "value19": 1,
+    "value20": 1,
+    "value21": {
+        "fov": 85.0,
+        "nearPlane": 0.009999999776482582,
+        "farPlane": 1000.0,
+        "pitch": -0.26788583397865298,
+        "yaw": -0.19509287178516389,
+        "type": 1,
+        "interpolate": true
+    },
+    "value22": 0,
+    "value23": 0,
+    "value24": 0,
+    "value25": 0,
+    "value26": 0,
+    "value27": 0,
+    "value28": 0,
+    "value29": 0,
+    "value30": 0,
+    "value31": 0,
+    "value32": 0,
+    "value33": 0,
+    "SystemManager": {
+        "systems": [
+            {
+                "value0": true,
+                "value1": "Imp::InputSystem"
+            },
+            {
+                "value0": false,
+                "value1": "Imp::ResourceSystem"
+            },
+            {
+                "value0": true,
+                "value1": "Imp::TransformSystem"
+            },
+            {
+                "value0": true,
+                "value1": "CameraControllerSystem"
+            },
+            {
+                "value0": true,
+                "value1": "Imp::CameraSystem"
+            },
+            {
+                "value0": true,
+                "value1": "Imp::RenderSystem"
+            },
+            {
+                "value0": true,
+                "value1": "EditorGuiSystem"
+            },
+            {
+                "value0": true,
+                "value1": "Imp::EndRenderSystem"
+            }
+        ],
+        "preFixedSystems": [
+            {
+                "value0": true,
+                "value1": "Imp::PrePhysicsSystem"
+            }
+        ],
+        "fixedSystems": [
+            {
+                "value0": true,
+                "value1": "Imp::PhysicsSystem"
+            }
+        ],
+        "postFixedSystems": [
+            {
+                "value0": true,
+                "value1": "Imp::PostPhysicsSystem"
+            }
+        ],
+        "systemMetaMap": [
+            {
+                "key": "Imp::TransformSystem",
+                "value": {
+                    "value0": 2,
+                    "value1": 0
+                }
+            },
+            {
+                "key": "Imp::InputSystem",
+                "value": {
+                    "value0": 0,
+                    "value1": 0
+                }
+            },
+            {
+                "key": "Imp::ResourceSystem",
+                "value": {
+                    "value0": 1,
+                    "value1": 0
+                }
+            },
+            {
+                "key": "EditorGuiSystem",
+                "value": {
+                    "value0": 6,
+                    "value1": 0
+                }
+            },
+            {
+                "key": "Imp::PrePhysicsSystem",
+                "value": {
+                    "value0": 0,
+                    "value1": 2
+                }
+            },
+            {
+                "key": "CameraControllerSystem",
+                "value": {
+                    "value0": 3,
+                    "value1": 0
+                }
+            },
+            {
+                "key": "Imp::PhysicsSystem",
+                "value": {
+                    "value0": 0,
+                    "value1": 1
+                }
+            },
+            {
+                "key": "Imp::PostPhysicsSystem",
+                "value": {
+                    "value0": 0,
+                    "value1": 3
+                }
+            },
+            {
+                "key": "Imp::EndRenderSystem",
+                "value": {
+                    "value0": 7,
+                    "value1": 0
+                }
+            },
+            {
+                "key": "Imp::CameraSystem",
+                "value": {
+                    "value0": 4,
+                    "value1": 0
+                }
+            },
+            {
+                "key": "Imp::RenderSystem",
+                "value": {
+                    "value0": 5,
+                    "value1": 0
+                }
+            }
+        ]
+    }
+}

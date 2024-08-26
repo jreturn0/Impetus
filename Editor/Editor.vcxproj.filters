@@ -15,18 +15,19 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <None Include="TestGame" />
-    <None Include="BallMap" />
-    <None Include="Floor" />
-    <None Include="Floor2" />
-    <None Include="Floor3" />
-    <None Include="Floor4" />
+    <None Include="Scenes\TestGame" />
+    <None Include="Scenes\BallMap" />
+    <None Include="Scenes\Floor" />
+    <None Include="Scenes\Floor2" />
+    <None Include="Scenes\Floor3" />
+    <None Include="Scenes\Floor4" />
     <None Include="imgui.ini" />
-    <None Include="Test" />
-    <None Include="Test1" />
-    <None Include="Test2" />
-    <None Include="Test3" />
-    <None Include="TestBase" />
+    <None Include="Scenes\Test" />
+    <None Include="Scenes\Test1" />
+    <None Include="Scenes\Test2" />
+    <None Include="Scenes\Test3" />
+    <None Include="Scenes\TestBase" />
+    <None Include="Scenes\Example" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Components\AttackComponent.h">

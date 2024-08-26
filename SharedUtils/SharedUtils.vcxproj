@@ -155,9 +155,12 @@
     <ClInclude Include="include\FreeList.h" />
     <ClInclude Include="include\Log.h" />
     <ClInclude Include="include\Logger.h" />
+    <ClInclude Include="include\Profiler.h" />
     <ClInclude Include="include\RNG.h" />
+    <ClInclude Include="include\Stats.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="include\Profiler.cpp" />
     <ClCompile Include="src\FileDirectoryHelper.cpp" />
     <ClCompile Include="src\Log.cpp" />
     <ClCompile Include="src\Logger.cpp" />

@@ -3,6 +3,8 @@
 #include "utils/QuickMacros.h"
 #include "core/Vma.h"
 
+
+
 namespace Imp::Render {
 	class Device;
 	using UniqueBuffer = std::unique_ptr<class Buffer>;
