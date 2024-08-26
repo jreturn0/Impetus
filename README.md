@@ -1,5 +1,7 @@
 # Impetus
 Engine/Framework made with C++/Vulkan
+###### Note
+vcpkg and the vulkan sdk are needed to run/build the project
 # Tech
 - ## C++ / Vulkan
 	- ### Libraries
@@ -21,9 +23,22 @@ Engine/Framework made with C++/Vulkan
 			- Used for compiling shaders. Specifically here glsl to spir-v 
 		- #### [SPIRV-Reflect](https://github.com/KhronosGroup/SPIRV-Reflect)
 			- Currently unused aside from printing while compiling
+		- #### [STB](https://github.com/nothings/stb)
+			- Image loading
+		- #### [FastGltf](https://github.com/spnda/fastgltf)
+		  	- For storing and loading meshes/textures from primary data type .glb(gltf)
 - ## Software
-    - ### Visual Studio
-        - #### Programming IDE
-    - ### Blender
-        - #### 3D Modelling. Mostly used to build the glb(gltf) files
-    
+	- ### Visual Studio
+   		- Programming IDE
+	- ### Blender
+   		- 3D Modelling. Mostly used to build the glb(gltf) files
+- ## Sources
+	- ### [FreePBR](https://freepbr.com/)
+   		- where I got some basic textures
+	- ### [imgui_entt_entity_editor](https://github.com/Green-Sky/imgui_entt_entity_editor)
+	  	- Basis of a lot of the editor through concept. Not directly used but got a lot of core concepts
+   	- ### [Vulkan Tutorial](https://vulkan-tutorial.com/)
+   	  	- Learning Vulkan and more related concepts. Used to help abstract core Vulkan concepts and items
+   	- ### [vkguide](https://vkguide.dev/)
+   	  	- Same as above. Mostly used as basis for the renderer's architecture
+  
