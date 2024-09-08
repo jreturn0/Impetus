@@ -5,13 +5,15 @@
 namespace Imp::Render
 {
 	class Instance;
-	using UniqueDebugMessenger = std::unique_ptr<class DebugMessenger>;
+	
 
 	class DebugMessenger
 	{
 	private:
 		vk::DispatchLoaderDynamic dldi;
 		vk::UniqueHandle<vk::DebugUtilsMessengerEXT, vk::DispatchLoaderDynamic> debugMessenger;
+
+
 		static VKAPI_ATTR  VkBool32 VKAPI_CALL DebugMessageCallback(
 			VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
 			VkDebugUtilsMessageTypeFlagsEXT messageTypes,
@@ -20,17 +22,15 @@ namespace Imp::Render
 
 		static inline vk::UniqueHandle<vk::DebugUtilsMessengerEXT, vk::DispatchLoaderDynamic> CreateDebugUtilsMessenger(
 			const vk::Instance& instance, const vk::DispatchLoaderDynamic& dldi);
-		DebugMessenger(const Instance& instance);
-
-
-		friend UniqueDebugMessenger CreateUniqueDebugMessenger(const Instance& instance);
 
 	public:
+		explicit DebugMessenger(const Instance& instance);
 		DebugMessenger();
 		~DebugMessenger();
 		DISABLE_COPY_AND_MOVE(DebugMessenger);
 
 	};
 
+	using UniqueDebugMessenger = std::unique_ptr<class DebugMessenger>;
 	UniqueDebugMessenger CreateUniqueDebugMessenger(const Instance& instance);
 }

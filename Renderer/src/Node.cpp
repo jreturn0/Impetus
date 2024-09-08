@@ -1,4 +1,5 @@
-﻿#include "nodes/Node.h"
+#include "pch.h"
+#include "nodes/Node.h"
 
 void Imp::Render::Node::refreshTransform(const glm::mat4& parentMatrix)
 {

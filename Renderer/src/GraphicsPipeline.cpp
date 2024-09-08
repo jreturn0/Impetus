@@ -1,4 +1,5 @@
-﻿#include "core/GraphicsPipeline.h"
+#include "pch.h"
+#include "core/GraphicsPipeline.h"
 
 #include <bitset>
 #include "fstream"

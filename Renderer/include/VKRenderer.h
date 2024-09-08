@@ -39,13 +39,13 @@ namespace Imp::Render {
 		UniqueQueue presentQueue;
 		UniqueQueue transferQueue;
 
+		//Commands:
+		UniqueCommandPool graphicsPool;
+		UniqueCommandPool transferPool;
+
 		//Allocators:
 		UniqueVmaAllocator allocator;
 		UniqueDescriptorAllocatorGrowable descriptorAllocator;
-
-		//Commands:
-		UniqueCommandPool graphicsPool;
-		UniqueImmediateCommands transferCommands;
 
 		//Per Frame:
 		std::array<UniqueFrameData, vkutil::MAX_FRAMES_IN_FLIGHT> frames;
@@ -115,7 +115,7 @@ namespace Imp::Render {
 		auto&& getMetallicRoughness() { return *metallicRoughness; }
 		auto&& getTransferQueue() const { return *transferQueue; }
 		auto&& getGraphicsQueue() const { return *graphicsQueue; }
-		auto&& getTransferPool() const { return *transferCommands; }
+		auto&& getTransferPool() const { return *transferPool; }
 
 		ResourceCache& getResourceCache () const { return *resourceHandler; }
 		SharedImage createImage(const char* nameId, void* data, const vk::Extent3D size, const vk::Format format, const vk::ImageUsageFlags usage, const

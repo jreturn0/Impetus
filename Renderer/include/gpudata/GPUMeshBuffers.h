@@ -7,7 +7,8 @@
 
 namespace Imp::Render
 {
-	class ImmediateCommands;
+	class Queue;
+	class CommandPool;
 	class CommandPool;
 
     class GPUMeshBuffers
@@ -24,7 +25,7 @@ namespace Imp::Render
         UniqueBuffer& getVertexBuffer() { return vertexBuffer; }
         vk::DeviceAddress getVertexAddress() const { return vertexAddress; }
 
-        GPUMeshBuffers(const Device& device, const vk::Queue& queue,const ImmediateCommands& transferCommands, VmaAllocator& allocator, std::span<uint32_t> indices, std::span<Vertex> vertices);
+        GPUMeshBuffers(const Device& device, const Queue& queue,const CommandPool& transferCommands, VmaAllocator& allocator, std::span<uint32_t> indices, std::span<Vertex> vertices);
         GPUMeshBuffers() = default;
     };
 

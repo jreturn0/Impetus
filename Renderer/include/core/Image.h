@@ -18,16 +18,17 @@ namespace Imp::Render {
 		VmaAllocation allocation;
 		vk::Extent3D extent;
 		vk::Format format;
-		inline static size_t idCounter = 0;
-		size_t id = idCounter++;
+
+
 	public:
-		DISABLE_COPY_AND_MOVE(Image);
-
-		// Constructor
-		Image(const Device& device, Vma& allocator, vk::Extent3D extent, vk::Format format, vk::ImageUsageFlags usage, vk::ImageAspectFlags aspectFlags,bool mipmap=false);
-		// Destructor
+		// Create an image without data
+		Image(const Device& device, Vma& allocator, vk::Extent3D extent, vk::Format format, vk::ImageUsageFlags usage, vk::ImageAspectFlags aspectFlags, bool mipmap = false);
+		// Create an image with data
+		Image(const Device& device, Vma& allocator, const Queue& transferQueue, const Queue& graphicsQueue, const CommandPool& transferPool, const CommandPool& graphicsPool,
+			  void* data, vk::Extent3D size, vk::Format format, vk::ImageUsageFlags usage, vk::ImageAspectFlags aspectFlags, bool mipmap = false);
+		Image();
 		~Image();
-
+		DISABLE_COPY_AND_MOVE(Image);
 		// Getters
 		const vk::Image& getImage() const;
 		const vk::Image* getpImage() const;
@@ -38,20 +39,32 @@ namespace Imp::Render {
 
 		// Transition image layout
 		void transitionImageLayout(const vk::CommandBuffer& commandBuffer, const vk::ImageLayout& oldLayout, const vk::ImageLayout& newLayout);
+		void copyTo(const CommandBuffer& commandBuffer, const Image& dst) const;
+
+
 	};
 	using UniqueImage = std::unique_ptr<Image>;
+
+
+
+
 	using SharedImage = std::shared_ptr<Image>;
 	UniqueImage CreateDrawImage(const Device& device, Vma& allocator, vk::Extent2D extent, vk::Format format);
 	UniqueImage CreateDepthImage(const Device& device, Vma& allocator, vk::Extent2D extent);
-	UniqueImage CreateImage(const Device& device, Vma& allocator,vk::Extent3D size, vk::Format format, vk::ImageUsageFlags usage, bool mipmapped =true );
-	UniqueImage CreateImage(const Device& device, Vma& allocator, const ImmediateCommands& transferCommands, const vk::Queue& transferQueue, void*
-	                        data, vk::Extent3D size, vk::Format format, vk::ImageUsageFlags usage, const vk::Queue* graphicsQueue , bool mipmapped = true);
-	SharedImage CreateSharedImage(const Device& device, Vma& allocator, vk::Extent3D size, vk::Format format, vk::ImageUsageFlags usage, bool mipmapped = true);
-	SharedImage CreateSharedImage(const Device& device, Vma& allocator, const ImmediateCommands& transferCommands, const vk::Queue& transferQueue, void*
-							data, vk::Extent3D size, vk::Format format, vk::ImageUsageFlags usage, const vk::Queue* graphicsQueue , bool mipmapped = true);
+
+	// Create UniqueImage with data
+	UniqueImage CreateImage(const Device& device, Vma& allocator, const Queue& transferQueue, const Queue& graphicsQueue, const CommandPool& transferPool, const CommandPool& graphicsPool,
+							void* data, vk::Extent3D size, vk::Format format, vk::ImageUsageFlags usage, vk::ImageAspectFlags aspectFlags, bool mipmap = false);
+	// Create UniqueImage without data
+	UniqueImage CreateImage(const Device& device, Vma& allocator, vk::Extent3D extent, vk::Format format, vk::ImageUsageFlags usage, vk::ImageAspectFlags aspectFlags, bool mipmap = false);
+	// Create SharedImage with data
+	SharedImage CreateSharedImage(const Device& device, Vma& allocator, const Queue& transferQueue, const Queue& graphicsQueue, const CommandPool& transferPool, const CommandPool& graphicsPool,
+								  void* data, vk::Extent3D size, vk::Format format, vk::ImageUsageFlags usage, vk::ImageAspectFlags aspectFlags, bool mipmap = false);
+	// Create SharedImage without data
+	SharedImage CreateSharedImage(const Device& device, Vma& allocator, vk::Extent3D extent, vk::Format format, vk::ImageUsageFlags usage, vk::ImageAspectFlags aspectFlags, bool mipmap = false);
 
 	void CopyImageToImage(const CommandBuffer& cmd, Image& src, Image& dst);
 	void CopyImageToSwapChain(const vk::CommandBuffer& cmd, Image& src, const SwapChain& swapChain, uint32_t imageIndex);
 	void TransitionImageLayout(const vk::Image& image, const vk::CommandBuffer& commandBuffer, const vk::ImageLayout& oldLayout, const vk::ImageLayout
-	                           & newLayout);
+							   & newLayout);
 }

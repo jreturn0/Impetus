@@ -1,4 +1,5 @@
-﻿#include "VKRenderer.h"
+#include "pch.h"
+#include "VKRenderer.h"
 
 
 
@@ -21,7 +22,7 @@
 #include "window/VKWindow.h"
 #include "utils/GUI.h"
 #include "utils/MeshLoader.h"
-#include "core/ImmediateCommands.h"
+#include "core/CommandPool.h"
 #include "core/Instance.h"
 #include "core/Vma.h"
 #include <glm/gtc/type_ptr.hpp>
@@ -85,8 +86,9 @@ namespace Imp::Render {
 
 			auto depthAttachment = depth != nullptr ? GetDepthAttachment(depth, vk::AttachmentLoadOp::eClear, { 1.f,0 }) : vk::RenderingAttachmentInfoKHR{};
 
-			vk::RenderingInfoKHR renderingInfo(
-				{}, // flags
+
+
+			cmd.beginRendering({ {}, // flags
 				vk::Rect2D(vk::Offset2D(0, 0), extent), // renderArea
 				1, // layerCount
 				0, // viewMask
@@ -94,9 +96,7 @@ namespace Imp::Render {
 				&colourAttachment, // pColorAttachments
 				depth != nullptr ? &depthAttachment : nullptr, // pDepthAttachment
 				nullptr // pStencilAttachment
-			);
-
-			cmd.beginRendering(renderingInfo);
+				});
 		}
 		vk::Format ChooseSupportedFormat(vk::PhysicalDevice physicalDevice, const std::vector<vk::Format>& candidates, vk::ImageTiling tiling, vk::FormatFeatureFlags features)
 		{
@@ -369,8 +369,8 @@ Imp::Render::VKRenderer::VKRenderer(const std::string& title, uint32_t width, ui
 	transferQueue(CreateUniqueQueue(*device, QueueFamily::Transfer)),
 	allocator(std::make_unique<Vma>(*instance, *device)),
 	descriptorAllocator(CreateUniqueDescriptorAllocatorGrowableEasyBake(*device)),
-	graphicsPool(CreateUniqueCommandPool(*device, device->getIndices().graphicsFamily.value())),
-	transferCommands(std::make_unique<ImmediateCommands>(*device, device->getIndices().transferFamily.value())),
+	graphicsPool(CreateUniqueCommandPool(*device, QueueFamily::Graphics, device->getIndices().graphicsFamily.value())),
+	transferPool(CreateUniqueCommandPool(*device, QueueFamily::Transfer, device->getIndices().transferFamily.value())),
 	frames(CreateFrameDataArray(*device, *swapChain, *graphicsPool)),
 	drawImage(CreateDrawImage(*device, *allocator, swapChain->getExtent(), swapChain->getFormat())),
 	depthImage(CreateDepthImage(*device, *allocator, swapChain->getExtent())),
@@ -384,8 +384,8 @@ Imp::Render::VKRenderer::VKRenderer(const std::string& title, uint32_t width, ui
 	errorCheckerboardImage(CreateErrorImage(*this)),
 	defaultSamplerLinear(device->getLogical().createSamplerUnique(vk::SamplerCreateInfo{ {},vk::Filter::eLinear,vk::Filter::eLinear, })),
 	defaultSamplerNearest(device->getLogical().createSamplerUnique(vk::SamplerCreateInfo{ {},vk::Filter::eNearest,vk::Filter::eNearest })),
-	defaultMaterial(createDefaultMaterial()),
 	resourceHandler(std::make_unique<ResourceCache>(*device)),
+	defaultMaterial(createDefaultMaterial()),
 	drawCtx(std::make_unique<DrawContext>())
 {
 	;
@@ -419,7 +419,7 @@ Imp::Render::VKRenderer::~VKRenderer()
 Imp::Render::SharedImage Imp::Render::VKRenderer::createImage(const char* nameId, void* data, const vk::Extent3D size, const vk::Format format, const vk::ImageUsageFlags usage, const bool mipMapped) const
 {
 
-	auto image = CreateSharedImage(*device, *allocator, *transferCommands, *transferQueue, data, size, format, usage, &graphicsQueue->getQueue(), mipMapped);
+	auto image = CreateSharedImage(*device, *allocator, *transferQueue,*graphicsQueue,*transferPool,*graphicsPool, data, size, format, usage,vk::ImageAspectFlagBits::eColor, mipMapped);
 	if (image == nullptr) {
 		//throw std::runtime_error("Failed to create image");
 	}
@@ -548,7 +548,7 @@ void Imp::Render::VKRenderer::drawCompute()
 
 void Imp::Render::VKRenderer::drawGeometry()
 {
-	auto start = std::chrono::high_resolution_clock::now();
+	const auto start = std::chrono::high_resolution_clock::now();
 
 	auto& cmd = getCurrentFrameData().getCommandBuffer();
 
@@ -694,7 +694,7 @@ std::shared_ptr<Imp::Render::Mesh> Imp::Render::VKRenderer::uploadMesh(const std
 																	   std::span<uint32_t> indices,
 																	   std::span<Vertex> vertices) const
 {
-	return std::make_shared<Mesh>(name, *device, *transferQueue, *transferCommands, *allocator, surfaces, indices, vertices);
+	return std::make_shared<Mesh>(name, *device, *transferQueue, *transferPool, *allocator, surfaces, indices, vertices);
 }
 void Imp::Render::VKRenderer::endFrame()
 {
@@ -718,7 +718,7 @@ void Imp::Render::VKRenderer::endFrame()
 	vk::SemaphoreSubmitInfo signalSemaphoreInfo(frame->getRenderFinishedSemaphore(), 0, vk::PipelineStageFlagBits2::eBottomOfPipe);
 	vk::SubmitInfo2 submitInfo2({}, waitSemaphoreInfo, commandBufferInfo, signalSemaphoreInfo);
 
-	if (graphicsQueue->getQueue().submit2(1, &submitInfo2, frame->getInFlightFence()) != vk::Result::eSuccess) {
+	if (!graphicsQueue->submit( submitInfo2, frame->getInFlightFence())) {
 		throw std::runtime_error("Failed to submit draw command buffer!");
 	}
 

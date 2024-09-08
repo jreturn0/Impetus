@@ -1,4 +1,5 @@
-﻿#include "core/ComputePipeline.h"
+#include "pch.h"
+#include "core/ComputePipeline.h"
 #include "utils/descriptor/DescriptorLayoutBuilder.h"
 #include "core/Device.h"
 #include "utils/descriptor/DescriptorAllocator.h"

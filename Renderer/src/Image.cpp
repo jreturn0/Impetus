@@ -1,4 +1,5 @@
-﻿#include "core/Image.h"
+#include "pch.h"
+#include "core/Image.h"
 
 #include "Debug.h"
 #include "core/CommandBuffer.h"
@@ -6,7 +7,8 @@
 #include "core/SwapChain.h"
 #include "core/Vma.h"
 #include "core/Buffer.h"
-#include "core/ImmediateCommands.h"	
+#include "core/CommandPool.h"	
+#include "core/Queue.h"
 
 
 namespace {
@@ -132,6 +134,12 @@ Imp::Render::Image::Image(const Device& device, Vma& allocator, vk::Extent3D ext
 {
 	//std::cout << "ImageColor format: " << vk::to_string(format) << std::endl;
 	//std::cout << "ImageColor extent: " << extent.width << " " << extent.height << " " << extent.depth << std::endl;
+	// Include necessary usage flags
+	usage |= vk::ImageUsageFlagBits::eTransferDst;
+
+	if (mipmap) {
+		usage |= vk::ImageUsageFlagBits::eTransferSrc;
+	}
 
 	// Ensure extent is valid
 	if (extent.width == 0 || extent.height == 0 || extent.depth == 0) {
@@ -145,21 +153,24 @@ Imp::Render::Image::Image(const Device& device, Vma& allocator, vk::Extent3D ext
 	usage |= vk::ImageUsageFlagBits::eTransferDst;
 
 	// Create the image
-	vk::ImageCreateInfo imageInfo{};
-	imageInfo.imageType = vk::ImageType::e2D;
-	imageInfo.extent = extent;
-	imageInfo.mipLevels = mipLevels;
-	imageInfo.arrayLayers = 1;
-	imageInfo.format = format;
-	imageInfo.tiling = vk::ImageTiling::eOptimal;
-	imageInfo.initialLayout = vk::ImageLayout::eUndefined;
-	imageInfo.usage = usage;
-	imageInfo.samples = vk::SampleCountFlagBits::e1;
-	imageInfo.sharingMode = vk::SharingMode::eExclusive;
+	vk::ImageCreateInfo imageInfo{
+		{},
+		vk::ImageType::e2D,
+		 format,
+		 extent,
+		 mipLevels,
+		 1,
+		 vk::SampleCountFlagBits::e1,
+		 vk::ImageTiling::eOptimal,
+		 usage,
+		 vk::SharingMode::eExclusive,
+		{},
+		 vk::ImageLayout::eUndefined
+	};
 
 	VmaAllocationCreateInfo allocInfo{};
 	allocInfo.usage = VMA_MEMORY_USAGE_GPU_ONLY;
-	allocInfo.requiredFlags = VkMemoryPropertyFlags(VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+	allocInfo.requiredFlags = static_cast<VkMemoryPropertyFlags>(VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
 	VkImage rawImage;
 	VkImageCreateInfo rawImageInfo = static_cast<VkImageCreateInfo>(imageInfo);
 
@@ -168,20 +179,51 @@ Imp::Render::Image::Image(const Device& device, Vma& allocator, vk::Extent3D ext
 	image = vk::UniqueImage(rawImage, device.getLogical());
 
 	// Create the image view
-	vk::ImageViewCreateInfo viewInfo{};
-	viewInfo.image = *image;
-	viewInfo.viewType = vk::ImageViewType::e2D;
-	viewInfo.format = format;
-	viewInfo.subresourceRange.aspectMask = aspectFlags;
-	viewInfo.subresourceRange.baseMipLevel = 0; // Start from base level
-	viewInfo.subresourceRange.levelCount = mipLevels; // Set the correct number of mip levels
-	viewInfo.subresourceRange.baseArrayLayer = 0;
-	viewInfo.subresourceRange.layerCount = 1;
+	vk::ImageViewCreateInfo viewInfo{
+		{},
+		*image,
+		vk::ImageViewType::e2D,
+		 format,
+		 {},
+		 { aspectFlags, 0, mipLevels, 0, 1 }
+	};
+
 
 	view = device.getLogical().createImageViewUnique(viewInfo);
 }
 
+Imp::Render::Image::Image(const Device& device, Vma& allocator, const Queue& transferQueue, const Queue& graphicsQueue, const CommandPool& transferPool, const CommandPool& graphicsPool,
+						  void* data, vk::Extent3D size, vk::Format format, vk::ImageUsageFlags usage, vk::ImageAspectFlags aspectFlags, bool mipmap) : Image(device, allocator, size, format, usage, aspectFlags, mipmap)
+{
 
+	size_t data_size = size.depth * size.width * size.height * 4;
+
+	auto  uploadBuffer = CreateUniqueBuffer(allocator, data_size, vk::BufferUsageFlagBits::eTransferSrc, VMA_MEMORY_USAGE_CPU_TO_GPU);
+	//	auto uploadBuffer = CreateUniqueBuffer(allocator, data_size, vk::BufferUsageFlagBits::eTransferSrc, VMA_MEMORY_USAGE_CPU_TO_GPU);
+//
+	memcpy(uploadBuffer->getAllocationInfo().pMappedData, data, data_size);
+	transferQueue.oneTimeSubmit(device, transferPool, [&](const vk::CommandBuffer& cmd) {
+		// Transition image to transfer destination layout
+		transitionImageLayout(cmd, vk::ImageLayout::eUndefined, vk::ImageLayout::eTransferDstOptimal);
+
+		vk::BufferImageCopy copyRegion{
+			0, 0, 0,
+			vk::ImageSubresourceLayers{aspectFlags, 0, 0, 1},
+			{}, size
+		};
+		cmd.copyBufferToImage(uploadBuffer->getBuffer(), *image, vk::ImageLayout::eTransferDstOptimal, copyRegion);
+								});
+
+	graphicsQueue.oneTimeSubmit(device, graphicsPool, [&](const vk::CommandBuffer& cmd) {
+		if (mipmap)
+			GenerateMipmaps(cmd, *image, { size.width, size.height });
+		else
+			transitionImageLayout(cmd, vk::ImageLayout::eTransferDstOptimal, vk::ImageLayout::eShaderReadOnlyOptimal);
+								});
+}
+
+Imp::Render::Image::Image()
+= default;
 
 
 Imp::Render::Image::~Image()
@@ -245,123 +287,119 @@ void Imp::Render::Image::transitionImageLayout(const vk::CommandBuffer& commandB
 	commandBuffer.pipelineBarrier2(depInfo);
 }
 
+void Imp::Render::Image::copyTo(const CommandBuffer& commandBuffer, const Image& dst) const
+{
+	vk::ImageBlit2 blitRegion{};
+	auto srcExtent = getExtent();
+	blitRegion.srcOffsets[1].setX(srcExtent.width);
+	blitRegion.srcOffsets[1].setY(srcExtent.height);
+	blitRegion.srcOffsets[1].setZ(1);
+	auto dstExtent = dst.getExtent();
+	blitRegion.dstOffsets[1].setX(dstExtent.width);
+	blitRegion.dstOffsets[1].setY(dstExtent.height);
+	blitRegion.dstOffsets[1].setZ(1);
+	blitRegion.setSrcSubresource({ vk::ImageAspectFlagBits::eColor, 0, 0, 1 }).setDstSubresource({ vk::ImageAspectFlagBits::eColor, 0, 0, 1 });
+	vk::BlitImageInfo2 blitInfo{};
+	blitInfo.setSrcImage(getImage()).setSrcImageLayout(vk::ImageLayout::eTransferSrcOptimal).setDstImage(dst.getImage())
+		.setDstImageLayout(vk::ImageLayout::eTransferDstOptimal).setRegions(blitRegion).setFilter(
+			vk::Filter::eLinear).setRegionCount(1);
+
+	commandBuffer.getBuffer().blitImage2(blitInfo);
+}
+
 Imp::Render::UniqueImage Imp::Render::CreateDrawImage(const Device& device, Vma& allocator, vk::Extent2D extent, vk::Format format)
 {
-	return UniqueImage(new Image(device, allocator, { extent.width,extent.height,1 },
-								 format,
-								 (vk::ImageUsageFlagBits::eTransferSrc | vk::ImageUsageFlagBits::eTransferDst |
-								  vk::ImageUsageFlagBits::eStorage | vk::ImageUsageFlagBits::eColorAttachment),
-								 vk::ImageAspectFlagBits::eColor));
+	return CreateImage(
+		device,
+		allocator,
+{ extent.width, extent.height, 1 },
+		format,
+		(vk::ImageUsageFlagBits::eTransferSrc | vk::ImageUsageFlagBits::eTransferDst | vk::ImageUsageFlagBits::eStorage | vk::ImageUsageFlagBits::eColorAttachment),
+		vk::ImageAspectFlagBits::eColor);
 }
 
 Imp::Render::UniqueImage Imp::Render::CreateDepthImage(const Device& device, Vma& allocator, vk::Extent2D extent)
 {
-	return UniqueImage(new Image(device, allocator, { extent.width,extent.height,1 },
-								 vk::Format::eD32Sfloat,
-								 (vk::ImageUsageFlagBits::eDepthStencilAttachment),
-								 vk::ImageAspectFlagBits::eDepth));
+	return CreateImage(
+	device,
+		allocator,
+				{ extent.width, extent.height, 1 },
+		vk::Format::eD32Sfloat,
+		(vk::ImageUsageFlagBits::eDepthStencilAttachment),
+		vk::ImageAspectFlagBits::eDepth);
 }
 
-Imp::Render::UniqueImage Imp::Render::CreateImage(const Device& device, Vma& allocator, vk::Extent3D size,
-												  vk::Format format, vk::ImageUsageFlags usage, bool mipmapped)
+Imp::Render::UniqueImage Imp::Render::CreateImage(const Device& device, Vma& allocator, const Queue& transferQueue,
+												  const Queue& graphicsQueue, const CommandPool& transferPool, const CommandPool& graphicsPool, void* data,
+												  vk::Extent3D size, vk::Format format, vk::ImageUsageFlags usage, vk::ImageAspectFlags aspectFlags, bool mipmap)
 {
-
-	if (mipmapped) {
-		usage |= vk::ImageUsageFlagBits::eTransferSrc;
-	}
-	return UniqueImage(new Image(device, allocator, size, format, usage, vk::ImageAspectFlagBits::eColor,mipmapped));
+	return std::make_unique<Image>(device, allocator, transferQueue, graphicsQueue, transferPool, graphicsPool, data, size, format, usage, aspectFlags, mipmap);
 }
 
-Imp::Render::UniqueImage Imp::Render::CreateImage(const Device& device, Vma& allocator, const ImmediateCommands& transferCommands, const vk::Queue& transferQueue, void* data, vk::Extent3D size, vk::Format format, vk::ImageUsageFlags usage, const vk::Queue* graphicsQueue, bool mipmapped)
+Imp::Render::UniqueImage Imp::Render::CreateImage(const Device& device, Vma& allocator, vk::Extent3D extent,
+												  vk::Format format, vk::ImageUsageFlags usage, vk::ImageAspectFlags aspectFlags, bool mipmap)
 {
-	if (mipmapped) {
-		usage |= vk::ImageUsageFlagBits::eTransferSrc;
-	}
-	size_t data_size = size.depth * size.width * size.height * 4;
-
-	auto uploadBuffer = CreateUniqueBuffer(allocator, data_size, vk::BufferUsageFlagBits::eTransferSrc, VMA_MEMORY_USAGE_CPU_TO_GPU);
-
-	memcpy(uploadBuffer->getAllocationInfo().pMappedData, data, data_size);
-
-	// Include necessary usage flags
-	usage |= vk::ImageUsageFlagBits::eTransferDst;
-
-	auto newImage = CreateImage(device, allocator, size, format, usage, mipmapped);
-
-	transferCommands.immediateSubmit(transferQueue, device, [&](const vk::CommandBuffer& cmd) {
-		// Transition image to transfer destination layout
-		TransitionImageLayout(newImage->getImage(), cmd, vk::ImageLayout::eUndefined, vk::ImageLayout::eTransferDstOptimal);
-
-		vk::BufferImageCopy copyRegion{
-		   0, 0, 0,
-		   vk::ImageSubresourceLayers{vk::ImageAspectFlagBits::eColor, 0, 0, 1},
-		   {}, size
-		};
-		cmd.copyBufferToImage(uploadBuffer->getBuffer(), newImage->getImage(), vk::ImageLayout::eTransferDstOptimal, copyRegion);
-
-		// Transition image to shader read layout
-									 });
-	SubmitTemporaryCommandBuffer(device, *graphicsQueue, [&](vk::CommandBuffer graphicsCmd) {
-		if (mipmapped)
-			GenerateMipmaps(graphicsCmd, newImage->getImage(), { size.width, size.height });
-		else
-			TransitionImageLayout(newImage->getImage(), graphicsCmd, vk::ImageLayout::eTransferDstOptimal, vk::ImageLayout::eShaderReadOnlyOptimal);
-								 });
-	return std::move(newImage);
-}
-
-Imp::Render::SharedImage Imp::Render::CreateSharedImage(const Device& device, Vma& allocator, vk::Extent3D size,
-														vk::Format format, vk::ImageUsageFlags usage, bool mipmapped)
-{
-	if (mipmapped) {
-		usage |= vk::ImageUsageFlagBits::eTransferSrc;
-	}
-	return SharedImage(new Image(device, allocator, size, format, usage, vk::ImageAspectFlagBits::eColor,mipmapped));
+	return std::make_unique<Image>(device, allocator, extent, format, usage, aspectFlags, mipmap);
 }
 
 Imp::Render::SharedImage Imp::Render::CreateSharedImage(const Device& device, Vma& allocator,
-														const ImmediateCommands& transferCommands, const vk::Queue& transferQueue, void* data, vk::Extent3D size,
-														vk::Format format, vk::ImageUsageFlags usage, const vk::Queue* graphicsQueue , bool mipmapped)
+														const Queue& transferQueue, const Queue& graphicsQueue, const CommandPool& transferPool,
+														const CommandPool& graphicsPool, void* data, vk::Extent3D size, vk::Format format, vk::ImageUsageFlags usage,
+														vk::ImageAspectFlags aspectFlags, bool mipmap)
 {
-	if (mipmapped)
-	{
-		usage |= vk::ImageUsageFlagBits::eTransferSrc;
-	}
-	
-	size_t data_size = size.depth * size.width * size.height * 4;
-
-	auto uploadBuffer = CreateUniqueBuffer(allocator, data_size, vk::BufferUsageFlagBits::eTransferSrc, VMA_MEMORY_USAGE_CPU_TO_GPU);
-
-	memcpy(uploadBuffer->getAllocationInfo().pMappedData, data, data_size);
-
-	// Include necessary usage flags
-	usage |= vk::ImageUsageFlagBits::eTransferDst;
-
-	auto newImage = CreateSharedImage(device, allocator, size, format, usage, mipmapped);
-
-	transferCommands.immediateSubmit(transferQueue, device, [&](const vk::CommandBuffer& cmd) {
-		// Transition image to transfer destination layout
-		TransitionImageLayout(newImage->getImage(), cmd, vk::ImageLayout::eUndefined, vk::ImageLayout::eTransferDstOptimal);
-
-		vk::BufferImageCopy copyRegion{
-		   0, 0, 0,
-		   vk::ImageSubresourceLayers{vk::ImageAspectFlagBits::eColor, 0, 0, 1},
-		   {}, size
-		};
-		cmd.copyBufferToImage(uploadBuffer->getBuffer(), newImage->getImage(), vk::ImageLayout::eTransferDstOptimal, copyRegion);
-
-
-									 });
-
-	SubmitTemporaryCommandBuffer(device, *graphicsQueue, [&](vk::CommandBuffer graphicsCmd) {
-		if (mipmapped)
-			GenerateMipmaps(graphicsCmd, newImage->getImage(), { size.width, size.height });
-		else
-			TransitionImageLayout(newImage->getImage(), graphicsCmd, vk::ImageLayout::eTransferDstOptimal, vk::ImageLayout::eShaderReadOnlyOptimal);
-								 });
-
-	return (newImage);
+	return std::make_shared<Image>(device, allocator, transferQueue, graphicsQueue, transferPool, graphicsPool, data, size, format, usage, aspectFlags, mipmap);
 }
+
+Imp::Render::SharedImage Imp::Render::CreateSharedImage(const Device& device, Vma& allocator, vk::Extent3D extent,
+														vk::Format format, vk::ImageUsageFlags usage, vk::ImageAspectFlags aspectFlags, bool mipmap)
+{
+	return std::make_shared<Image>(device, allocator, extent, format, usage, aspectFlags, mipmap);
+}
+
+
+//
+//Imp::Render::SharedImage Imp::Render::CreateSharedImage(const Device& device, Vma& allocator,
+//														const CommandPool& transferCommands, const vk::Queue& transferQueue, void* data, vk::Extent3D size,
+//														vk::Format format, vk::ImageUsageFlags usage, const vk::Queue* graphicsQueue, bool mipmapped)
+//{
+//	if (mipmapped) {
+//		usage |= vk::ImageUsageFlagBits::eTransferSrc;
+//	}
+//
+//	size_t data_size = size.depth * size.width * size.height * 4;
+//
+//	auto uploadBuffer = CreateUniqueBuffer(allocator, data_size, vk::BufferUsageFlagBits::eTransferSrc, VMA_MEMORY_USAGE_CPU_TO_GPU);
+//
+//	memcpy(uploadBuffer->getAllocationInfo().pMappedData, data, data_size);
+//
+//	// Include necessary usage flags
+//	usage |= vk::ImageUsageFlagBits::eTransferDst;
+//
+//	auto newImage = CreateSharedImage(device, allocator, size, format, usage, mipmapped);
+//
+//	transferCommands.immediateSubmit(transferQueue, device, [&](const vk::CommandBuffer& cmd) {
+//		// Transition image to transfer destination layout
+//		TransitionImageLayout(newImage->getImage(), cmd, vk::ImageLayout::eUndefined, vk::ImageLayout::eTransferDstOptimal);
+//
+//		vk::BufferImageCopy copyRegion{
+//		   0, 0, 0,
+//		   vk::ImageSubresourceLayers{vk::ImageAspectFlagBits::eColor, 0, 0, 1},
+//		   {}, size
+//		};
+//		cmd.copyBufferToImage(uploadBuffer->getBuffer(), newImage->getImage(), vk::ImageLayout::eTransferDstOptimal, copyRegion);
+//
+//
+//									 });
+//
+//	SubmitTemporaryCommandBuffer(device, *graphicsQueue, [&](vk::CommandBuffer graphicsCmd) {
+//		if (mipmapped)
+//			GenerateMipmaps(graphicsCmd, newImage->getImage(), { size.width, size.height });
+//		else
+//			TransitionImageLayout(newImage->getImage(), graphicsCmd, vk::ImageLayout::eTransferDstOptimal, vk::ImageLayout::eShaderReadOnlyOptimal);
+//								 });
+//
+//	return (newImage);
+//}
 
 
 void Imp::Render::CopyImageToImage(const CommandBuffer& cmd, Image& src, Image& dst)

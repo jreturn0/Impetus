@@ -1,11 +1,13 @@
-﻿#include "gpudata/GPUMeshBuffers.h"
+#include "pch.h"
+#include "gpudata/GPUMeshBuffers.h"
 
 #include "core/CommandBuffer.h"
+#include "core/CommandPool.h"
 #include "core/Device.h"
-#include "core/ImmediateCommands.h"
+#include "core/Queue.h"
 #include "utils/VKUtils.h"
 #include "core/Vma.h"
-Imp::Render::GPUMeshBuffers::GPUMeshBuffers(const Device& device, const vk::Queue& queue, const ImmediateCommands& transferCommands, VmaAllocator& allocator, std::span<uint32_t> indices, std::span<Vertex> vertices)
+Imp::Render::GPUMeshBuffers::GPUMeshBuffers(const Device& device, const Queue& queue, const CommandPool& transferCommands, VmaAllocator& allocator, std::span<uint32_t> indices, std::span<Vertex> vertices)
     : indexBuffer(CreateUniqueBuffer( allocator,
                                      indices.size() * sizeof(uint32_t),
                                      vk::BufferUsageFlagBits::eIndexBuffer | vk::BufferUsageFlagBits::eTransferDst,
@@ -39,7 +41,7 @@ vertexAddress(device.getLogical().getBufferAddress(vk::BufferDeviceAddressInfo{v
     memcpy(static_cast<char*>(data) + vertexSize, indices.data(), indexSize);
 
     // Submit the copy commands
-    transferCommands.immediateSubmit(queue, device.getLogical(), [&](vk::CommandBuffer& cmd) {
+    queue.oneTimeSubmit (device,transferCommands, [&](auto&& cmd) {
         vk::BufferCopy vertRegion(0, 0, vertexSize);
         cmd.copyBuffer(stagingBuffer->getBuffer(), vertexBuffer->getBuffer(), 1, &vertRegion);
 

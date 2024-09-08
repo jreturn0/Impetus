@@ -1,4 +1,5 @@
-﻿#include "window/Window.h"
+#include "pch.h"
+#include "window/Window.h"
 
 #include <glm/vec2.hpp>
 

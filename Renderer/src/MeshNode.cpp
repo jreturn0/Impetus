@@ -1,4 +1,5 @@
-﻿#include "nodes/MeshNode.h"
+#include "pch.h"
+#include "nodes/MeshNode.h"
 #include <glm/mat4x4.hpp>
 
 #include "geometry/Mesh.h"

@@ -5,25 +5,29 @@
 namespace Imp::Render {
 	class Device;
 	using UniqueCommandPool = std::unique_ptr<class CommandPool>;
-
+	class CommandBuffer;
+	using UniqueCommandBuffer = std::unique_ptr<class CommandBuffer>;
 	class CommandPool
 	{
 	private:
+		QueueFamily family;
 		uint32_t familyIndex;
 		vk::UniqueCommandPool pool;
-		CommandPool(const Device& device, uint32_t familyIndex);
-
-
-		friend UniqueCommandPool CreateUniqueCommandPool(const Device& device,uint32_t familyIndex);
+		vk::UniqueFence fence;
 
 	public:
-		const vk::CommandPool& getPool()const { return *pool; }
-		operator vk::CommandPool& () { return*pool; }
+		explicit CommandPool(const Device& device, QueueFamily family, uint32_t familyIndex);
 		CommandPool();
 		~CommandPool();
 		DISABLE_COPY_AND_MOVE(CommandPool);
 
+		operator vk::CommandPool& () { return*pool; }
+		const vk::CommandPool& getPool()const { return *pool; }
+
+
+		UniqueCommandBuffer createCommandBuffer(const Device& device,vk::CommandBufferLevel level = vk::CommandBufferLevel::ePrimary) const;
+
 	};
 
-	UniqueCommandPool CreateUniqueCommandPool(const Device& device, uint32_t familyIndex);
+	UniqueCommandPool CreateUniqueCommandPool(const Device& device, QueueFamily family, uint32_t familyIndex);
 }

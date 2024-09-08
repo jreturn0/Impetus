@@ -1,4 +1,5 @@
-﻿#include "utils/ResourceCache.h"
+#include "pch.h"
+#include "utils/ResourceCache.h"
 
 
 Imp::Render::ResourceCache::ResourceCache(const vk::Device& device)

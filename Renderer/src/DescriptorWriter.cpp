@@ -1,4 +1,5 @@
-﻿#include "utils/descriptor/DescriptorWriter.h"
+#include "pch.h"
+#include "utils/descriptor/DescriptorWriter.h"
 
 void Imp::Render::DescriptorWriter::write_image(int binding, const vk::ImageView& image, const vk::Sampler& sampler,
 												vk::ImageLayout layout, vk::DescriptorType type)

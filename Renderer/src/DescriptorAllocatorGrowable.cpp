@@ -1,4 +1,5 @@
-﻿#include "utils/descriptor/DescriptorAllocatorGrowable.h"
+#include "pch.h"
+#include "utils/descriptor/DescriptorAllocatorGrowable.h"
 
 #include "core/Device.h"
 

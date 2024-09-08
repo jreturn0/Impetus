@@ -1,4 +1,5 @@
-﻿#include "core/DebugMessenger.h"
+#include "pch.h"
+#include "core/DebugMessenger.h"
 #include <iostream>
 #include <sstream>
 #include "core/Instance.h"
@@ -7,15 +8,22 @@
 #include "AnsiCodes.h"
 
 VkBool32 Imp::Render::DebugMessenger::DebugMessageCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
-                                                           VkDebugUtilsMessageTypeFlagsEXT messageTypes, const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData, void*)
+														   VkDebugUtilsMessageTypeFlagsEXT messageTypes, const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData, void*)
 {
 	std::ostringstream message;
 
-	message << vk::to_string(static_cast<vk::DebugUtilsMessageTypeFlagsEXT>(messageTypes))
-		<< ": " << "\n"
-		<< "\tmessageIDName   = <" << pCallbackData->pMessageIdName << ">\n"
-		<< "\tmessageIdNumber = " << pCallbackData->messageIdNumber << "\n"
-		<< "\tmessage         = <" << pCallbackData->pMessage << ">\n";
+	message << std::format(
+		"{}:\n\tMessageID   = <{}>({})\n\tMessage     = <{}>\n",
+		vk::to_string(static_cast<vk::DebugUtilsMessageTypeFlagsEXT>(messageTypes)),
+		pCallbackData->pMessageIdName,
+		pCallbackData->messageIdNumber,
+		pCallbackData->pMessage);
+
+	//message << vk::to_string(static_cast<vk::DebugUtilsMessageTypeFlagsEXT>(messageTypes))
+	//	<< ": " << "\n"
+	//	<< "\tMessageID   = <" << pCallbackData->pMessageIdName << "> \n"
+	//	<< "\tmessageIdNumber = " << pCallbackData->messageIdNumber << "\n"
+	//	<< "\tmessage         = <" << pCallbackData->pMessage << ">\n";
 
 	if (pCallbackData->queueLabelCount > 0) {
 		message << "\tQueue Labels:\n";
@@ -32,14 +40,27 @@ VkBool32 Imp::Render::DebugMessenger::DebugMessageCallback(VkDebugUtilsMessageSe
 	}
 
 	if (pCallbackData->objectCount > 0) {
-		message << "\tObjects:\n";
+
+		if (pCallbackData->objectCount > 1)
+			message << "\tObjects:\n\t";
+
 		for (uint32_t i = 0; i < pCallbackData->objectCount; ++i) {
-			message << "\t\tObject " << i << "\n"
-				<< "\t\t\tobjectType   = " << vk::to_string(
-					static_cast<vk::ObjectType>(pCallbackData->pObjects[i].objectType)) << "\n"
-				<< "\t\t\tobjectHandle = " << pCallbackData->pObjects[i].objectHandle << "\n";
+			auto&& type = vk::to_string(static_cast<vk::ObjectType>(pCallbackData->pObjects[i].objectType));
+			message << std::vformat(
+				"\tObject[{}]   = <{}>({})\n\t\t",
+				std::make_format_args(
+					i,
+					type,
+					pCallbackData->pObjects[i].objectHandle
+				)
+			);
+
+			//message << "\t\tObject " << i << "\n"
+			//	<< "\t\t\tobjectType   = " << vk::to_string(
+			//		static_cast<vk::ObjectType>(pCallbackData->pObjects[i].objectType)) << "\n"
+			//	<< "\t\t\tobjectHandle = " << pCallbackData->pObjects[i].objectHandle << "\n";
 			if (pCallbackData->pObjects[i].pObjectName) {
-				message << "\t\t\tobjectName   = <" << pCallbackData->pObjects[i].pObjectName << ">\n";
+				message << "\t\t\t\tObjectName   = <" << pCallbackData->pObjects[i].pObjectName << ">\n";
 			}
 		}
 	}
@@ -49,7 +70,7 @@ VkBool32 Imp::Render::DebugMessenger::DebugMessageCallback(VkDebugUtilsMessageSe
 
 	switch (messageSeverity) {
 	case VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT:
-		Debug::Info("{}",message.str());
+		Debug::Info("{}", message.str());
 		break;
 	case VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT:
 		Debug::Info("{}", message.str());
@@ -58,7 +79,7 @@ VkBool32 Imp::Render::DebugMessenger::DebugMessageCallback(VkDebugUtilsMessageSe
 		Debug::Warning("{}", message.str());
 		break;
 	case VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT:
-		 Debug::Error("{}", message.str());
+		Debug::Error("{}", message.str());
 		break;
 	case VK_DEBUG_UTILS_MESSAGE_SEVERITY_FLAG_BITS_MAX_ENUM_EXT:
 		break;
@@ -83,20 +104,18 @@ CreateDebugUtilsMessenger(const vk::Instance& instance, const vk::DispatchLoader
 }
 
 Imp::Render::DebugMessenger::DebugMessenger(const Instance& instance) : dldi(instance.getInstance(), vkGetInstanceProcAddr),
-debugMessenger(CreateDebugUtilsMessenger(instance,dldi))
+debugMessenger(CreateDebugUtilsMessenger(instance, dldi))
 {
 
 }
 
 Imp::Render::DebugMessenger::DebugMessenger()
-{
-}
+= default;
 
 Imp::Render::DebugMessenger::~DebugMessenger()
-{
-}
+= default;
 
 Imp::Render::UniqueDebugMessenger Imp::Render::CreateUniqueDebugMessenger(const Instance& instance)
 {
-	return std::unique_ptr<DebugMessenger>(new DebugMessenger(instance));
+	return std::make_unique<DebugMessenger>(instance);
 }

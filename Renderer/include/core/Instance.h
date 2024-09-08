@@ -1,4 +1,6 @@
 ﻿#pragma once
+//#include "utils/VKCommon.hpp"
+#include <memory>
 #include "utils/VKCommon.hpp"
 #include "utils/QuickMacros.h"
 
@@ -8,10 +10,10 @@ namespace Imp::Render {
 	{
 	private:
 		vk::UniqueInstance instance;
-		vk::UniqueInstance CreateInstance(const char* title);
-		Instance(const char* title);
+		static vk::UniqueInstance CreateInstance(const char* title);
+		explicit Instance(const char* title);
 		friend UniqueInstance CreateUniqueInstance(const char* title);
-		friend UniqueInstance CreateUniqueInstance(const char* title, class VKWindow& window);
+
 	public:
 		Instance() = default;
 		~Instance();
@@ -27,5 +29,5 @@ namespace Imp::Render {
 		return std::unique_ptr<Instance>(new Instance(title));
 	}
 
-	 UniqueInstance CreateUniqueInstance(const char* title, class VKWindow& window);
+
 }

@@ -1,4 +1,5 @@
-﻿#include "utils/descriptor/DescriptorLayoutBuilder.h"
+#include "pch.h"
+#include "utils/descriptor/DescriptorLayoutBuilder.h"
 
 #include "Debug.h"
 

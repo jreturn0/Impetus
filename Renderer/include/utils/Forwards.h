@@ -14,7 +14,7 @@ namespace Imp::Render
 	class DescriptorAllocatorGrowable;
 	class CommandPool;
 	class CommandBuffer;
-	class ImmediateCommands;
+
 	class FrameData;
 	class Image;
 	class ComputePipeline;
@@ -43,7 +43,6 @@ namespace Imp::Render
 	using UniqueDescriptorAllocatorGrowable = std::unique_ptr< DescriptorAllocatorGrowable>;
 	using UniqueCommandPool = std::unique_ptr< CommandPool>;
 	using UniqueCommandBuffer = std::unique_ptr< CommandBuffer>;
-	using UniqueImmediateCommands = std::unique_ptr< ImmediateCommands>;
 	using UniqueFrameData = std::unique_ptr< FrameData>;
 	using UniqueImage = std::unique_ptr< Image>;
 	using SharedImage = std::shared_ptr< Image>;

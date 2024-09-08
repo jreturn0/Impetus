@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-#include "utils/VKCommon.hpp"
+
 #include "utils/QuickMacros.h"
 #include <vma/vk_mem_alloc.h>
 namespace Imp::Render

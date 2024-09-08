@@ -1,29 +1,25 @@
-﻿#include "core/CommandBuffer.h"
+#include "pch.h"
+
+
+#include "core/CommandBuffer.h"
 #include "core/Device.h"
 #include "core/CommandPool.h"
 
 
-Imp::Render::CommandBuffer::CommandBuffer(const Device& device, const CommandPool& commandPool):
-	buffer(std::move(device.getLogical().allocateCommandBuffersUnique(
-		vk::CommandBufferAllocateInfo{ commandPool.getPool(), vk::CommandBufferLevel::ePrimary, 1 })[0]))
+
+
+Imp::Render::CommandBuffer::CommandBuffer(vk::UniqueCommandBuffer& buffer, vk::CommandBufferLevel level): buffer(std::move(buffer)), level(level)
 {}
 
 Imp::Render::CommandBuffer::CommandBuffer() = default;
 
-Imp::Render::CommandBuffer::~CommandBuffer()
+Imp::Render::CommandBuffer::~CommandBuffer() = default;
+
+
+
+void Imp::Render::CommandBuffer::beginRecording(const vk::CommandBufferBeginInfo& beginInfo)
 {
-}
-
-
-
-void Imp::Render::CommandBuffer::beginRecording(vk::CommandBufferBeginInfo beginInfo)
-{
-	
 	buffer->begin(beginInfo);
 }
 
-Imp::Render::UniqueCommandBuffer Imp::Render::CreateUniqueCommandBuffer(const Device& device,
-	const CommandPool& commandPool)
-{
-	return std::unique_ptr<CommandBuffer>(new CommandBuffer(device, commandPool));
-}
+

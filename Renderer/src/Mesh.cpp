@@ -1,9 +1,10 @@
+#include "pch.h"
 #include "geometry/Mesh.h"
 
 Imp::Render::Mesh::Mesh(const std::string& name,
 						const Device& device,
-						const vk::Queue& queue,
-						const ImmediateCommands& transferCommands,
+						const Queue& queue,
+						const CommandPool& transferCommands,
 						VmaAllocator& allocator,
 						std::span<GeoSurface> surfaces,
 						std::span<uint32_t> indices,
@@ -14,3 +15,4 @@ Imp::Render::Mesh::Mesh(const std::string& name,
 {
 
 }
+

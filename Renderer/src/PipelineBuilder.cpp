@@ -1,4 +1,5 @@
-﻿#include "utils/PipelineBuilder.h"
+#include "pch.h"
+#include "utils/PipelineBuilder.h"
 
 #include "core/Device.h"
 

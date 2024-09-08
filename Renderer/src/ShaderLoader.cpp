@@ -1,4 +1,5 @@
-﻿#include "utils/shader/ShaderLoader.h"
+#include "pch.h"
+#include "utils/shader/ShaderLoader.h"
 
 #include <filesystem>
 #include <fstream>

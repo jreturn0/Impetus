@@ -1,4 +1,5 @@
-﻿#include "utils/shader/ShaderReflect.h"
+#include "pch.h"
+#include "utils/shader/ShaderReflect.h"
 #include <vulkan/vulkan.hpp>
 #include <spirv_cross/spirv.hpp>
 #include <fstream>

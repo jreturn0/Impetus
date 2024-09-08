@@ -1,4 +1,5 @@
-﻿#include "utils/shader/ShaderCompiler.h"
+#include "pch.h"
+#include "utils/shader/ShaderCompiler.h"
 #include "utils/shader/ShaderReflect.h"
 
 #include <bitset>

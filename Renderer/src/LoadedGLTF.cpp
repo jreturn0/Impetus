@@ -1,4 +1,5 @@
-﻿#include "utils/LoadedGLTF.h"
+#include "pch.h"
+#include "utils/LoadedGLTF.h"
 
 std::shared_ptr<Imp::Render::Node> Imp::Render::LoadedGLTF::getNode(const std::string& name) const
 {

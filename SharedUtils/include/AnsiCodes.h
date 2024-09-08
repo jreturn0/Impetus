@@ -1,6 +1,38 @@
 ﻿#pragma once
 #include <string_view>
 #include <string>
+#include <format>
+#include <iostream>
+template <typename... Args>
+void Print(const std::string_view &fmt, Args &&...args)
+{
+    std::cout << std::vformat(fmt, std::make_format_args(args...));
+}
+template <typename T>
+void Print(T &&t)
+{
+    std::cout << t;
+}
+
+constexpr std::array<char, 11> SetColor(int id)
+{
+    // We are constructing the string "\033[38;5;IDm"
+    std::array<char, 11> result = {'\033', '[', '3', '8', ';', '5', ';', '0', '0', '0', 'm'};
+
+    if (id > 255 || id < 0)
+        id = 0; // Fallback to color 0 if out of range
+
+    // Convert `id` to its individual digits
+    int hundreds = id / 100;
+    int tens = (id % 100) / 10;
+    int ones = id % 10;
+
+    result[7] = '0' + hundreds;
+    result[8] = '0' + tens;
+    result[9] = '0' + ones;
+
+    return result;
+}
 namespace ansi {
 
     // Reset / Normal

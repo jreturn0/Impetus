@@ -1,4 +1,7 @@
-﻿#include "core/Buffer.h"
+#include "pch.h"
+#include "pch.h"
+
+#include "core/Buffer.h"
 #include "core/Device.h"
 
 namespace Imp {
@@ -6,7 +9,7 @@ namespace Imp {
 
         Buffer::Buffer( VmaAllocator& allocator, vk::DeviceSize size,
                        vk::BufferUsageFlags usage, VmaMemoryUsage memoryUsage, bool defer)
-            :  allocator(&allocator), size(size), defer(defer), id(++idCounter)
+            :  allocator(&allocator), size(size)
         {
             VmaAllocationCreateInfo allocCreateInfo = {};
             allocCreateInfo.usage = memoryUsage;
@@ -22,7 +25,6 @@ namespace Imp {
                 throw std::runtime_error("failed to allocate buffer memory!");
             }
             buffer = vk::Buffer{ _buffer };
-            ++allocated;
         }
 
 
@@ -35,47 +37,31 @@ namespace Imp {
             {
                 std::cout << "NO ALLOCATOR IN BUFFER\n";
             }
-            if (!defer) {
-                destroy();
-            }
-            else
-            {
-              //  std::cout << std::format("Buffer: {}, deferred destruction\n", id);
-            }
-        }
 
-        void Buffer::destroy()
-        {
-            if (buffer && allocation ) {
+            if (buffer && allocation) {
                 vmaDestroyBuffer(*allocator, buffer, allocation);
-              //  std::cout << "Buffer destroyed, buffers left: " << --allocated << "\n";
+                //  std::cout << "Buffer destroyed, buffers left: " << --allocated << "\n";
             }
+
         }
 
-
-        SharedBuffer CreateSharedBuffer(VmaAllocator& allocator, vk::DeviceSize size, vk::BufferUsageFlags usage, VmaMemoryUsage memoryUsage)
+        SharedBuffer CreateSharedBuffer(VmaAllocator& allocator, 
+                                        vk::DeviceSize size, 
+                                        vk::BufferUsageFlags usage,
+                                        VmaMemoryUsage memoryUsage)
         {
-            return std::shared_ptr<Buffer>(new Buffer(allocator, size, usage, memoryUsage));
+            return std::make_shared<Buffer>(allocator, size, usage, memoryUsage);
         }
 
-        std::unique_ptr<Buffer> CreateUniqueBuffer(
-                                                   VmaAllocator& allocator,
+        UniqueBuffer CreateUniqueBuffer(VmaAllocator& allocator,
                                                    vk::DeviceSize size,
                                                    vk::BufferUsageFlags usage,
                                                    VmaMemoryUsage memoryUsage)
         {
 
-            return std::unique_ptr<Buffer>(new Buffer( allocator, size, usage, memoryUsage));
+            return std::make_unique<Buffer>(allocator, size, usage, memoryUsage);
         }
-        Buffer CreateBuffer(
-            VmaAllocator& allocator,
-            vk::DeviceSize size,
-            vk::BufferUsageFlags usage,
-            VmaMemoryUsage memoryUsage, bool defer)
-        {
 
-            return { allocator, size, usage, memoryUsage,defer };
-        }
 
     } // namespace Render
 } // namespace Imp

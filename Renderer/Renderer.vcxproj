@@ -123,6 +123,8 @@
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalIncludeDirectories>$(VULKAN_SDK)/Include/;include/;$(SolutionDir)SharedUtils/include/;$(SolutionDir)libs\x64-windows\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -145,6 +147,8 @@
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalIncludeDirectories>$(VULKAN_SDK)/Include/;include/;$(SolutionDir)SharedUtils/include/;$(SolutionDir)libs\x64-windows\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -176,7 +180,6 @@
     <ClCompile Include="src\GraphicsPipeline.cpp" />
     <ClCompile Include="src\GUI.cpp" />
     <ClCompile Include="src\Image.cpp" />
-    <ClCompile Include="src\ImmediateCommands.cpp" />
     <ClCompile Include="src\Instance.cpp" />
     <ClCompile Include="src\LoadedGLTF.cpp" />
     <ClCompile Include="src\main.cpp" />
@@ -186,6 +189,10 @@
     <ClCompile Include="src\MetallicRoughness.cpp" />
     <ClCompile Include="src\Node.cpp" />
     <ClCompile Include="src\OldRenderer.cpp" />
+    <ClCompile Include="src\pch.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="src\PipelineBuilder.cpp" />
     <ClCompile Include="src\Queue.cpp" />
     <ClCompile Include="src\QueueFamilyIndices.cpp" />
@@ -213,12 +220,13 @@
     <ClInclude Include="include\core\FrameData.h" />
     <ClInclude Include="include\core\GraphicsPipeline.h" />
     <ClInclude Include="include\core\Image.h" />
-    <ClInclude Include="include\core\ImmediateCommands.h" />
     <ClInclude Include="include\core\Instance.h" />
     <ClInclude Include="include\core\Queue.h" />
     <ClInclude Include="include\core\QueueFamilyIndices.h" />
     <ClInclude Include="include\core\SwapChain.h" />
     <ClInclude Include="include\core\SwapChainSupportDetails.h" />
+    <ClInclude Include="include\pch.h" />
+    <ClInclude Include="include\VK\Handles.h" />
     <ClInclude Include="include\core\Vma.h" />
     <ClInclude Include="include\CreateRenderer.h" />
     <ClInclude Include="include\geometry\Bounds.h" />

@@ -1,4 +1,6 @@
-﻿#include "utils/descriptor/DescriptorAllocator.h"
+#include "pch.h"
+
+#include "utils/descriptor/DescriptorAllocator.h"
 
 #include "core/Device.h"
 

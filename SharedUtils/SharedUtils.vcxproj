@@ -149,6 +149,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="include\AnsiCodes.h" />
+    <ClInclude Include="include\ConsoleVariableSystem.h" />
     <ClInclude Include="include\Debug.h" />
     <ClInclude Include="include\FileDirectoryHelper.h" />
     <ClInclude Include="include\FixedQueue.h" />
@@ -157,9 +158,14 @@
     <ClInclude Include="include\Logger.h" />
     <ClInclude Include="include\Profiler.h" />
     <ClInclude Include="include\RNG.h" />
+    <ClInclude Include="include\StackedSliceArray.h" />
     <ClInclude Include="include\Stats.h" />
+    <ClInclude Include="include\StringHash.h" />
+    <ClInclude Include="MemUtils.h" />
+    <ClInclude Include="include\Slice.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="include\ConsoleVariableSystem.cpp" />
     <ClCompile Include="include\Profiler.cpp" />
     <ClCompile Include="src\FileDirectoryHelper.cpp" />
     <ClCompile Include="src\Log.cpp" />

@@ -5,31 +5,26 @@
 namespace Imp::Render
 {
 	class Device;
-	using UniqueQueue = std::unique_ptr<class Queue>;
-	enum QueueFamily
-	{
-		Graphics,
-		Present,
-		Transfer
-	};
+
+
 	class Queue
 	{
 	private:
 		QueueFamily family;
 		vk::Queue queue;
-		Queue(const Device& device, QueueFamily family);
-
-
-		friend UniqueQueue CreateUniqueQueue(const Device& device, QueueFamily family);
 
 	public:
+		explicit Queue(const Device& device, QueueFamily family);
 		Queue();
 		~Queue();
 		DISABLE_COPY_AND_MOVE(Queue);
-		const vk::Queue& getQueue() const { return queue; }
+		[[nodiscard]] const vk::Queue& getQueue() const { return queue; }
 		operator vk::Queue& () { return queue; }
 		operator const vk::Queue& () const { return queue; }
-	};
 
+		void oneTimeSubmit(const Device& device, const class CommandPool& pool, std::function<void(vk::CommandBuffer& cmd)>&& function) const;
+		bool submit(const vk::SubmitInfo2& info, const vk::Fence fence = nullptr) const;;
+	};
+	using UniqueQueue = std::unique_ptr<class Queue>;
 	UniqueQueue CreateUniqueQueue(const Device& device, QueueFamily family);
 }

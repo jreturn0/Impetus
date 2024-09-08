@@ -11,7 +11,7 @@ namespace Imp::Render
 {
 	struct LoadedGLTF;
 	class VKRenderer;
-	class ImmediateCommands;
+	class CommandPool;
 	class Device;
 
 	class MeshLoader

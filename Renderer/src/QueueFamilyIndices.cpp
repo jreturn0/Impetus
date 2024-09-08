@@ -1,4 +1,5 @@
-﻿#include "core/QueueFamilyIndices.h"
+#include "pch.h"
+#include "core/QueueFamilyIndices.h"
 
 Imp::Render::QueueFamilyIndices Imp::Render::vkutil::FindQueueFamilies(const vk::PhysicalDevice& device,
 	const vk::SurfaceKHR& surface)

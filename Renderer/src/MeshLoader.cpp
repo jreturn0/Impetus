@@ -1,4 +1,5 @@
-﻿#include "utils/MeshLoader.h"
+#include "pch.h"
+#include "utils/MeshLoader.h"
 #include <glm/gtc/quaternion.hpp>
 #include "geometry/Mesh.h"
 #include <glm/gtx/quaternion.hpp>
@@ -85,7 +86,7 @@ std::optional<Imp::Render::SharedImage> load_image(Imp::Render::VKRenderer& engi
 			stbi_image_free(data);
 			return newImage;
 		} else {
-			Debug::Error("Failed to load image: {}",image.name);
+			Debug::Error("Failed to load image: {}", image.name);
 			return nullptr;
 		}
 		};
@@ -97,54 +98,54 @@ std::optional<Imp::Render::SharedImage> load_image(Imp::Render::VKRenderer& engi
 			},
 
 			[&](fastgltf::sources::URI& filePath) {
-				//std::cout << "attempting image from uri" << '\n';
-				Debug::Assert(filePath.fileByteOffset == 0,"don't support offsets with stbi"); // We don't support offsets with stbi.
-				Debug::Assert(filePath.uri.isLocalPath(),"only capable of loading local files"); // We're only capable of loading local files.
+			//std::cout << "attempting image from uri" << '\n';
+			Debug::Assert(filePath.fileByteOffset == 0,"don't support offsets with stbi"); // We don't support offsets with stbi.
+			Debug::Assert(filePath.uri.isLocalPath(),"only capable of loading local files"); // We're only capable of loading local files.
 
-				const std::string path(filePath.uri.path().begin(), filePath.uri.path().end()); // Thanks C++.
-				unsigned char* data = stbi_load(path.c_str(), &width, &height, &nrChannels, 4);
-				newImage = loadImageData(data);
-			},
+			const std::string path(filePath.uri.path().begin(), filePath.uri.path().end()); // Thanks C++.
+			unsigned char* data = stbi_load(path.c_str(), &width, &height, &nrChannels, 4);
+			newImage = loadImageData(data);
+		},
 
-			[&](fastgltf::sources::Vector& vector) {
-				//std::cout << "attempting image from vector" << '\n';
-				unsigned char* data = stbi_load_from_memory(
-					vector.bytes.data(),
-					static_cast<int>(vector.bytes.size()),
-					&width,
-					&height,
-					&nrChannels,
-					4
-				);
-				newImage = loadImageData(data);
-			},
+		[&](fastgltf::sources::Vector& vector) {
+			//std::cout << "attempting image from vector" << '\n';
+			unsigned char* data = stbi_load_from_memory(
+				vector.bytes.data(),
+				static_cast<int>(vector.bytes.size()),
+				&width,
+				&height,
+				&nrChannels,
+				4
+			);
+			newImage = loadImageData(data);
+		},
 
-			[&](fastgltf::sources::BufferView& view) {
-				auto& bufferView = asset.bufferViews[view.bufferViewIndex];
-				auto& buffer = asset.buffers[bufferView.bufferIndex];
-				print_variant_type(buffer.data);
-				std::visit(
-					fastgltf::visitor{
-						[](auto& arg) {
-							Debug::Error( "Unhandled type in buffer view variant");
-						},
-
-						[&](fastgltf::sources::Array& vector) {
-							//std::cout << "attempting image from buffer view" << '\n';
-							unsigned char* data = stbi_load_from_memory(
-								vector.bytes.data() + bufferView.byteOffset,
-								static_cast<int>(bufferView.byteLength),
-								&width,
-								&height,
-								&nrChannels,
-								4
-							);
-							newImage = loadImageData(data);
-						}
+		[&](fastgltf::sources::BufferView& view) {
+			auto& bufferView = asset.bufferViews[view.bufferViewIndex];
+			auto& buffer = asset.buffers[bufferView.bufferIndex];
+			print_variant_type(buffer.data);
+			std::visit(
+				fastgltf::visitor{
+					[](auto& arg) {
+						Debug::Error("Unhandled type in buffer view variant");
 					},
-					buffer.data
-				);
-			}
+
+					[&](fastgltf::sources::Array& vector) {
+					//std::cout << "attempting image from buffer view" << '\n';
+					unsigned char* data = stbi_load_from_memory(
+						vector.bytes.data() + bufferView.byteOffset,
+						static_cast<int>(bufferView.byteLength),
+						&width,
+						&height,
+						&nrChannels,
+						4
+					);
+					newImage = loadImageData(data);
+				}
+			},
+			buffer.data
+		);
+	}
 		},
 		image.data
 	);
@@ -209,19 +210,24 @@ std::optional<std::shared_ptr<Imp::Render::LoadedGLTF>> Imp::Render::MeshLoader:
 		{ vk::DescriptorType::eStorageBuffer, 1 } };
 
 	//file.descriptorPool.init_pool(renderer.getDevice().getLogical(), gltf.materials.size(), sizes);
+	vk::SamplerCreateInfo samplPrev = {};
+
 	for (fastgltf::Sampler& sampler : gltf.samplers) {
 
 		vk::SamplerCreateInfo sampl = {};
 		sampl.maxLod = vk::LodClampNone;
 		sampl.minLod = 0;
-		//sampl.addressModeU = vk::SamplerAddressMode::eRepeat;
-		//sampl.addressModeV = vk::SamplerAddressMode::eRepeat;
-		//sampl.addressModeW = vk::SamplerAddressMode::eRepeat;
 		sampl.magFilter = ExtractFilter(sampler.magFilter.value_or(fastgltf::Filter::Nearest));
 		sampl.minFilter = ExtractFilter(sampler.minFilter.value_or(fastgltf::Filter::Nearest));
 
 		sampl.mipmapMode = ExtractMipmapMode(sampler.minFilter.value_or(fastgltf::Filter::Nearest));
+		if (sampl == samplPrev) {
+			Debug::Error("Sampler already exists");
+		}
+		samplPrev = sampl;
 
+		Debug::Info("Creating sampler: \n\tmaxLod: {}\n\tminLod: {}\n\tmagFilter: {}\n\tminFilter: {}\n\tmipmapMode: {}\n\n",
+					sampl.maxLod, sampl.minLod, vk::to_string(sampl.magFilter), vk::to_string(sampl.minFilter), vk::to_string(sampl.mipmapMode));
 		file.samplers.push_back(renderer.getDevice().getLogical().createSamplerUnique(sampl));
 	}
 	std::vector<std::shared_ptr<Mesh>> meshes;
@@ -239,7 +245,7 @@ std::optional<std::shared_ptr<Imp::Render::LoadedGLTF>> Imp::Render::MeshLoader:
 			// we failed to load, so lets give the slot a default white texture to not
 			// completely break loading
 			images.push_back(renderer.getErrorCheckerboardImage());
-			Debug::FatalError( "Failed to load texture: {}", image.name);
+			Debug::FatalError("Failed to load texture: {}", image.name);
 		}
 	}
 
@@ -405,7 +411,7 @@ std::optional<std::shared_ptr<Imp::Render::LoadedGLTF>> Imp::Render::MeshLoader:
 			newmesh->surfaces.push_back(newSurface);
 		}
 		//std::cout << "Mesh: " << newmesh->name << " has " << newmesh->surfaces.size() << " surfaces" << '\n';
-		newmesh->meshBuffer = std::make_unique< GPUMeshBuffers>(renderer.getDevice(), renderer.getTransferQueue().getQueue(),
+		newmesh->meshBuffer = std::make_unique< GPUMeshBuffers>(renderer.getDevice(), renderer.getTransferQueue(),
 																renderer.getTransferPool(), renderer.getAllocator(), indices, vertices);
 	}
 	for (fastgltf::Node& node : gltf.nodes) {

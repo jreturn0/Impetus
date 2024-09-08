@@ -9,32 +9,37 @@
 #include "vulkan/vulkan.hpp"
 #pragma warning(pop)
 #include <source_location>
+#include "Debug.h"
 
 
-
-
-namespace Imp::Render::vkutil {
-	enum class ShaderStage
+namespace Imp::Render
+{
+	enum QueueFamily
 	{
-		None = INT32_MAX,
+		Graphics,
+		Present,
+		Transfer
+	};
+}
+namespace Imp::Render::vkutil {
+	enum class ShaderStage : uint8_t
+	{
+		None = INT8_MAX,
 		Vertex = 0,
 		Fragment = 1,
 		Compute = 2,
 		Geometry = 3
 	};
-	const std::vector<const char*> VALIDATION_LAYERS = {
+
+	constexpr std::array VALIDATION_LAYERS = {
 		   "VK_LAYER_KHRONOS_validation"
 	};
-	const std::vector INSTANCE_EXTENSIONS = {
+	constexpr std::array INSTANCE_EXTENSIONS = {
 		vk::EXTSwapchainColorSpaceExtensionName
 	};
 
-	const std::vector<const char*> DEVICE_EXTENSIONS = {
+	constexpr std::array DEVICE_EXTENSIONS = {
 		   vk::KHRSwapchainExtensionName,
-		VK_KHR_SYNCHRONIZATION_2_EXTENSION_NAME,
-		VK_KHR_DYNAMIC_RENDERING_EXTENSION_NAME,
-		VK_KHR_BUFFER_DEVICE_ADDRESS_EXTENSION_NAME
-
 	};
 #ifdef NDEBUG
 	constexpr bool ENABLE_VALIDATION_LAYERS = false;
@@ -48,31 +53,33 @@ namespace Imp::Render::vkutil {
 	std::vector<const char*> GetRequiredExtensions();;
 
 
-	inline void CheckResult(const vk::Result result, const std::source_location& src = std::source_location::current())
+	inline bool CheckResult(const vk::Result result, const std::source_location& src = std::source_location::current())
 	{
 		if (result != vk::Result::eSuccess) {
 			std::cerr << "Fatal : VkResult is \"" << vk::to_string(result) << "\" in " << src.file_name()
 				<< " at line " << src.line() << std::endl;
 			throw std::runtime_error("Vulkan error encountered!");
+			return false;
 		}
+		return true;
 	}
 
 	inline bool CheckExtensionsAvailability(const std::vector<const char*>& requiredExtensions)
 	{
-		auto availableExtensions = vk::enumerateInstanceExtensionProperties();
+		const auto&& availableExtensions = vk::enumerateInstanceExtensionProperties();
 		std::set<std::string> availableExtensionsSet;
 		for (const auto& extension : availableExtensions) {
 			availableExtensionsSet.insert(extension.extensionName);
 		}
-
-		for (const auto& required : requiredExtensions) {
-			//std::cout << "Required extension: " << required << std::endl;
-			if (!availableExtensionsSet.contains(required)) {
-			//	std::cerr << "Required extension not available: " << required << std::endl;
-				return false;
-			}
+		if (std::ranges::all_of(requiredExtensions, [&availableExtensionsSet](const auto& required) {
+			if (availableExtensionsSet.contains(required))
+				return true;
+			Debug::FatalError("Required extension not available: {}", required);
+			return false;
+								 })) {
+			return true;
 		}
-		return true;
+		return false;
 	}
 }
 inline bool Imp::Render::vkutil::CheckValidationLayerSupport()
@@ -99,7 +106,7 @@ inline std::vector<const char*> Imp::Render::vkutil::GetRequiredExtensions()
 	uint32_t glfwExtensionCount = 0;
 	const char** glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
 	std::vector<const char*> extensions(glfwExtensions, glfwExtensions + glfwExtensionCount);
-	if (ENABLE_VALIDATION_LAYERS) { extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME); }
+	if constexpr (ENABLE_VALIDATION_LAYERS) { extensions.push_back(vk::EXTDebugUtilsExtensionName); }
 	extensions.insert(extensions.end(), INSTANCE_EXTENSIONS.begin(), INSTANCE_EXTENSIONS.end());
 	return extensions;
 }
