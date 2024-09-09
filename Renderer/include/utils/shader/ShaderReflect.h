@@ -14,10 +14,17 @@ namespace Imp::Render
 		
 	};
 
+	struct ReflectInfo
+	{
+		std::vector<vk::PushConstantRange> pushConstantRanges;
+		std::vector<vk::UniqueDescriptorSetLayout> descriptorSetLayouts;
+	};
 
 	std::vector<uint32_t> readSPVFile(const std::string& filename);
 
 	void ReflectShader(const std::vector<uint32_t>& spirvCode);
+
+	ReflectInfo ReflectShader(vk::Device device, const std::vector<uint32_t>& spirv);
 
 	std::vector<vk::UniqueDescriptorSetLayout> CreateDescriptorSetLayoutsFromShader(const vk::Device& device, const std::vector<uint32_t>& spirvCode, vk::ShaderStageFlagBits shaderStage);
 

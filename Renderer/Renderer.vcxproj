@@ -198,6 +198,7 @@
     <ClCompile Include="src\QueueFamilyIndices.cpp" />
     <ClCompile Include="src\Renderer.cpp" />
     <ClCompile Include="src\ResourceCache.cpp" />
+    <ClCompile Include="src\ResourceManager.cpp" />
     <ClCompile Include="src\ShaderCompiler.cpp" />
     <ClCompile Include="src\ShaderLoader.cpp" />
     <ClCompile Include="src\ShaderReflect.cpp" />
@@ -226,6 +227,7 @@
     <ClInclude Include="include\core\SwapChain.h" />
     <ClInclude Include="include\core\SwapChainSupportDetails.h" />
     <ClInclude Include="include\pch.h" />
+    <ClInclude Include="include\core\ResourceManager.h" />
     <ClInclude Include="include\VK\Handles.h" />
     <ClInclude Include="include\core\Vma.h" />
     <ClInclude Include="include\CreateRenderer.h" />
