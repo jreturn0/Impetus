@@ -1,5 +1,9 @@
 # Impetus
 Engine/Framework made with C++/Vulkan
+
+#### Description/History
+Made originally as a capstone project. Currently rewriting much of the architecture 
+
 ###### Note
 vcpkg and the vulkan sdk are needed to run/build the project
 # Tech
