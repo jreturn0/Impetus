@@ -305,19 +305,16 @@
     <ClInclude Include="include\CreateRenderer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\GlmMath.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="include\MVPUbo.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\OldRenderer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\Renderer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\VKRenderer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\utils\VkConstants.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

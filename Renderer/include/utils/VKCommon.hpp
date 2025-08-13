@@ -1,15 +1,16 @@
 ﻿#pragma once
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
-
-#include <iostream>
+#include "QuickMacros.h"
+#include <fmt\core.h>
 #include <set>
+#define VULKAN_HPP_DISPATCH_LOADER_DYNAMIC 1
 #pragma warning(push)
 #pragma warning(disable: 4996)
 #include "vulkan/vulkan.hpp"
 #pragma warning(pop)
 #include <source_location>
-
+#include "VkConstants.h"
 
 
 
@@ -26,7 +27,8 @@ namespace Imp::Render::vkutil {
 		   "VK_LAYER_KHRONOS_validation"
 	};
 	const std::vector INSTANCE_EXTENSIONS = {
-		vk::EXTSwapchainColorSpaceExtensionName
+		vk::EXTSwapchainColorSpaceExtensionName,
+		vk::EXTDebugUtilsExtensionName
 	};
 
 	const std::vector<const char*> DEVICE_EXTENSIONS = {
@@ -41,7 +43,7 @@ namespace Imp::Render::vkutil {
 #else
 	constexpr bool ENABLE_VALIDATION_LAYERS = true;
 #endif
-	constexpr int MAX_FRAMES_IN_FLIGHT = 2;
+
 
 	using ConstInstRef = const vk::Instance&;
 	bool CheckValidationLayerSupport();;
@@ -51,8 +53,9 @@ namespace Imp::Render::vkutil {
 	inline void CheckResult(const vk::Result result, const std::source_location& src = std::source_location::current())
 	{
 		if (result != vk::Result::eSuccess) {
-			std::cerr << "Fatal : VkResult is \"" << vk::to_string(result) << "\" in " << src.file_name()
-				<< " at line " << src.line() << std::endl;
+
+			fmt::print(stderr, "Fatal: VkResult is \"{}\" in {} at line {}\n",
+					   vk::to_string(result), src.file_name(), src.line());
 			throw std::runtime_error("Vulkan error encountered!");
 		}
 	}
@@ -66,8 +69,14 @@ namespace Imp::Render::vkutil {
 		}
 
 		for (const auto& required : requiredExtensions) {
+#ifndef NDEBUG
+			fmt::println(stderr, "Required extension: {}", required);
+#endif
 			//std::cout << "Required extension: " << required << std::endl;
 			if (!availableExtensionsSet.contains(required)) {
+#ifndef NDEBUG
+				fmt::println(stderr, "Required extension not available: {}", required);
+#endif
 			//	std::cerr << "Required extension not available: " << required << std::endl;
 				return false;
 			}
@@ -87,7 +96,7 @@ inline bool Imp::Render::vkutil::CheckValidationLayerSupport()
 			}
 		}
 		if (!layerFound) {
-			std::cerr << "Validation layer not available: " << layerName << std::endl;
+			fmt::print(stderr, "Validation layer not available: {}\n", layerName);
 			return false;
 		}
 	}

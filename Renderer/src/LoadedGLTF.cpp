@@ -7,7 +7,7 @@ std::shared_ptr<Imp::Render::Node> Imp::Render::LoadedGLTF::getNode(const std::s
 	if (it != nodes.end()) {
 		return it->second;
 	}
-	std::cerr << "Could not find node " << name << std::endl;
+	fmt::println(stderr, "Could not find node {}", name);
 	return nullptr;
 }
 
@@ -17,7 +17,7 @@ Imp::Render::Node& Imp::Render::LoadedGLTF::getNodeRef(const std::string& name) 
 	if (it != nodes.end()) {
 		return *it->second;
 	}
-	std::cerr << "Could not find node " << name << std::endl;
+	fmt::println(stderr, "Could not find node {}", name);
 	throw std::runtime_error("Could not find node " + name);
 }
 

@@ -1,9 +1,8 @@
 ﻿#pragma once
 #include <glm/vec3.hpp>
 
-namespace Imp::Render
-{
-		struct Bounds
+namespace Imp::Render {
+	struct Bounds
 	{
 		glm::vec3 origin;
 		float sphereRadius;

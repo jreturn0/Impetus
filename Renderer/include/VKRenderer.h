@@ -5,7 +5,7 @@
 #include <unordered_map>
 
 #include "Renderer.h"
-#include "utils/VKCommon.hpp"
+
 #include "utils/Forwards.h"
 #include "geometry/GeoSurface.h"
 #include "geometry/Vertex.h"

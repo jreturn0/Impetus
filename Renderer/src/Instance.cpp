@@ -1,7 +1,7 @@
 ﻿#include "core/Instance.h"
 
 #include "window/VKWindow.h"
-
+VULKAN_HPP_DEFAULT_DISPATCH_LOADER_DYNAMIC_STORAGE
 vk::UniqueInstance Imp::Render::Instance::CreateInstance(const char* title)
 {
 	auto version = VK_MAKE_API_VERSION(0, 1, 0, 0);
@@ -10,11 +10,11 @@ vk::UniqueInstance Imp::Render::Instance::CreateInstance(const char* title)
 		version,
 		"Impetus",
 		version,
-		VK_API_VERSION_1_3
+		VK_API_VERSION_1_4
 	);
 
 	std::vector<const char*> extensions = vkutil::GetRequiredExtensions();
-	//extensions.push_back(VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME);
+
 	if (!vkutil::CheckExtensionsAvailability(extensions)) {
 		throw std::runtime_error("Required extensions are not available");
 	}
@@ -31,8 +31,14 @@ vk::UniqueInstance Imp::Render::Instance::CreateInstance(const char* title)
 		extensions.data()
 	);
 
-	return vk::createInstanceUnique(instanceCreateInfo);
+	auto instance = vk::createInstanceUnique(instanceCreateInfo);
+
+
+	VULKAN_HPP_DEFAULT_DISPATCHER.init(*instance);
+
+	return instance;
 }
+
 
 Imp::Render::Instance::Instance(const char* title) : instance(CreateInstance(title))
 {
@@ -46,5 +52,6 @@ Imp::Render::UniqueInstance Imp::Render::CreateUniqueInstance(const char* title,
 {
 	auto instance = std::unique_ptr<Instance>(new Instance(title));
 	window.setSurface(*instance);
+	//VULKAN_HPP_DEFAULT_DISPATCHER.init((*instance).getInstance());
 	return std::move(instance);
 }

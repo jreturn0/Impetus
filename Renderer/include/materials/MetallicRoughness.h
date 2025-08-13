@@ -14,10 +14,6 @@ namespace Imp::Render
 
 	struct MetallicRoughness
 	{
-		std::unique_ptr< GraphicsPipeline> opaque;
-		std::unique_ptr< GraphicsPipeline> transparent;
-		vk::UniqueDescriptorSetLayout materialLayout;
-
 		struct MaterialConstants
 		{
 			glm::vec4 colorFactors;
@@ -33,17 +29,20 @@ namespace Imp::Render
 			vk::Sampler* metalRoughSampler;
 			std::shared_ptr<Buffer> dataBuffer;
 			uint32_t dataOffset;
-
-			const auto& getMetalRoughSampler() const { return *metalRoughSampler; }
-
 		};
+
+
+		std::unique_ptr< GraphicsPipeline> opaque;
+		std::unique_ptr< GraphicsPipeline> transparent;
+		vk::UniqueDescriptorSetLayout materialLayout;
+
+
 
 		DescriptorWriter writer;
 		MetallicRoughness( VKRenderer& renderer);
 		void recreate( VKRenderer& renderer);
 		void buildPipelines( VKRenderer& renderer);
-		void clear_resources(const vk::Device& device);
-		auto write_material(const vk::Device& device, MaterialPass pass,
+		auto writeMaterial(const vk::Device& device, MaterialPass pass,
 		                    MaterialResources& resources, DescriptorAllocatorGrowable& descriptorAllocator) -> std::shared_ptr<Material>;
 		DISABLE_COPY_AND_MOVE(MetallicRoughness);
 		

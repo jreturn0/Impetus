@@ -85,7 +85,8 @@
 //		static_cast<uint32_t>(layers.size()), layers.data(),
 //		static_cast<uint32_t>(glfwExtensionsVector.size()), glfwExtensionsVector.data() });
 //
-//	// vk::DispatchLoaderDynamic dldi(*instance);
+//	// vk::
+// dldi(*instance);
 //	auto dldi = vk::DispatchLoaderDynamic(*instance, vkGetInstanceProcAddr);
 //
 //

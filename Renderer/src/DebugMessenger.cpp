@@ -6,8 +6,12 @@
 
 #include "AnsiCodes.h"
 
-VkBool32 Imp::Render::DebugMessenger::DebugMessageCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
-                                                           VkDebugUtilsMessageTypeFlagsEXT messageTypes, const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData, void*)
+VKAPI_ATTR VkBool32 VKAPI_CALL Imp::Render::DebugMessenger::DebugMessageCallback(
+    VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
+    VkDebugUtilsMessageTypeFlagsEXT messageTypes,
+    const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData,
+       void* pUserData)
+   
 {
 	std::ostringstream message;
 
@@ -68,22 +72,29 @@ VkBool32 Imp::Render::DebugMessenger::DebugMessageCallback(VkDebugUtilsMessageSe
 	return VK_FALSE;
 }
 
-vk::UniqueHandle<vk::DebugUtilsMessengerEXT, vk::DispatchLoaderDynamic> Imp::Render::DebugMessenger::
-CreateDebugUtilsMessenger(const vk::Instance& instance, const vk::DispatchLoaderDynamic& dldi)
+vk::UniqueDebugUtilsMessengerEXT  Imp::Render::DebugMessenger::
+CreateDebugUtilsMessenger(const vk::Instance& instance)
 {
+	auto severityFlags = vk::DebugUtilsMessageSeverityFlagBitsEXT::eError |
+		vk::DebugUtilsMessageSeverityFlagBitsEXT::eWarning |
+		vk::DebugUtilsMessageSeverityFlagBitsEXT::eVerbose |
+		vk::DebugUtilsMessageSeverityFlagBitsEXT::eInfo;
+	auto messageTypeFlags = vk::DebugUtilsMessageTypeFlagBitsEXT::eGeneral |
+		vk::DebugUtilsMessageTypeFlagBitsEXT::eValidation |
+		vk::DebugUtilsMessageTypeFlagBitsEXT::ePerformance;
+
 	vk::DebugUtilsMessengerCreateInfoEXT createInfo(
-		{},
-		vk::DebugUtilsMessageSeverityFlagBitsEXT::eError | vk::DebugUtilsMessageSeverityFlagBitsEXT::eWarning |
-		vk::DebugUtilsMessageSeverityFlagBitsEXT::eVerbose | vk::DebugUtilsMessageSeverityFlagBitsEXT::eInfo,
-		vk::DebugUtilsMessageTypeFlagBitsEXT::eGeneral | vk::DebugUtilsMessageTypeFlagBitsEXT::eValidation |
-		vk::DebugUtilsMessageTypeFlagBitsEXT::ePerformance,
-		DebugMessenger::DebugMessageCallback
+		vk::DebugUtilsMessengerCreateFlagsEXT{},
+		severityFlags,
+		messageTypeFlags,
+		reinterpret_cast<vk::PFN_DebugUtilsMessengerCallbackEXT>(&Imp::Render::DebugMessenger::DebugMessageCallback),
+		nullptr
 	);
-	return instance.createDebugUtilsMessengerEXTUnique(createInfo, nullptr, dldi);
+	return instance.createDebugUtilsMessengerEXTUnique(createInfo);
 }
 
-Imp::Render::DebugMessenger::DebugMessenger(const Instance& instance) : dldi(instance.getInstance(), vkGetInstanceProcAddr),
-debugMessenger(CreateDebugUtilsMessenger(instance,dldi))
+Imp::Render::DebugMessenger::DebugMessenger(const Instance& instance) :
+debugMessenger(CreateDebugUtilsMessenger(instance))
 {
 
 }

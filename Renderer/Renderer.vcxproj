@@ -123,6 +123,7 @@
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalIncludeDirectories>$(VULKAN_SDK)/Include/;include/;$(SolutionDir)SharedUtils/include/;$(SolutionDir)libs\x64-windows\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -145,6 +146,7 @@
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalIncludeDirectories>$(VULKAN_SDK)/Include/;include/;$(SolutionDir)SharedUtils/include/;$(SolutionDir)libs\x64-windows\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -225,7 +227,6 @@
     <ClInclude Include="include\geometry\GeoSurface.h" />
     <ClInclude Include="include\geometry\Mesh.h" />
     <ClInclude Include="include\geometry\Vertex.h" />
-    <ClInclude Include="include\GlmMath.h" />
     <ClInclude Include="include\gpudata\GPUDrawPushConstants.h" />
     <ClInclude Include="include\gpudata\GPUMeshBuffers.h" />
     <ClInclude Include="include\gpudata\GPUSceneData.h" />
@@ -238,7 +239,6 @@
     <ClInclude Include="include\nodes\IRenderable.h" />
     <ClInclude Include="include\nodes\MeshNode.h" />
     <ClInclude Include="include\nodes\Node.h" />
-    <ClInclude Include="include\OldRenderer.h" />
     <ClInclude Include="include\rendercontext\DrawContext.h" />
     <ClInclude Include="include\rendercontext\RenderObject.h" />
     <ClInclude Include="include\Renderer.h" />
@@ -259,6 +259,7 @@
     <ClInclude Include="include\utils\shader\ShaderLoader.h" />
     <ClInclude Include="include\utils\shader\ShaderReflect.h" />
     <ClInclude Include="include\utils\VKCommon.hpp" />
+    <ClInclude Include="include\utils\VkConstants.h" />
     <ClInclude Include="include\utils\VKUtils.h" />
     <ClInclude Include="include\VKRenderer.h" />
     <ClInclude Include="include\window\VKWindow.h" />

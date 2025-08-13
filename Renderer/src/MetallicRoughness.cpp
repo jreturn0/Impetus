@@ -57,11 +57,9 @@ void Imp::Render::MetallicRoughness::buildPipelines(VKRenderer& renderer)
 
 }
 
-void Imp::Render::MetallicRoughness::clear_resources(const vk::Device& device)
-{
-}
 
-std::shared_ptr<Imp::Render::Material> Imp::Render::MetallicRoughness::write_material(const vk::Device& device,
+
+std::shared_ptr<Imp::Render::Material> Imp::Render::MetallicRoughness::writeMaterial(const vk::Device& device,
 	MaterialPass pass,  MaterialResources& resources, DescriptorAllocatorGrowable& descriptorAllocator)
 {
 	auto material = std::make_shared<Material>();
@@ -86,31 +84,5 @@ std::shared_ptr<Imp::Render::Material> Imp::Render::MetallicRoughness::write_mat
 	return material;
 }
 
-//
-//void Imp::Render::MetallicRoughness::write_material(const vk::Device& device, MaterialPass pass,
-//	const MaterialResources& resources, DescriptorAllocatorGrowable& descriptorAllocator)
-//{
-//	std::shared_ptr< Material> material;
-//	material->passType = pass;
-//	if (pass == MaterialPass::Transparent)
-//	{
-//		material->pipeline = transparent.get();
-//	}
-//	else
-//	{
-//		material->pipeline = opaque.get();
-//	}
-//	
-//	material->set = descriptorAllocator.allocate(device,*materialLayout);
-//	writer.clear();
-//	writer.write_buffer(0, resources.dataBuffer->getBuffer(), sizeof(MaterialConstants), resources.dataOffset, vk::DescriptorType::eUniformBuffer);
-//	writer.write_image(1, resources.colorImage->getView(), resources.getMetalRoughSampler(), vk::ImageLayout::eShaderReadOnlyOptimal, vk::DescriptorType::eCombinedImageSampler);
-//	writer.write_image(2, resources.metalRoughImage->getView(), *resources.metalRoughSampler, vk::ImageLayout::eShaderReadOnlyOptimal, vk::DescriptorType::eCombinedImageSampler);
-//	writer.update_set(device, *material->set);
-//
-//	//return material;
-//
-//
-//}
 
 

@@ -44,6 +44,7 @@
 
 
 namespace Imp::Render {
+	// Anonymous namespace for utility functions only used here
 	namespace {
 		void SetViewportAndScissors(const vk::CommandBuffer& cmd, const vk::Extent2D extent)
 		{
@@ -98,6 +99,7 @@ namespace Imp::Render {
 
 			cmd.beginRendering(renderingInfo);
 		}
+
 		vk::Format ChooseSupportedFormat(vk::PhysicalDevice physicalDevice, const std::vector<vk::Format>& candidates, vk::ImageTiling tiling, vk::FormatFeatureFlags features)
 		{
 			for (vk::Format format : candidates) {
@@ -105,7 +107,8 @@ namespace Imp::Render {
 
 				if (tiling == vk::ImageTiling::eLinear && (props.linearTilingFeatures & features) == features) {
 					return format;
-				} else if (tiling == vk::ImageTiling::eOptimal && (props.optimalTilingFeatures & features) == features) {
+				}
+				else if (tiling == vk::ImageTiling::eOptimal && (props.optimalTilingFeatures & features) == features) {
 					return format;
 				}
 			}
@@ -117,33 +120,33 @@ namespace Imp::Render {
 			uint32_t color = glm::packUnorm4x8(glm::vec4(1, 1, 1, 1));
 
 			return renderer.createImage("white_image", (void*)&color, { 1,1,1 },
-										vk::Format::eR8G8B8A8Unorm, vk::ImageUsageFlagBits::eSampled, true);
+				vk::Format::eR8G8B8A8Unorm, vk::ImageUsageFlagBits::eSampled, true);
 
 		}
 		auto CreateGreyImage(const VKRenderer& renderer)
 		{
 			uint32_t color = glm::packUnorm4x8(glm::vec4(0.66f, 0.66f, 0.66f, 1));
 			return renderer.createImage("grey_image", (void*)&color, { 1,1,1 },
-										vk::Format::eR8G8B8A8Unorm, vk::ImageUsageFlagBits::eSampled, true);
+				vk::Format::eR8G8B8A8Unorm, vk::ImageUsageFlagBits::eSampled, true);
 		}
 		auto CreateBlackImage(const VKRenderer& renderer)
 		{
 			uint32_t color = glm::packUnorm4x8(glm::vec4(0, 0, 0, 0));
 			return renderer.createImage("black_image", (void*)&color, { 1,1,1 },
-										vk::Format::eR8G8B8A8Unorm, vk::ImageUsageFlagBits::eSampled, true);
+				vk::Format::eR8G8B8A8Unorm, vk::ImageUsageFlagBits::eSampled, true);
 		}
 		auto CreateErrorImage(const VKRenderer& renderer)
 		{
 			uint32_t magenta = glm::packUnorm4x8(glm::vec4(1, 0, 1, 1));
 			uint32_t black = glm::packUnorm4x8(glm::vec4(0, 0, 0, 1));
-			std::array<uint32_t, 16 * 16 > pixels; //for 16x16 checkerboard texture
+			std::array<uint32_t, 16 * 16 > pixels{}; //for 16x16 checkerboard texture
 			for (int x = 0; x < 16; x++) {
 				for (int y = 0; y < 16; y++) {
 					pixels[y * 16 + x] = ((x % 2) ^ (y % 2)) ? magenta : black;
 				}
 			}
 			return renderer.createImage("error_image", (void*)&pixels[0], { 16,16,1 },
-										vk::Format::eR8G8B8A8Unorm, vk::ImageUsageFlagBits::eSampled, true);
+				vk::Format::eR8G8B8A8Unorm, vk::ImageUsageFlagBits::eSampled, true);
 		}
 
 		auto CreateGPUSceneDescriptorLayout(const Imp::Render::Device& device)
@@ -155,55 +158,6 @@ namespace Imp::Render {
 			return builder.build(device.getLogical(), vk::ShaderStageFlagBits::eVertex | vk::ShaderStageFlagBits::eFragment);
 
 		}
-		void printMatrix(const glm::mat4& matrix, const std::string& name)
-		{
-			std::stringstream str;
-			str << name << ":\n";
-			const float* m = (const float*)glm::value_ptr(matrix);
-			for (int i = 0; i < 4; ++i) {
-				for (int j = 0; j < 4; ++j) {
-					str << m[j * 4 + i] << " ";
-				}
-				str << "\n";
-			}
-			Debug::Info(str.str());
-		}
-
-		// Helper function to print a glm::vec4
-		void printVector(const glm::vec4& vector, const std::string& name)
-		{
-			Debug::Info("{}: ({}, {}, {}, {})", name, vector.x, vector.y, vector.z, vector.w);
-			std::cout << name << ": (" << vector.x << ", " << vector.y << ", " << vector.z << ", " << vector.w << ")" << std::endl;
-		}
-
-		// Function to print the contents of GPUSceneData
-		void printGPUSceneData(const GPUSceneData& sceneData)
-		{
-			printMatrix(sceneData.view, "view");
-			printMatrix(sceneData.proj, "proj");
-			printMatrix(sceneData.viewproj, "viewproj");
-			printVector(sceneData.ambientColor, "ambientColor");
-			printVector(sceneData.sunlightDirection, "sunlightDirection");
-			printVector(sceneData.sunlightColor, "sunlightColor");
-		}
-
-
-		bool isBoundingSphereVisible(const RenderObject& obj, const glm::mat4& viewProj)
-		{
-			glm::vec4 clipSpaceCenter = viewProj * glm::vec4(obj.bounds.origin, 1.0f);
-
-			// Perspective divide
-			clipSpaceCenter /= clipSpaceCenter.w;
-
-			// Sphere radius in clip space
-			float clipSpaceRadius = obj.bounds.sphereRadius * glm::length(glm::vec3(viewProj[0][0], viewProj[1][1], viewProj[2][2]));
-
-			return !(clipSpaceCenter.z - clipSpaceRadius > 1.0f || clipSpaceCenter.z + clipSpaceRadius < 0.0f ||
-					 clipSpaceCenter.x - clipSpaceRadius > 1.0f || clipSpaceCenter.x + clipSpaceRadius < -1.0f ||
-					 clipSpaceCenter.y - clipSpaceRadius > 1.0f || clipSpaceCenter.y + clipSpaceRadius < -1.0f);
-		}
-
-#include <iostream> // For debugging
 
 		bool isBoundingBoxVisible(const RenderObject& obj, const glm::mat4& viewProj)
 		{
@@ -224,85 +178,14 @@ namespace Imp::Render {
 
 			for (const auto& corner : corners) {
 				glm::vec4 transformedCorner = glm::vec4(obj.bounds.origin + obj.bounds.extents * glm::vec3(corner), 1.0f);
-				//std::cout << "Normal scaled and translated corner: (" << transformedCorner.x << ", " << transformedCorner.y << ", " << transformedCorner.z << ", " << transformedCorner.w << ")\n";
-
 				glm::vec4 v = matrix * transformedCorner;
-				//std::cout << "Normal transformed corner before perspective: (" << v.x << ", " << v.y << ", " << v.z << ", " << v.w << ")\n";
-
 				v /= v.w;
-				//std::cout << "Normal transformed corner after perspective: (" << v.x << ", " << v.y << ", " << v.z << ", " << v.w << ")\n";
-
 				min_ = glm::min(min_, glm::vec3(v));
 				max_ = glm::max(max_, glm::vec3(v));
 			}
 
 			return !(min_.z > 1.0f || max_.z < 0.0f || min_.x > 1.0f || max_.x < -1.0f || min_.y > 1.0f || max_.y < -1.0f);
 		}
-
-
-
-
-
-
-
-		bool isVisible(const RenderObject& obj, const glm::mat4& viewProj)
-		{
-			static const std::array<glm::vec3, 8> corners = {
-				glm::vec3{1, 1, 1},
-				glm::vec3{1, 1, -1},
-				glm::vec3{1, -1, 1},
-				glm::vec3{1, -1, -1},
-				glm::vec3{-1, 1, 1},
-				glm::vec3{-1, 1, -1},
-				glm::vec3{-1, -1, 1},
-				glm::vec3{-1, -1, -1},
-			};
-
-			glm::mat4 matrix = viewProj * obj.transform;
-
-			__m128 min = _mm_set1_ps(std::numeric_limits<float>::max());
-			__m128 max = _mm_set1_ps(std::numeric_limits<float>::lowest());
-
-			__m128 origin = _mm_set_ps(1.0f, obj.bounds.origin.z, obj.bounds.origin.y, obj.bounds.origin.x);
-			__m128 extents = _mm_set_ps(1.0f, obj.bounds.extents.z, obj.bounds.extents.y, obj.bounds.extents.x);
-
-			for (const auto& corner : corners) {
-				__m128 cornerVec = _mm_set_ps(1.0f, corner.z, corner.y, corner.x);
-				__m128 worldCorner = _mm_add_ps(origin, _mm_mul_ps(cornerVec, extents));
-
-				__m128 transformedCorner = _mm_set_ps(
-					1.0f,
-					matrix[3][2] + _mm_cvtss_f32(_mm_shuffle_ps(worldCorner, worldCorner, _MM_SHUFFLE(2, 2, 2, 2))) * matrix[2][2] +
-					_mm_cvtss_f32(_mm_shuffle_ps(worldCorner, worldCorner, _MM_SHUFFLE(1, 1, 1, 1))) * matrix[1][2] +
-					_mm_cvtss_f32(_mm_shuffle_ps(worldCorner, worldCorner, _MM_SHUFFLE(0, 0, 0, 0))) * matrix[0][2],
-					matrix[3][1] + _mm_cvtss_f32(_mm_shuffle_ps(worldCorner, worldCorner, _MM_SHUFFLE(2, 2, 2, 2))) * matrix[2][1] +
-					_mm_cvtss_f32(_mm_shuffle_ps(worldCorner, worldCorner, _MM_SHUFFLE(1, 1, 1, 1))) * matrix[1][1] +
-					_mm_cvtss_f32(_mm_shuffle_ps(worldCorner, worldCorner, _MM_SHUFFLE(0, 0, 0, 0))) * matrix[0][1],
-					matrix[3][0] + _mm_cvtss_f32(_mm_shuffle_ps(worldCorner, worldCorner, _MM_SHUFFLE(2, 2, 2, 2))) * matrix[2][0] +
-					_mm_cvtss_f32(_mm_shuffle_ps(worldCorner, worldCorner, _MM_SHUFFLE(1, 1, 1, 1))) * matrix[1][0] +
-					_mm_cvtss_f32(_mm_shuffle_ps(worldCorner, worldCorner, _MM_SHUFFLE(0, 0, 0, 0))) * matrix[0][0]
-				);
-
-				float w = matrix[3][3] + _mm_cvtss_f32(_mm_shuffle_ps(worldCorner, worldCorner, _MM_SHUFFLE(2, 2, 2, 2))) * matrix[2][3] +
-					_mm_cvtss_f32(_mm_shuffle_ps(worldCorner, worldCorner, _MM_SHUFFLE(1, 1, 1, 1))) * matrix[1][3] +
-					_mm_cvtss_f32(_mm_shuffle_ps(worldCorner, worldCorner, _MM_SHUFFLE(0, 0, 0, 0))) * matrix[0][3];
-				__m128 invW = _mm_set1_ps(1.0f / w);
-				__m128 v = _mm_mul_ps(transformedCorner, invW);
-
-				min = _mm_min_ps(v, min);
-				max = _mm_max_ps(v, max);
-			}
-
-			alignas(16) float minArr[4], maxArr[4];
-			_mm_store_ps(minArr, min);
-			_mm_store_ps(maxArr, max);
-
-			return !(minArr[2] > 1.0f || maxArr[2] < 0.0f || minArr[0] > 1.0f || maxArr[0] < -1.0f || minArr[1] > 1.0f || maxArr[1] < -1.0f);
-		}
-
-
-
-
 	}
 }
 void Imp::Render::VKRenderer::recreate()
@@ -321,17 +204,7 @@ void Imp::Render::VKRenderer::recreate()
 	for (auto& compute : computePipelines) {
 		compute->recreate(*device, *drawImage, *descriptorAllocator);
 	}
-	//metallicRoughness = std::make_unique<MetallicRoughness>(*this);
-
 	device->getLogical().waitIdle();
-	//meshPipeline = std::make_unique<GraphicsPipeline>(*device, *singleImageDescriptorLayout, "triangle_mesh",
-	//												  vk::PrimitiveTopology::eTriangleList,
-	//												  vk::PolygonMode::eFill,
-	//												  vk::CullModeFlagBits::eBack,
-	//												  vk::FrontFace::eCounterClockwise,
-	//												  drawImage->getFormat(),
-	//												  depthImage->getFormat(),
-	//												  true, true, false);
 }
 
 Imp::Render::SharedMaterial Imp::Render::VKRenderer::createDefaultMaterial()
@@ -355,7 +228,7 @@ Imp::Render::SharedMaterial Imp::Render::VKRenderer::createDefaultMaterial()
 	materialResources.dataOffset = 0;
 	materialConstants = nullptr;
 
-	return metallicRoughness->write_material(*device, MaterialPass::MainColor, materialResources, *descriptorAllocator);
+	return metallicRoughness->writeMaterial(*device, MaterialPass::MainColor, materialResources, *descriptorAllocator);
 }
 
 Imp::Render::VKRenderer::VKRenderer(const std::string& title, uint32_t width, uint32_t height) :
@@ -400,8 +273,8 @@ Imp::Render::VKRenderer::VKRenderer(const std::string& title, uint32_t width, ui
 					   VMA_MEMORY_USAGE_CPU_TO_GPU),0
 	};
 
-	auto errorMaterial =metallicRoughness->write_material(*device, MaterialPass::MainColor, materialResources
-									  , resourceHandler->getMaterialDescriptorAllocator());
+	auto errorMaterial = metallicRoughness->writeMaterial(*device, MaterialPass::MainColor, materialResources
+		, resourceHandler->getMaterialDescriptorAllocator());
 	resourceHandler->addMaterial("error_material", errorMaterial);
 
 }
@@ -434,7 +307,7 @@ Imp::Render::SharedImage Imp::Render::VKRenderer::createImage(const char* nameId
 Imp::Render::SharedMaterial Imp::Render::VKRenderer::createMaterial(const char* nameId, MaterialPass type, MetallicRoughness::MaterialResources& resources) const
 {
 
-	auto material = metallicRoughness->write_material(*device, type, resources, resourceHandler->getMaterialDescriptorAllocator());
+	auto material = metallicRoughness->writeMaterial(*device, type, resources, resourceHandler->getMaterialDescriptorAllocator());
 	material->name = nameId;
 	if (material == nullptr) {
 		//throw std::runtime_error("Failed to create material");
@@ -468,7 +341,7 @@ void Imp::Render::VKRenderer::loadGLTF(std::filesystem::path filePath)
 
 	auto gltf = MeshLoader::LoadGltf(filePath.string(), *this);
 	if (!gltf.has_value()) {
-		Debug ::FatalError("Failed to load gltf file");
+		Debug::FatalError("Failed to load gltf file");
 		//std::cout << "Failed to load gltf file" << std::endl;
 		//throw std::runtime_error("Failed to load gltf file");
 		return;
@@ -515,7 +388,8 @@ void Imp::Render::VKRenderer::beginFrame()
 		recreate();
 		isWindowResized = false;
 		return;
-	} else if (result != vk::Result::eSuccess && result != vk::Result::eSuboptimalKHR) {
+	}
+	else if (result != vk::Result::eSuccess && result != vk::Result::eSuboptimalKHR) {
 		throw std::runtime_error("Failed to acquire swap chain image!");
 	}
 	logical.resetFences(frame.getInFlightFence());
@@ -581,7 +455,7 @@ void Imp::Render::VKRenderer::drawGeometry()
 			std::lock_guard<std::mutex> lock(drawMutex);
 			opaque_draws.push_back(&obj - drawCtx->opaque.data());
 		}
-				  });
+		});
 
 
 
@@ -593,10 +467,11 @@ void Imp::Render::VKRenderer::drawGeometry()
 		const RenderObject& B = drawCtx->opaque[iB];
 		if (A.material == B.material) {
 			return A.indexBuffer < B.indexBuffer;
-		} else {
+		}
+		else {
 			return A.material < B.material;
 		}
-					  });
+		});
 	end2 = std::chrono::high_resolution_clock::now();
 	stats.timeStatsMap["sort"].update(std::chrono::duration_cast<std::chrono::microseconds>(end2 - start3).count());
 	stats.timeStatsMap["visibilityCheckAndSort"].update(std::chrono::duration_cast<std::chrono::microseconds>(end2 - start2).count());
@@ -690,9 +565,9 @@ void Imp::Render::VKRenderer::endDrawGui()
 
 }
 std::shared_ptr<Imp::Render::Mesh> Imp::Render::VKRenderer::uploadMesh(const std::string& name,
-																	   std::span<GeoSurface> surfaces,
-																	   std::span<uint32_t> indices,
-																	   std::span<Vertex> vertices) const
+	std::span<GeoSurface> surfaces,
+	std::span<uint32_t> indices,
+	std::span<Vertex> vertices) const
 {
 	return std::make_shared<Mesh>(name, *device, *transferQueue, *transferCommands, *allocator, surfaces, indices, vertices);
 }
@@ -732,7 +607,8 @@ void Imp::Render::VKRenderer::endFrame()
 	if (result == vk::Result::eErrorOutOfDateKHR || result == vk::Result::eSuboptimalKHR) {
 		recreate();
 		isWindowResized = false;
-	} else if (result != vk::Result::eSuccess) {
+	}
+	else if (result != vk::Result::eSuccess) {
 		throw std::runtime_error("Failed to present swap chain image!");
 	}
 
@@ -786,16 +662,19 @@ void Imp::Render::VKRenderer::draw(const std::string& gltf, const std::string& n
 		// Draw the node with or without a specific material
 		if (materialName.empty() || materialName == "default") {
 			node->draw(transform, *drawCtx);
-		} else {
+		}
+		else {
 			if (!resourceHandler->hasMaterial(materialName)) {
 				//std::cout << "Material with name (" << materialName << ") does not exist" << std::endl;
 				node->draw(transform, *drawCtx, resourceHandler->getMaterialRef("error_material"));
-			} else {
+			}
+			else {
 				node->draw(transform, *drawCtx, resourceHandler->getMaterialRef(materialName));
 			}
 			//node->draw(transform, *drawCtx, resourceHandler->getMaterialRef(materialName));
 		}
-	} else {
+	}
+	else {
 		//std::cout << "GLTF(" << gltf << ") node with name (" << name << ") does not exist" << std::endl;
 	}
 
@@ -834,11 +713,11 @@ void Imp::Render::VKRenderer::reloadShader(const std::string& name)
 		device.get()->getLogical().waitIdle();
 		shader->get()->recreate(*device, *drawImage, *descriptorAllocator);
 		device.get()->getLogical().waitIdle();
-							  });
+		});
 }
 
 std::shared_ptr<Imp::Render::Node> Imp::Render::VKRenderer::getLoadedGltfChildNode(const std::string& gltf,
-																				   const std::string& child)
+	const std::string& child)
 {
 	if (!resourceHandler->hasGLTF(gltf)) {
 		return nullptr;

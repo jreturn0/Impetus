@@ -7,6 +7,6 @@ namespace Imp {
 
 	//struct ActiveCameraTag
 	//{
-	//	bool tag;
+	//	bool tag
 	//};
 }

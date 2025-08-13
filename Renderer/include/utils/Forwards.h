@@ -31,6 +31,8 @@ namespace Imp::Render
 	struct Node;
 	class IRenderable;
 	struct MaterialInstance;
+	struct MetallicRoughnessMaterialResources;
+	struct MetallicRoughnessMaterialConstants;
 
 
 	using UniqueInstance = std::unique_ptr< Instance>;

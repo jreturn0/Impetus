@@ -83,5 +83,8 @@ Imp::Render::Device::~Device()
 
 Imp::Render::UniqueDevice Imp::Render::CreateUniqueDevice(const Instance& instance, const VKWindow& surface)
 {
-	return std::unique_ptr< Device>(new Device(instance, surface.getSurface()));
+	auto _device = std::unique_ptr< Device>(new Device(instance, surface.getSurface()));
+	
+	VULKAN_HPP_DEFAULT_DISPATCHER.init((*_device).getLogical());
+	return std::move(_device);
 }

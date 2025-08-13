@@ -33,7 +33,7 @@ namespace Imp {
         {
             if(!allocator)
             {
-                std::cout << "NO ALLOCATOR IN BUFFER\n";
+                fmt::println("NO ALLOCATOR IN BUFFER");
             }
             if (!defer) {
                 destroy();
