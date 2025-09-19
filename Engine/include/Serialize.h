@@ -94,30 +94,30 @@ namespace cereal { \
 
 //namespace Registration {
 	// System registration
-REGISTER_SYSTEM(Imp::RenderSystem)
-REGISTER_SYSTEM(Imp::ResourceSystem)
-REGISTER_SYSTEM(Imp::InputSystem)
-REGISTER_SYSTEM(Imp::TransformSystem)
-REGISTER_SYSTEM(Imp::PrePhysicsSystem)
-REGISTER_SYSTEM(Imp::PhysicsSystem)
-REGISTER_SYSTEM(Imp::PostPhysicsSystem)
-REGISTER_SYSTEM(Imp::EndRenderSystem)
-REGISTER_SYSTEM(Imp::CameraSystem)
-REGISTER_SYSTEM(Imp::RelationshipSystem)
+REGISTER_SYSTEM(imp::RenderSystem)
+REGISTER_SYSTEM(imp::ResourceSystem)
+REGISTER_SYSTEM(imp::InputSystem)
+REGISTER_SYSTEM(imp::TransformSystem)
+REGISTER_SYSTEM(imp::PrePhysicsSystem)
+REGISTER_SYSTEM(imp::PhysicsSystem)
+REGISTER_SYSTEM(imp::PostPhysicsSystem)
+REGISTER_SYSTEM(imp::EndRenderSystem)
+REGISTER_SYSTEM(imp::CameraSystem)
+REGISTER_SYSTEM(imp::RelationshipSystem)
 
 // Component registrationREGISTER_AND_SERIALIZE(Imp::TransformComponent);
-REGISTER_AND_SERIALIZE(Imp::TransformComponent);
-REGISTER_AND_SERIALIZE(Imp::PhysicsBodyComponent);
-REGISTER_AND_SERIALIZE(Imp::InputStateComponent);
-REGISTER_AND_SERIALIZE(Imp::CameraComponent);
-REGISTER_COMPONENT_CUSTOM_WIDGET(Imp::ModelComponent, ModelWidgetInfo);
-SERIALIZE(Imp::ModelComponent);
-REGISTER_AND_SERIALIZE(Imp::RelationshipComponent);
-REGISTER_AND_EMPTY_SERIALIZE(Imp::CollisionInfoComponent);
-REGISTER_COMPONENT_CUSTOM_NAME(Imp::ActiveCameraTag, "ActiveCamera")
-EMPTY_SERIALIZE(Imp::ActiveCameraTag);
-REGISTER_COMPONENT_CUSTOM_NAME(Imp::CameraLookAtTag, "CameraLookAt")
-EMPTY_SERIALIZE(Imp::CameraLookAtTag);
+REGISTER_AND_SERIALIZE(imp::TransformComponent);
+REGISTER_AND_SERIALIZE(imp::PhysicsBodyComponent);
+REGISTER_AND_SERIALIZE(imp::InputStateComponent);
+REGISTER_AND_SERIALIZE(imp::CameraComponent);
+REGISTER_COMPONENT_CUSTOM_WIDGET(imp::ModelComponent, ModelWidgetInfo);
+SERIALIZE(imp::ModelComponent);
+REGISTER_AND_SERIALIZE(imp::RelationshipComponent);
+REGISTER_AND_EMPTY_SERIALIZE(imp::CollisionInfoComponent);
+REGISTER_COMPONENT_CUSTOM_NAME(imp::ActiveCameraTag, "ActiveCamera")
+EMPTY_SERIALIZE(imp::ActiveCameraTag);
+REGISTER_COMPONENT_CUSTOM_NAME(imp::CameraLookAtTag, "CameraLookAt")
+EMPTY_SERIALIZE(imp::CameraLookAtTag);
 
 //system registration
 //EMPTY_SERIALIZE(Imp::CollisionInfoComponent)
@@ -129,7 +129,7 @@ namespace cereal {
 
 	//physics serialization
 	template<class Archive>void serialize(Archive& archive, JPH::BodyID& v) { (archive(v.GetIndexAndSequenceNumber()), v = JPH::BodyID(v.GetIndexAndSequenceNumber())); }
-	template<class Archive>void serialize(Archive& archive, Imp::Phys::Shape& v) { archive(v.type, v.data); }
+	template<class Archive>void serialize(Archive& archive, imp::Phys::Shape& v) { archive(v.type, v.data); }
 
 	//vector serialization
 	template<class Archive> void serialize(Archive& archive, glm::vec2& v) { archive(make_nvp("x", v.x), make_nvp("y", v.y)); }

@@ -1,7 +1,7 @@
 ﻿#pragma once
 #include <memory>
 #include "nodes/Node.h"
-namespace Imp::Render {
+namespace imp::gfx {
 	struct Mesh;
 
 	struct MeshNode : public Node

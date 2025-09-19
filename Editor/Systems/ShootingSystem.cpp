@@ -14,15 +14,15 @@
 
 void ShootingSystem::update(entt::registry& registry, const float deltaTime)
 {
-	auto&& aimView = registry.group<>(entt::get<AimTarget, Imp::TransformComponent>);
+	auto&& aimView = registry.group<>(entt::get<AimTarget, imp::TransformComponent>);
 	if (aimView.empty()) return;
-	auto&& playerGroup = registry.group<>(entt::get<PlayerTag, Imp::TransformComponent, AttackComponent>);
+	auto&& playerGroup = registry.group<>(entt::get<PlayerTag, imp::TransformComponent, AttackComponent>);
 	if (playerGroup.empty()) return;
 
-	auto&& inputGroup = registry.view<Imp::InputStateComponent>();
-	auto&& input = inputGroup.get<Imp::InputStateComponent>(inputGroup.front());
-	auto&& aimTransform = aimView.get<Imp::TransformComponent>(aimView.front());
-	auto&& [playerTransform, attackCooldown] = playerGroup.get<Imp::TransformComponent, AttackComponent>(playerGroup.front());
+	auto&& inputGroup = registry.view<imp::InputStateComponent>();
+	auto&& input = inputGroup.get<imp::InputStateComponent>(inputGroup.front());
+	auto&& aimTransform = aimView.get<imp::TransformComponent>(aimView.front());
+	auto&& [playerTransform, attackCooldown] = playerGroup.get<imp::TransformComponent, AttackComponent>(playerGroup.front());
 
 	if (!attackCooldown.canAttack)return;
 	constexpr std::string_view file{ "basic_shapes.glb" }, mesh{ "UVSphere" }, material{ "Error" };
@@ -31,15 +31,15 @@ void ShootingSystem::update(entt::registry& registry, const float deltaTime)
 		auto direction = glm::normalize(aimTransform.position - playerTransform.position);
 		auto bulletSpeed = 20.f;
 		auto lookQuat = glm::quatLookAt(direction, glm::vec3(0, 1, 0));
-		registry.emplace<Imp::TransformComponent>(bullet, playerTransform.position+(direction*2.5f),lookQuat,glm::vec3{0.25f});
+		registry.emplace<imp::TransformComponent>(bullet, playerTransform.position+(direction*2.5f),lookQuat,glm::vec3{0.25f});
 		registry.emplace<ProjectileTag>(bullet);
 		registry.emplace<DamageComponent>(bullet, 34);
-		registry.emplace<Imp::ModelComponent>(bullet, file.data(), mesh.data(), material.data());
-		registry.emplace<Imp::CollisionInfoComponent>(bullet);
-		auto&& body =registry.emplace<Imp::PhysicsBodyComponent>(bullet, Imp::Phys::Shape{ Imp::Phys::ShapeType::Sphere,glm::vec3{0.25f}},Imp::Phys::MovementType::Dynamic,Imp::Phys::ObjectLayers::DEFAULT,direction*bulletSpeed);
+		registry.emplace<imp::ModelComponent>(bullet, file.data(), mesh.data(), material.data());
+		registry.emplace<imp::CollisionInfoComponent>(bullet);
+		auto&& body =registry.emplace<imp::PhysicsBodyComponent>(bullet, imp::Phys::Shape{ imp::Phys::ShapeType::Sphere,glm::vec3{0.25f}},imp::Phys::MovementType::Dynamic,imp::Phys::ObjectLayers::DEFAULT,direction*bulletSpeed);
 		//attackCooldown.canAttack = false;
 		attackCooldown.attackCooldownTimer= attackCooldown.attackCooldown;
-		registry.ctx().get<CtxRef<Imp::Phys::Physics>>().get().getBodyInterface().SetGravityFactor(body.id, 0.f);
+		registry.ctx().get<CtxRef<imp::Phys::Physics>>().get().getBodyInterface().SetGravityFactor(body.id, 0.f);
 
 	}
 

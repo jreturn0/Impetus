@@ -15,7 +15,7 @@
 #include "CameraType.h"
 //#include "../Resources/ResourceMetadata.h"
 
-namespace Imp {
+namespace imp {
 	template<typename T>
 	inline void TypeWidget(T& t, const std::string& name);
 
@@ -66,16 +66,16 @@ namespace Imp {
 		}
 	}
 	template<>
-	inline void TypeWidget<Imp::CameraType>(Imp::CameraType& t, const std::string& name)
+	inline void TypeWidget<imp::CameraType>(imp::CameraType& t, const std::string& name)
 	{
 		
-		if (ImGui::Button(Imp::ToString(t).data())) {
+		if (ImGui::Button(imp::ToString(t).data())) {
 			ImGui::OpenPopup("CameraType");
 		}
 
 		if (ImGui::BeginPopup("CameraType")) {
 			for (int i = 0; i < (2); ++i) {
-				if (const auto type = static_cast<CameraType>(i); ImGui::Selectable(Imp::ToString(type).data())) {
+				if (const auto type = static_cast<CameraType>(i); ImGui::Selectable(imp::ToString(type).data())) {
 					t = type;
 				}
 			}

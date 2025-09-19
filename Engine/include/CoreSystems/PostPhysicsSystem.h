@@ -1,7 +1,7 @@
 ﻿#pragma once
 #include "System.h"
 
-namespace Imp
+namespace imp
 {
 	namespace Phys
 	{

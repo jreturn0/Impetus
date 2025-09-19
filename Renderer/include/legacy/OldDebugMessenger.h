@@ -2,7 +2,7 @@
 #include "utils/VKCommon.hpp"
 #include "utils/QuickMacros.h"
 
-namespace Imp::Render
+namespace imp::gfx
 {
 	class Instance;
 	using UniqueDebugMessenger = std::unique_ptr<class DebugMessenger>;

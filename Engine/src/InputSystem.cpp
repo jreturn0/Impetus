@@ -8,7 +8,7 @@
 #include "Components/InputStateComponent.h"
 #include "window/Window.h"
 
-void Imp::InputSystem::initialize(entt::registry& registry)
+void imp::InputSystem::initialize(entt::registry& registry)
 {
 	if (initalized) {
 		//Debug::Out("Input System (id: {}) was already Initialized", id);
@@ -48,7 +48,7 @@ void Imp::InputSystem::initialize(entt::registry& registry)
 
 }
 
-void Imp::InputSystem::OnMouseMoveEvent(const MouseMoveEvent mouseMoveEvent)
+void imp::InputSystem::OnMouseMoveEvent(const MouseMoveEvent mouseMoveEvent)
 {
 	lastMouseX = mouseX;
 	lastMouseY = mouseY;
@@ -56,20 +56,20 @@ void Imp::InputSystem::OnMouseMoveEvent(const MouseMoveEvent mouseMoveEvent)
 	mouseY = mouseMoveEvent.y;
 	mouseMoved = true;
 }
-void Imp::InputSystem::OnMouseScrollEvent(const MouseScrollEvent mouseScrollEvent)
+void imp::InputSystem::OnMouseScrollEvent(const MouseScrollEvent mouseScrollEvent)
 {
 	scrollX = mouseScrollEvent.x;
 	scrollY = mouseScrollEvent.y;
 }
 
-void Imp::InputSystem::OnMouseEnterEvent(const MouseEnterEvent mouseEnterEvent)
+void imp::InputSystem::OnMouseEnterEvent(const MouseEnterEvent mouseEnterEvent)
 {
 	//Imp::Debug::Info("Mouse Enter Event: {}", mouseEnterEvent.entered);
 	mouseEntered = mouseEnterEvent.entered;
 }
 
 
-void Imp::InputSystem::OnWindowFocusEvent(const WindowFocusEvent windowFocusEvent)
+void imp::InputSystem::OnWindowFocusEvent(const WindowFocusEvent windowFocusEvent)
 {
 	//Imp::Debug::Info("Window Focus Event: {}", windowFocusEvent.focused);
 
@@ -78,7 +78,7 @@ void Imp::InputSystem::OnWindowFocusEvent(const WindowFocusEvent windowFocusEven
 
 
 
-void Imp::InputSystem::OnKeyEvent(KeyEvent keyEvent)
+void imp::InputSystem::OnKeyEvent(KeyEvent keyEvent)
 {
 
 	//Debug::Out("id problem: {}", id);
@@ -98,7 +98,7 @@ void Imp::InputSystem::OnKeyEvent(KeyEvent keyEvent)
 }
 
 
-void Imp::InputSystem::OnMouseButtonEvent(MouseButtonEvent mouseButtonEvent)
+void imp::InputSystem::OnMouseButtonEvent(MouseButtonEvent mouseButtonEvent)
 {
 
 	if (mouseButtonEvent.action == Input::Action::Press) {
@@ -116,7 +116,7 @@ void Imp::InputSystem::OnMouseButtonEvent(MouseButtonEvent mouseButtonEvent)
 
 
 
-void Imp::InputSystem::update(entt::registry& registry, const float deltaTime)
+void imp::InputSystem::update(entt::registry& registry, const float deltaTime)
 {
 
 	auto group = registry.group<InputStateComponent>();
@@ -180,7 +180,7 @@ void Imp::InputSystem::update(entt::registry& registry, const float deltaTime)
 
 }
 
-void Imp::InputSystem::cleanup(entt::registry& registry)
+void imp::InputSystem::cleanup(entt::registry& registry)
 {
 	auto group = registry.group<InputStateComponent>();
 	group.each([this](auto entity, InputStateComponent& inputState) {

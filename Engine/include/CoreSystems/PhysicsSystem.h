@@ -3,7 +3,7 @@
 
 #include "System.h"
 #include "Physics/Physics.h"
-namespace Imp {
+namespace imp {
 
 
 	class PhysicsSystem final : public System
@@ -21,13 +21,13 @@ namespace Imp {
 
 		void OnCollisionInfoConstruct( entt::registry& registry, entt::entity entity) const;
 
-		void handleCollision (entt::registry& registry,const Imp::Phys::ContactEvent& event);
+		void handleCollision (entt::registry& registry,const imp::Phys::ContactEvent& event);
 		//void OnContactAdded(const Phys::CollisionInfo& info);
 		//void OnContactPersisted(const Phys::CollisionInfo& info);
 		//void OnContactRemoved(std::array<JPH::BodyID, 2> info);
-		void OnCollisionEvent(const Imp::Phys::ContactEvent& event);
+		void OnCollisionEvent(const imp::Phys::ContactEvent& event);
 		std::mutex collisionEventsMutex;
-		std::queue<Imp::Phys::ContactEvent> collisionEvents;
+		std::queue<imp::Phys::ContactEvent> collisionEvents;
 	public:
 		void initialize(entt::registry& registry) override;
 		void update(entt::registry& registry, const float deltaTime) override;

@@ -3,7 +3,7 @@
 #include <glm/vec2.hpp>
 
 #include "InputCodes.h"
-namespace Imp
+namespace imp
 {
 
 	struct InputStateComponent

@@ -6,7 +6,7 @@
 #include "CtxRef.h"
 
 
-void Imp::ResourceSystem::onTestResourceConstruct(entt::registry& registry, entt::entity entity)
+void imp::ResourceSystem::onTestResourceConstruct(entt::registry& registry, entt::entity entity)
 {
 	////auto&& comp = registry.get<TestComponent>(entity);
 
@@ -17,7 +17,7 @@ void Imp::ResourceSystem::onTestResourceConstruct(entt::registry& registry, entt
 	
 };
 
-void Imp::ResourceSystem::initialize(entt::registry& registry)
+void imp::ResourceSystem::initialize(entt::registry& registry)
 {
 	/*resourceManager = &registry.ctx().get<CtxRef<ResourceManager>>().get();
 	registry.on_construct <TestComponent>().connect<&ResourceSystem::onTestResourceConstruct>(*this);
@@ -25,7 +25,7 @@ void Imp::ResourceSystem::initialize(entt::registry& registry)
 	registry.ctx().get<CtxRef<entt::dispatcher>>().get().enqueue<SystemStatusEvent>("Imp::ResourceSystem", false);
 }
 
-void Imp::ResourceSystem::update(entt::registry & registry, const float deltaTime)
+void imp::ResourceSystem::update(entt::registry & registry, const float deltaTime)
 {
 //	Imp::Debug::Info("ResourceSystem Update");
 

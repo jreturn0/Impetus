@@ -16,7 +16,7 @@
 #include "core/ComputeEffect.h"
 #include "window/Window.h"
 
-inline void RotateCamera(Imp::CameraComponent& cam, Imp::TransformComponent& tran, glm::vec2 input)
+inline void RotateCamera(imp::CameraComponent& cam, imp::TransformComponent& tran, glm::vec2 input)
 {
 
 	// Update pitch and yaw
@@ -43,7 +43,7 @@ class CameraControllerSystem final : public System
 
 	void initialize(entt::registry& registry) override
 	{
-		auto& renderer = registry.ctx().get<CtxRef<Imp::Render::Renderer>>().get();
+		auto& renderer = registry.ctx().get<CtxRef<imp::gfx::Renderer>>().get();
 		renderer.getSceneData().proj = glm::perspective(glm::radians(80.0f), 16.0f / 9.0f, 0.01f, 1000.0f);
 		//renderer.loadGLTF("Meshes/basic_rusty_meshes.glb");
 		//renderer.loadGLTF("Meshes/structure.glb");
@@ -55,21 +55,21 @@ class CameraControllerSystem final : public System
 	{
 		//Imp::Debug::Info("Camera Update");
 
-		for (auto group = registry.view<Imp::TransformComponent, Imp::CameraComponent, Imp::ActiveCameraTag>();
+		for (auto group = registry.view<imp::TransformComponent, imp::CameraComponent, imp::ActiveCameraTag>();
 			 auto && [entity, transform, camera] : group.each()) {
 
-			auto&& inputGroup = registry.view<Imp::InputStateComponent>();
+			auto&& inputGroup = registry.view<imp::InputStateComponent>();
 			if (inputGroup.empty()) {
 				return;
 			}
-			auto input = registry.get<Imp::InputStateComponent>(*inputGroup.begin());
+			auto input = registry.get<imp::InputStateComponent>(*inputGroup.begin());
 
 
 			//Rotate camera if not in cursor mode and not looking at something
 
-			auto& renderer = registry.ctx().get<CtxRef<Imp::Render::Renderer>>().get();
-			if (renderer.getWindow().getCursorMode() == Imp::Window::CursorMode::Disabled) {
-				if (registry.view<Imp::CameraLookAtTag>().empty()) {
+			auto& renderer = registry.ctx().get<CtxRef<imp::gfx::Renderer>>().get();
+			if (renderer.getWindow().getCursorMode() == imp::Window::CursorMode::Disabled) {
+				if (registry.view<imp::CameraLookAtTag>().empty()) {
 
 					int rotatePitch = 0;
 					rotatePitch += Input::IsPressed(input.keyStates[Input::Key::Left]) ? -1 : 0;
@@ -86,9 +86,9 @@ class CameraControllerSystem final : public System
 				}
 				
 			}
-			auto&& view = registry.group<>(entt::get< CameraFollowComponent, Imp::TransformComponent>);
+			auto&& view = registry.group<>(entt::get< CameraFollowComponent, imp::TransformComponent>);
 			if (!view.empty()) {
-				auto [follow, targetTransform] = view.get<CameraFollowComponent, Imp::TransformComponent>(*view.begin());
+				auto [follow, targetTransform] = view.get<CameraFollowComponent, imp::TransformComponent>(*view.begin());
 				transform.position = targetTransform.position + follow.offset;
 			} else {
 				auto strafe = glm::vec3{ 0.f };

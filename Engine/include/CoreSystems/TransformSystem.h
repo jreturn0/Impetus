@@ -3,12 +3,12 @@
 
 #include "System.h"
 
-namespace Imp
+namespace imp
 {
 	class Clock;
 }
 
-namespace Imp {
+namespace imp {
 	class TransformSystem final : public System
 	{
 	private:

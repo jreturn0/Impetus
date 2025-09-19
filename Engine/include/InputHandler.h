@@ -1,5 +1,5 @@
 ﻿#pragma once
-namespace Imp {
+namespace imp {
 	class InputHandler
 	{
 	public:

@@ -2,7 +2,7 @@
 #include "CameraType.h"
 
 
-namespace Imp
+namespace imp
 {
 
 	struct CameraComponent

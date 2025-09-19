@@ -1,31 +1,17 @@
 ﻿#pragma once
-#include <filesystem>
 #include <optional>
 
+#include "utils/Forwards.h"
+#include <memory>
+#include <string_view>
 
-#include "core/Vma.h"
-#include "utils/VKCommon.hpp"
-#include "utils/QuickMacros.h"
-
-namespace Imp::Render
+namespace imp::gfx
 {
-	struct LoadedGLTF;
-	class VKRenderer;
-	class ImmediateCommands;
-	class Device;
+    class MeshLoader
+    {
+    public:
+        static std::optional<std::shared_ptr<LoadedGLTF>> LoadGltf(std::string_view filePath, const VulkanContext& context, ResourceCache& cache, MetallicRoughness& metallicRoughness);
+    };
 
-	class MeshLoader
-	{
-	private:
-
-
-	public:
-		//DISABLE_COPY_AND_MOVE(MeshLoader);
-
-		static std::optional<std::shared_ptr<LoadedGLTF>> LoadGltf(std::string_view filePath, VKRenderer& renderer);
-		//std::optional<std::vector<std::shared_ptr<struct Mesh>>> LoadGltfMeshes( std::filesystem::path filePath);
-		
-	};
-
-	
+    
 }

@@ -13,7 +13,7 @@
 #include <Jolt/Physics/Collision/NarrowPhaseQuery.h>
 
 #include <Jolt/Physics/Collision/CollisionCollector.h>
-namespace Imp::Phys {
+namespace imp::Phys {
 
 
 
@@ -207,8 +207,8 @@ namespace Imp::Phys {
 		{
 			if (destroyListSize == 0)
 				return;
-			physicsSystem->GetBodyInterface().RemoveBodies(&*destroyList.begin(), destroyListSize);
-			physicsSystem->GetBodyInterface().DestroyBodies(&*destroyList.begin(), destroyListSize);
+			physicsSystem->GetBodyInterface().RemoveBodies(&*destroyList.begin(), static_cast<uint32_t>(destroyListSize));
+			physicsSystem->GetBodyInterface().DestroyBodies(&*destroyList.begin(), static_cast<uint32_t>(destroyListSize));
 			destroyListSize = 0;
 		}
 

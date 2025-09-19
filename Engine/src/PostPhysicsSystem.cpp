@@ -10,13 +10,13 @@
 #include "Components/RelationshipComponent.h"
 #include "Components/TransformComponent.h"
 
-void Imp::PostPhysicsSystem::initialize(entt::registry& registry)
+void imp::PostPhysicsSystem::initialize(entt::registry& registry)
 {
 	physicsSystem = &registry.ctx().get<CtxRef<Phys::Physics>>().get();
 
 }
 
-void Imp::PostPhysicsSystem::update(entt::registry& registry, const float deltaTime)
+void imp::PostPhysicsSystem::update(entt::registry& registry, const float deltaTime)
 {
 	auto&& group = registry.group<PhysicsBodyComponent>();
 
@@ -54,5 +54,5 @@ void Imp::PostPhysicsSystem::update(entt::registry& registry, const float deltaT
 
 
 
-void Imp::PostPhysicsSystem::cleanup(entt::registry& registry)
+void imp::PostPhysicsSystem::cleanup(entt::registry& registry)
 {}

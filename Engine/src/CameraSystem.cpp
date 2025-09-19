@@ -11,9 +11,9 @@
 
 
 
-void Imp::CameraSystem::OnActiveCameraTagCreate(entt::registry& registry, entt::entity entity)
+void imp::CameraSystem::OnActiveCameraTagCreate(entt::registry& registry, entt::entity entity)
 {
-	auto camTags = registry.view<Imp::ActiveCameraTag>();
+	auto camTags = registry.view<imp::ActiveCameraTag>();
 	std::vector<entt::entity> entities;
 	for (auto&& [otherEntity] : camTags.each()) {
 		if (entity != otherEntity) {
@@ -21,19 +21,19 @@ void Imp::CameraSystem::OnActiveCameraTagCreate(entt::registry& registry, entt::
 		}
 	}
 	for (auto otherEntity : entities) {
-		registry.remove<Imp::ActiveCameraTag>(otherEntity);
+		registry.remove<imp::ActiveCameraTag>(otherEntity);
 	}
 }
 
-void Imp::CameraSystem::initialize(entt::registry& registry)
+void imp::CameraSystem::initialize(entt::registry& registry)
 {
-	registry.on_construct<ActiveCameraTag>().connect<&Imp::CameraSystem::OnActiveCameraTagCreate>(*this);
-	if (registry.view<Imp::CameraComponent>().empty()) {
+	registry.on_construct<ActiveCameraTag>().connect<&imp::CameraSystem::OnActiveCameraTagCreate>(*this);
+	if (registry.view<imp::CameraComponent>().empty()) {
 
 		Debug::Info("Creating Camera");
 		const auto cameraEntity = registry.create();
-		registry.emplace<Imp::TransformComponent>(cameraEntity, glm::vec3{ 0.f,0.f,-15.f }, glm::quat{ 0.f,0.f,0.f,0.f }, glm::vec3{ 1.f,1.f,1.f });
-		registry.emplace<Imp::CameraComponent>(cameraEntity);
+		registry.emplace<imp::TransformComponent>(cameraEntity, glm::vec3{ 0.f,0.f,-15.f }, glm::quat{ 0.f,0.f,0.f,0.f }, glm::vec3{ 1.f,1.f,1.f });
+		registry.emplace<imp::CameraComponent>(cameraEntity);
 		registry.emplace<ActiveCameraTag>(cameraEntity);
 	}
 }
@@ -59,11 +59,11 @@ glm::mat4 InterpolateMatrices(const glm::mat4& start, const glm::mat4& end, floa
 
 	return rotationMatrix;
 }
-void Imp::CameraSystem::update(entt::registry& registry, const float deltaTime)
+void imp::CameraSystem::update(entt::registry& registry, const float deltaTime)
 {
 
 	{
-		const auto camTags = registry.group<>(entt::get< Imp::CameraComponent, Imp::TransformComponent, Imp::ActiveCameraTag>);
+		const auto camTags = registry.group<>(entt::get< imp::CameraComponent, imp::TransformComponent, imp::ActiveCameraTag>);
 		if (camTags.empty()) {
 			Debug::Error("No active camera");
 			return;
@@ -71,7 +71,7 @@ void Imp::CameraSystem::update(entt::registry& registry, const float deltaTime)
 		const auto entity = camTags.front();
 		auto&& [cam, transform] = camTags.get<CameraComponent, TransformComponent>(entity);
 		// Update the view matrix
-		auto& renderer = registry.ctx().get<CtxRef<Imp::Render::Renderer>>().get();
+		auto& renderer = registry.ctx().get<CtxRef<imp::gfx::Renderer>>().get();
 		auto& sceneData = renderer.getSceneData();
 
 		const auto& window = renderer.getWindow();
@@ -83,7 +83,7 @@ void Imp::CameraSystem::update(entt::registry& registry, const float deltaTime)
 
 		if (!lookAtTags.empty()) {
 			auto&& target = lookAtTags.get<TransformComponent>(lookAtTags.front());
-			sceneData.view = glm::lookAt(transform.position, target.position, glm::vec3{ 0.f,1.f,0.f });
+			sceneData.view = glm::lookAt(transform.position, target.position, glm::vec3{ 0.f,1.f,0.f });			
 		} else {
 			sceneData.view = glm::lookAt(transform.position, transform.position + GetTransformForward(transform), GetTransformUp(transform));
 
@@ -92,7 +92,7 @@ void Imp::CameraSystem::update(entt::registry& registry, const float deltaTime)
 
 
 		// Construct the projection matrix
-		if (cam.type == Imp::CameraType::Orthographic) {
+		if (cam.type == imp::CameraType::Orthographic) {
 			// Orthographic camera settings
 			const float left = -cam.fov * ratio;
 			const float right = cam.fov * ratio;
@@ -112,5 +112,5 @@ void Imp::CameraSystem::update(entt::registry& registry, const float deltaTime)
 
 }
 
-void Imp::CameraSystem::cleanup(entt::registry& registry)
+void imp::CameraSystem::cleanup(entt::registry& registry)
 {}

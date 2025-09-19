@@ -1,6 +1,6 @@
 ﻿#include "ThreadPool.h"
 
-Imp::ThreadPool::ThreadPool(size_t threads) : stop(false)
+imp::ThreadPool::ThreadPool(size_t threads) : stop(false)
 {
 	for (size_t i = 0; i < threads; ++i)
 		workers.emplace_back([this] {
@@ -21,7 +21,7 @@ Imp::ThreadPool::ThreadPool(size_t threads) : stop(false)
 							 });
 }
 
-Imp::ThreadPool::~ThreadPool()
+imp::ThreadPool::~ThreadPool()
 {
 	{
 		std::unique_lock<std::mutex> lock(queueMutex);

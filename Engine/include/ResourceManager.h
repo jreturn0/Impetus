@@ -5,7 +5,7 @@
 #include <stdexcept>
 #include <Debug.h>
 #include <ResourceMember.h>
-namespace Imp {
+namespace imp {
 
 
 	class ResourceManager

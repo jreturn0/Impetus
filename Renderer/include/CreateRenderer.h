@@ -1,7 +1,7 @@
 ﻿#pragma once
 #include "Renderer.h"
-namespace Imp::Render
+namespace imp::gfx
 {
-	std::unique_ptr<Renderer> CreateRenderer(uint32_t width, uint32_t height, const char* title, const std::string& shaderName);
-	
+    // Factory function to create a Renderer instance
+    std::unique_ptr<Renderer> CreateRenderer(std::string_view windowTitle);
 }

@@ -8,7 +8,7 @@
 
 
 
-namespace Imp {
+namespace imp {
 	class InputSystem final : public System
 	{
 	private:

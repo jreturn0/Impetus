@@ -4,7 +4,7 @@
 #include "core/Buffer.h"
 #include "geometry/Bounds.h"
 
-namespace Imp::Render {
+namespace imp::gfx {
     struct Material;
 
     struct RenderObject

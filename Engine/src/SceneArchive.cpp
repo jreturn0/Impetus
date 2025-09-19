@@ -20,12 +20,12 @@
 #include "Debug.h"
 #include "SystemManager.h"
 
-bool Imp::SceneArchive::EntityHasComponent(entt::entity& entity, entt::registry& registry, entt::id_type component)
+bool imp::SceneArchive::EntityHasComponent(entt::entity& entity, entt::registry& registry, entt::id_type component)
 {
 	const auto* storage_ptr = registry.storage(component);
 	return storage_ptr != nullptr && storage_ptr->contains(entity);
 }
-void Imp::SceneArchive::Save(entt::registry& registry, SystemManager& systemManager, std::ostream& output)
+void imp::SceneArchive::Save(entt::registry& registry, SystemManager& systemManager, std::ostream& output)
 {
     try {
         cereal::JSONOutputArchive archive(output);
@@ -44,10 +44,10 @@ void Imp::SceneArchive::Save(entt::registry& registry, SystemManager& systemMana
                 try {
                     
                     info.serialize(snapshot, archive);
-                } catch (const std::bad_optional_access& e) {
+                } catch ( std::bad_optional_access e) {
                     Debug::Error("Bad optional access for component type: ", std::to_string(id));
                     throw;
-                } catch (const std::exception& e) {
+                } catch ( std::exception e) {
                     Debug::Error("Exception during component serialization for component type: ", std::to_string(id));
                     throw;
                 }
@@ -63,7 +63,7 @@ void Imp::SceneArchive::Save(entt::registry& registry, SystemManager& systemMana
     }
 }
 
-void Imp::SceneArchive::Load(entt::registry& registry, SystemManager& systemManager, std::istream& input)
+void imp::SceneArchive::Load(entt::registry& registry, SystemManager& systemManager, std::istream& input)
 {
     try {
         registry.clear();
@@ -88,10 +88,10 @@ void Imp::SceneArchive::Load(entt::registry& registry, SystemManager& systemMana
                 try {
                     info.deserialize(loader, archive);
                     loaded = true;
-                } catch (const std::bad_optional_access& e) {
+                } catch (std::bad_optional_access e) {
                     Debug::Exception("Bad optional access for component type: {}", info.name);
                     //throw;
-                } catch (const std::exception& e) {
+                } catch ( std::exception e) {
                     Debug::Exception("During component deserialization for component type: {}:\n\t", info.name,e.what());
                     //throw;
                 }

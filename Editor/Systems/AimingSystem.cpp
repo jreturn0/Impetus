@@ -17,25 +17,25 @@ void AimingSystem::initialize(entt::registry& registry)
 		const auto entity = registry.create();
 
 		registry.emplace<AimTarget>(entity);
-		registry.emplace<Imp::TransformComponent>(entity);
+		registry.emplace<imp::TransformComponent>(entity);
 	}
 }
 
 void AimingSystem::update(entt::registry& registry, const float deltaTime)
 {
-	auto view = registry.view<AimTarget, Imp::TransformComponent>();
-	auto&& physics = registry.ctx().get<CtxRef<Imp::Phys::Physics>>().get();
+	auto view = registry.view<AimTarget, imp::TransformComponent>();
+	auto&& physics = registry.ctx().get<CtxRef<imp::Phys::Physics>>().get();
 
-	auto&& camGroup = registry.group<>(entt::get<Imp::TransformComponent, Imp::ActiveCameraTag>);
-	auto&& renderer = registry.ctx().get<CtxRef<Imp::Render::Renderer>>().get();
+	auto&& camGroup = registry.group<>(entt::get<imp::TransformComponent, imp::ActiveCameraTag>);
+	auto&& renderer = registry.ctx().get<CtxRef<imp::gfx::Renderer>>().get();
 	auto&& sceneData = renderer.getSceneData();
-	auto&& inputView = registry.view<Imp::InputStateComponent>();
-	auto&& input = inputView.get<Imp::InputStateComponent>(inputView.front());
+	auto&& inputView = registry.view<imp::InputStateComponent>();
+	auto&& input = inputView.get<imp::InputStateComponent>(inputView.front());
 
 	camGroup.each([&](auto entity, auto&& transform) {
-		auto& aimTarget = registry.get<Imp::TransformComponent>(view.front());
+		auto& aimTarget = registry.get<imp::TransformComponent>(view.front());
 
-		if (auto hit = physics.getMouseWorldPosition(input.getMousePosition(), sceneData.view, sceneData.proj, renderer.getWindow().getSize())) 
+		if (auto hit = physics.getMouseWorldPosition(input.getMousePosition(), sceneData.view, sceneData.proj, renderer.getWindow().getSizeVec()))
 			aimTarget.position = hit.point + (hit.normal*2.f);
 			//Debug::Info("Hit: {}", entt::to_integral(hit.entity));
 		

@@ -5,21 +5,21 @@
 #include "Renderer.h"
 
 
-void Imp::EndRenderSystem::OnToggleGuiEvent()
+void imp::EndRenderSystem::OnToggleGuiEvent()
 {
 	gui = !gui;
 }
 
-void Imp::EndRenderSystem::initialize(entt::registry& registry)
+void imp::EndRenderSystem::initialize(entt::registry& registry)
 {
 	registry.ctx().get<CtxRef<entt::dispatcher>>().get().sink<ToggleGuiEvent>().connect<&EndRenderSystem::OnToggleGuiEvent>(this);
 
 	System::initialize(registry);
 }
 
-void Imp::EndRenderSystem::update(entt::registry& registry, const float deltaTime)
+void imp::EndRenderSystem::update(entt::registry& registry, const float deltaTime)
 {
-	auto& renderer = registry.ctx().get<CtxRef<Imp::Render::Renderer>>().get();
+	auto& renderer = registry.ctx().get<CtxRef<imp::gfx::Renderer>>().get();
 #ifdef _DEBUG
 	if (gui)
 		renderer.endDrawGui();
@@ -28,4 +28,4 @@ void Imp::EndRenderSystem::update(entt::registry& registry, const float deltaTim
 	renderer.endFrame();
 }
 
-void Imp::EndRenderSystem::cleanup(entt::registry& registry) { System::cleanup(registry); }
+void imp::EndRenderSystem::cleanup(entt::registry& registry) { System::cleanup(registry); }

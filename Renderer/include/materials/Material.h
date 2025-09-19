@@ -1,29 +1,40 @@
 ﻿#pragma once
 #include <glm/fwd.hpp>
-#include  "utils/VKCommon.hpp"
-#include "MaterialPass.h";
+#include "utils/VKCommon.hpp"
+#include "MaterialPass.h"
 
-namespace Imp::Render {
+namespace imp::gfx {
+    class Buffer;
+
+    struct Material
+    {
+
+        std::string name;
+        vk::Pipeline pipeline{ nullptr };
+        vk::PipelineLayout pipelineLayout{ nullptr };
+        vk::raii::DescriptorSet set{ nullptr };
+        MaterialPass passType;
+        std::shared_ptr<Buffer> buffer;
 
 
-	struct Material
-	{
-		DISABLE_COPY_AND_MOVE(Material);
-		std::string name;
-		class GraphicsPipeline* pipeline;
-		vk::UniqueDescriptorSet set;
-		MaterialPass passType;
-		std::shared_ptr<class Buffer> buffer;
-		Material(GraphicsPipeline* pipeline, vk::UniqueDescriptorSet set, MaterialPass passType, std::shared_ptr<class Buffer> buffer) : pipeline(pipeline), set(std::move(set)), passType(passType), buffer(
-			std::move(buffer))
-		{}
-		Material()
-		{
-			pipeline = nullptr;
-			passType = MaterialPass::MainColor;
-		}
-	};
-	using SharedMaterial = std::shared_ptr<Material>;
+        Material(vk::Pipeline pipeline, vk::raii::DescriptorSet& set, MaterialPass passType, std::shared_ptr<Buffer> buffer) :
+            pipeline(pipeline),
+            set(std::move(set)),
+            passType(passType),
+            buffer(std::move(buffer))
+        {
+        }
+        Material()
+        {
+            pipeline = nullptr;
+            passType = MaterialPass::MainColor;
+        }
+        Material(const Material&) = delete;
+        Material& operator=(const Material&) = delete;
+        Material(Material&&) = delete;
+        Material& operator=(Material&&) = delete;
+    };
+    using SharedMaterial = std::shared_ptr<Material>;
 
 
 

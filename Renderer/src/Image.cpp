@@ -1,438 +1,271 @@
-﻿#include "core/Image.h"
-
-#include "Debug.h"
-#include "core/CommandBuffer.h"
-#include "core/Device.h"
-#include "core/SwapChain.h"
-#include "core/Vma.h"
+#include "core/Image.h"
+#include "core/VulkanContext.h"
 #include "core/Buffer.h"
-#include "core/ImmediateCommands.h"	
-
-
+#include <Debug.h>
+#include "core/ImmediateCommands.h"
+#include "core/SwapChain.h"
+#include "utils/VKUtils.h"
+#include <concepts>
 namespace {
-	void SubmitTemporaryCommandBuffer(const Imp::Render::Device& device, const vk::Queue& graphicsQueue, std::function<void(vk::CommandBuffer)> func)
-	{
-		vk::CommandPoolCreateInfo poolInfo{};
-		poolInfo.queueFamilyIndex = device.getIndices().graphicsFamily.value(); // Ensure this index supports graphics operations
-		poolInfo.flags = vk::CommandPoolCreateFlagBits::eTransient;
 
-		vk::CommandPool commandPool = device.getLogical().createCommandPool(poolInfo);
+    uint32_t CalculateMipLevels(vk::Extent2D extent) {
+        return static_cast<uint32_t>(std::floor(std::log2(std::max(extent.width, extent.height)))) + 1;
+    }
 
-		vk::CommandBufferAllocateInfo allocInfo{};
-		allocInfo.commandPool = commandPool;
-		allocInfo.level = vk::CommandBufferLevel::ePrimary;
-		allocInfo.commandBufferCount = 1;
 
-		vk::CommandBuffer commandBuffer = device.getLogical().allocateCommandBuffers(allocInfo)[0];
 
-		vk::CommandBufferBeginInfo beginInfo{};
-		commandBuffer.begin(beginInfo);
+    imp::gfx::RawImage CreateRawImage(const imp::gfx::VulkanContext& context, vk::Extent2D extent, vk::Format format, vk::ImageUsageFlags usage, uint32_t mipLevels)
+    {
+        if (extent.width == 0 || extent.height == 0)
+            Debug::Throw("Invalid image extent");
+        vk::ImageCreateInfo imageInfo{};
+        imageInfo.setImageType(vk::ImageType::e2D)
+            .setExtent({ extent.width,extent.height,1 })
+            .setFormat(format)
+            .setUsage(usage)
+            .setArrayLayers(1)
+            .setMipLevels(mipLevels)
+            .setSamples(vk::SampleCountFlagBits::e1)
+            .setTiling(vk::ImageTiling::eOptimal)
+            .setInitialLayout(vk::ImageLayout::eUndefined)
+            .setSharingMode(vk::SharingMode::eExclusive);
 
-		func(commandBuffer);
+        VmaAllocationCreateInfo allocInfo{};
+        allocInfo.usage = VMA_MEMORY_USAGE_GPU_ONLY;
+        allocInfo.requiredFlags = VkMemoryPropertyFlags(VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+        VkImage rawImage;
+        VkImageCreateInfo rawImageInfo = static_cast<VkImageCreateInfo>(imageInfo);
+        VmaAllocation allocation;
+        imp::gfx::vkutil::CheckResult(static_cast<vk::Result>(vmaCreateImage(context.getVmaAllocator(), &rawImageInfo, &allocInfo, &rawImage, &allocation, nullptr)));
 
-		commandBuffer.end();
+        return { context.getVmaAllocator(), allocation,  vk::Image(rawImage), vk::Extent2D{ extent.width, extent.height }, format, mipLevels };
+    }
 
-		vk::SubmitInfo submitInfo{};
-		submitInfo.commandBufferCount = 1;
-		submitInfo.pCommandBuffers = &commandBuffer;
+    vk::raii::ImageView CreateImageView(const vk::raii::Device& device, const vk::Image image, const vk::Format format, const vk::ImageAspectFlags aspectFlags, const uint32_t mipLevels)
+    {
+        vk::ImageViewCreateInfo viewInfo{};
+        viewInfo.setImage(image)
+            .setViewType(vk::ImageViewType::e2D)
+            .setFormat(format)
+            .subresourceRange.setAspectMask(aspectFlags)
+            .setBaseMipLevel(0)
+            .setLevelCount(mipLevels)
+            .setBaseArrayLayer(0)
+            .setLayerCount(1);
+        return device.createImageView(viewInfo);
+    }
 
-		graphicsQueue.submit(submitInfo, nullptr);
-		graphicsQueue.waitIdle();
+    void GenerateMipmaps(const vk::CommandBuffer cmd, vk::Image image, vk::Extent2D imageSize) {
+        auto mipLevels = CalculateMipLevels(imageSize);
+        vk::ImageAspectFlags aspectMask = vk::ImageAspectFlagBits::eColor;
+        vk::Extent2D halfSize{};
+        // Track prev layout
 
-		device.getLogical().freeCommandBuffers(commandPool, commandBuffer);
-		device.getLogical().destroyCommandPool(commandPool);
-	}
 
-	vk::ImageSubresourceRange ImageSubresourceRange(vk::ImageAspectFlags aspectMask)
-	{
-		vk::ImageSubresourceRange subImage{};
-		subImage.aspectMask = aspectMask;
-		subImage.baseMipLevel = 0;
-		subImage.levelCount = vk::RemainingMipLevels;
-		subImage.baseArrayLayer = 0;
-		subImage.layerCount = vk::RemainingArrayLayers;
+        for (uint32_t mip = 0; mip < mipLevels; mip++) {
+            halfSize.setWidth(std::max(1u, imageSize.width / 2));
+            halfSize.setHeight(std::max(1u, imageSize.height / 2));
+            vk::ImageMemoryBarrier2 barrier{};
+            barrier.setSrcStageMask(vk::PipelineStageFlagBits2::eAllCommands)
+                .setSrcAccessMask(vk::AccessFlagBits2::eMemoryWrite)
+                .setDstStageMask(vk::PipelineStageFlagBits2::eAllCommands)
+                .setDstAccessMask(vk::AccessFlagBits2::eMemoryWrite | vk::AccessFlagBits2::eMemoryRead)
+                .setOldLayout(vk::ImageLayout::eTransferDstOptimal)
+                .setNewLayout(vk::ImageLayout::eTransferSrcOptimal)
+                .setSubresourceRange(imp::gfx::vkutil::CreateImageSubresourceRange(aspectMask).setLevelCount(1).setBaseMipLevel(mip))
+                .setImage(image);
+            vk::DependencyInfo depInfo{};
+            depInfo.setImageMemoryBarrierCount(1)
+                .setPImageMemoryBarriers(&barrier);
+            cmd.pipelineBarrier2(depInfo);
+            if (mip < mipLevels - 1) {
+                vk::ImageBlit2 blitRegion{};
 
-		return subImage;
-	}
-	void GenerateMipmaps(vk::CommandBuffer cmd, vk::Image image, vk::Extent2D imageSize)
-	{
-		int mipLevels = int(std::floor(std::log2(std::max(imageSize.width, imageSize.height)))) + 1;
-		for (int mip = 0; mip < mipLevels; mip++) {
 
-			vk::Extent2D halfSize = imageSize;
-			halfSize.width /= 2;
-			halfSize.height /= 2;
+                blitRegion.srcOffsets[1].setX(imageSize.width)
+                    .setY(imageSize.height)
+                    .setZ(1);
 
-			vk::ImageMemoryBarrier2 imageBarrier{ };
 
-			imageBarrier.srcStageMask = vk::PipelineStageFlagBits2::eAllCommands;// VK_PIPELINE_STAGE_2_ALL_COMMANDS_BIT;
-			imageBarrier.srcAccessMask = vk::AccessFlagBits2::eMemoryWrite;//  VK_ACCESS_2_MEMORY_WRITE_BIT;
-			imageBarrier.dstStageMask = vk::PipelineStageFlagBits2::eAllCommands;// VK_PIPELINE_STAGE_2_ALL_COMMANDS_BIT;
-			imageBarrier.dstAccessMask = vk::AccessFlagBits2::eMemoryWrite | vk::AccessFlagBits2::eMemoryRead;// VK_ACCESS_2_MEMORY_WRITE_BIT | VK_ACCESS_2_MEMORY_READ_BIT;
+                blitRegion.dstOffsets[1].setX(halfSize.width)
+                    .setY(halfSize.height)
+                    .setZ(1);
 
-			imageBarrier.oldLayout = vk::ImageLayout::eTransferDstOptimal;
-			imageBarrier.newLayout = vk::ImageLayout::eTransferSrcOptimal;
+                blitRegion.srcSubresource.setAspectMask(vk::ImageAspectFlagBits::eColor)
+                    .setMipLevel(mip)
+                    .setBaseArrayLayer(0)
+                    .setLayerCount(1);
 
-			vk::ImageAspectFlags aspectMask = vk::ImageAspectFlagBits::eColor;
-			imageBarrier.subresourceRange = ImageSubresourceRange(aspectMask);
-			imageBarrier.subresourceRange.levelCount = 1;
-			imageBarrier.subresourceRange.baseMipLevel = mip;
-			imageBarrier.image = image;
+                blitRegion.dstSubresource.setAspectMask(vk::ImageAspectFlagBits::eColor)
+                    .setMipLevel(mip + 1)
+                    .setBaseArrayLayer(0)
+                    .setLayerCount(1);
 
-			vk::DependencyInfo depInfo{  };
-			depInfo.imageMemoryBarrierCount = 1;
-			depInfo.pImageMemoryBarriers = &imageBarrier;
+                vk::BlitImageInfo2 blitInfo{};
+                blitInfo.setSrcImage(image)
+                    .setSrcImageLayout(vk::ImageLayout::eTransferSrcOptimal)
+                    .setDstImage(image)
+                    .setDstImageLayout(vk::ImageLayout::eTransferDstOptimal)
+                    .setRegions(blitRegion)
+                    .setFilter(vk::Filter::eLinear);
 
-			cmd.pipelineBarrier2(depInfo);
+                cmd.blitImage2(blitInfo);
+                imageSize = halfSize;
+            }
+        }
+        imp::gfx::TransitionImageLayout(cmd, image, vk::ImageLayout::eTransferSrcOptimal, vk::ImageLayout::eShaderReadOnlyOptimal);
 
-			if (mip < mipLevels - 1) {
-				vk::ImageBlit2 blitRegion{ };
+    }
 
-				blitRegion.srcOffsets[1].x = imageSize.width;
-				blitRegion.srcOffsets[1].y = imageSize.height;
-				blitRegion.srcOffsets[1].z = 1;
 
-				blitRegion.dstOffsets[1].x = halfSize.width;
-				blitRegion.dstOffsets[1].y = halfSize.height;
-				blitRegion.dstOffsets[1].z = 1;
+    template<typename PtrType>
+    PtrType CreateImage(const imp::gfx::VulkanContext& context,  imp::gfx::Bitmap data, vk::Format format, vk::ImageUsageFlags usage, vk::ImageAspectFlags aspectFlags, bool mipmapped)
+    {
+        auto& transferCommands = context.getGraphicsImmediateCommands();
+        if (mipmapped) {
+            usage |= vk::ImageUsageFlagBits::eTransferSrc; // Just a contingency if forgotten
+        }
+        const auto size = glm::uvec2{ data.size };
+        const size_t expectedSize = static_cast<size_t>(size.x) * size.y * 4; // assuming RGBA8
+        if (data.bytes.size() < expectedSize) {
+            Debug::Throw("Bitmap has {} bytes but {} required for extent {}x{}", data.bytes.size(), expectedSize, size.x, size.y);
+        }
+        auto dataSize = static_cast<size_t>(size.x) * size.y * 4;
+        auto uploadBuffer = imp::gfx::Buffer(context.getVmaAllocator(), dataSize, vk::BufferUsageFlagBits::eTransferSrc, VMA_MEMORY_USAGE_CPU_TO_GPU);
+        memcpy(uploadBuffer.getAllocationInfo().pMappedData, data.bytes.data(), dataSize);
 
-				blitRegion.srcSubresource.aspectMask = vk::ImageAspectFlagBits::eColor;// VK_IMAGE_ASPECT_COLOR_BIT;
-				blitRegion.srcSubresource.baseArrayLayer = 0;
-				blitRegion.srcSubresource.layerCount = 1;
-				blitRegion.srcSubresource.mipLevel = mip;
+        usage |= vk::ImageUsageFlagBits::eTransferDst;
 
-				blitRegion.dstSubresource.aspectMask = vk::ImageAspectFlagBits::eColor;// VK_IMAGE_ASPECT_COLOR_BIT;
-				blitRegion.dstSubresource.baseArrayLayer = 0;
-				blitRegion.dstSubresource.layerCount = 1;
-				blitRegion.dstSubresource.mipLevel = mip + 1;
+        PtrType newImage{ nullptr };
 
-				vk::BlitImageInfo2 blitInfo{ };
-				blitInfo.dstImage = image;
-				blitInfo.dstImageLayout = vk::ImageLayout::eTransferDstOptimal; //VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
-				blitInfo.srcImage = image;
-				blitInfo.srcImageLayout = vk::ImageLayout::eTransferSrcOptimal;
-				blitInfo.filter = vk::Filter::eLinear;
-				blitInfo.regionCount = 1;
-				blitInfo.pRegions = &blitRegion;
+        if constexpr (std::is_same_v<PtrType, imp::gfx::UniqueImage>) {
+            newImage = std::make_unique<imp::gfx::Image>(context, vk::Extent2D{ size.x,size.y }, format, usage, aspectFlags, mipmapped);
+        }
+        else if constexpr (std::is_same_v<PtrType, imp::gfx::SharedImage>) {
+            newImage = std::make_shared<imp::gfx::Image>(context, vk::Extent2D{ size.x,size.y }, format, usage, aspectFlags, mipmapped);
+        }
+        else {
+            static_assert("PtrType must be UniqueImage or SharedImage");
+        }
 
-				cmd.blitImage2(blitInfo);
 
-				imageSize = halfSize;
-			}
-		}
-		Imp::Render::TransitionImageLayout(image, cmd, vk::ImageLayout::eTransferSrcOptimal, vk::ImageLayout::eShaderReadOnlyOptimal);
-		// transition all mip levels into the final read_only layout
-	}
+
+
+        transferCommands.submit(context.getGraphicsQueue(), [&](const vk::CommandBuffer& cmd) {
+            // Transition image to transfer destination layout
+            imp::gfx::TransitionImageLayout(cmd, newImage->getImage(), vk::ImageLayout::eUndefined, vk::ImageLayout::eTransferDstOptimal);
+            vk::BufferImageCopy copyRegion{};
+            copyRegion.setBufferOffset(0)
+                .setBufferRowLength(0)
+                .setBufferImageHeight(0)
+                .setImageSubresource({ aspectFlags, 0, 0, 1 })
+                .setImageOffset({ 0,0,0 })
+                .setImageExtent({ size.x,size.y,1 });
+            cmd.copyBufferToImage(uploadBuffer.getBuffer(), newImage->getImage(), vk::ImageLayout::eTransferDstOptimal, copyRegion);
+            if (mipmapped) 
+                GenerateMipmaps(cmd, newImage->getImage(), { size.x, size.y });
+            else 
+                imp::gfx::TransitionImageLayout(cmd, newImage->getImage(), vk::ImageLayout::eTransferDstOptimal, vk::ImageLayout::eShaderReadOnlyOptimal);
+            
+
+            });
+        return std::move(newImage);
+    }
+}
+
+imp::gfx::Image::Image(const VulkanContext& context, vk::Extent2D extent, vk::Format format, vk::ImageUsageFlags usage, vk::ImageAspectFlags aspectFlags, bool mipmap) :
+    m_raw(CreateRawImage(context, extent, format, usage, mipmap ? CalculateMipLevels(extent) : 1)),
+    view(CreateImageView(context.getDevice(),m_raw.image,format,aspectFlags,m_raw.mipLevels))
+{
+
+}
+imp::gfx::Image::~Image() {
+    if (m_raw.allocation) {
+        vmaDestroyImage(m_raw.allocator, VkImage(m_raw.image), m_raw.allocation);
+        m_raw.allocation = nullptr;
+    }
+}
+
+void imp::gfx::Image::transitionImageLayout(const vk::CommandBuffer& cmd, const vk::ImageLayout& oldLayout, const vk::ImageLayout& newLayout)
+{
+    TransitionImageLayout(cmd, m_raw.image, oldLayout, newLayout);
+}
+
+imp::gfx::UniqueImage imp::gfx::CreateSampledImage(const VulkanContext& context, Bitmap data, vk::Format format, vk::ImageUsageFlags usage, bool mipmapped)
+{
+    return CreateImage<imp::gfx::UniqueImage>(context, data, format, usage, vk::ImageAspectFlagBits::eColor, mipmapped);
 }
 
 
-Imp::Render::Image::Image(const Device& device, Vma& allocator, vk::Extent3D extent, vk::Format format,
-						  vk::ImageUsageFlags usage, vk::ImageAspectFlags aspectFlags, bool mipmap)
-	: allocator(&allocator), allocation(nullptr), extent(extent), format(format)
+imp::gfx::SharedImage imp::gfx::CreateSampledSharedImage(const VulkanContext& context, Bitmap data, vk::Format format, vk::ImageUsageFlags usage, bool mipmapped)
 {
-	//std::cout << "ImageColor format: " << vk::to_string(format) << std::endl;
-	//std::cout << "ImageColor extent: " << extent.width << " " << extent.height << " " << extent.depth << std::endl;
+    return CreateImage<imp::gfx::SharedImage>(context, data, format, usage, vk::ImageAspectFlagBits::eColor, mipmapped);
+}
 
-	// Ensure extent is valid
-	if (extent.width == 0 || extent.height == 0 || extent.depth == 0) {
-		Debug::Throw("Invalid image extent");
-	}
+void imp::gfx::CopyImageToImage(const vk::CommandBuffer cmd, const vk::Image src, const vk::Extent2D srcExtent, const vk::Image dst, const  vk::Extent2D dstExtent)
+{
+    vk::ImageBlit2 blitRegion{};
 
-	// Calculate mip levels
-	uint32_t mipLevels = mipmap ? static_cast<uint32_t>(std::floor(std::log2(std::max(extent.width, extent.height)))) + 1 : 1;
 
-	// Include necessary usage flags
-	usage |= vk::ImageUsageFlagBits::eTransferDst;
+    blitRegion.srcOffsets[1].setX(srcExtent.width)
+        .setY(srcExtent.height)
+        .setZ(1);
 
-	// Create the image
-	vk::ImageCreateInfo imageInfo{};
-	imageInfo.imageType = vk::ImageType::e2D;
-	imageInfo.extent = extent;
-	imageInfo.mipLevels = mipLevels;
-	imageInfo.arrayLayers = 1;
-	imageInfo.format = format;
-	imageInfo.tiling = vk::ImageTiling::eOptimal;
-	imageInfo.initialLayout = vk::ImageLayout::eUndefined;
-	imageInfo.usage = usage;
-	imageInfo.samples = vk::SampleCountFlagBits::e1;
-	imageInfo.sharingMode = vk::SharingMode::eExclusive;
 
-	VmaAllocationCreateInfo allocInfo{};
-	allocInfo.usage = VMA_MEMORY_USAGE_GPU_ONLY;
-	allocInfo.requiredFlags = VkMemoryPropertyFlags(VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
-	VkImage rawImage;
-	VkImageCreateInfo rawImageInfo = static_cast<VkImageCreateInfo>(imageInfo);
+    blitRegion.dstOffsets[1].setX(dstExtent.width)
+        .setY(dstExtent.height)
+        .setZ(1);
 
-	vkutil::CheckResult(static_cast<vk::Result>(vmaCreateImage(allocator.getAllocator(), &rawImageInfo, &allocInfo, &rawImage, &allocation, nullptr)));
+    blitRegion.srcSubresource.setAspectMask(vk::ImageAspectFlagBits::eColor)
+        .setMipLevel(0)
+        .setBaseArrayLayer(0)
+        .setLayerCount(1);
 
-	image = vk::UniqueImage(rawImage, device.getLogical());
+    blitRegion.dstSubresource.setAspectMask(vk::ImageAspectFlagBits::eColor)
+        .setMipLevel(0)
+        .setBaseArrayLayer(0)
+        .setLayerCount(1);
 
-	// Create the image view
-	vk::ImageViewCreateInfo viewInfo{};
-	viewInfo.image = *image;
-	viewInfo.viewType = vk::ImageViewType::e2D;
-	viewInfo.format = format;
-	viewInfo.subresourceRange.aspectMask = aspectFlags;
-	viewInfo.subresourceRange.baseMipLevel = 0; // Start from base level
-	viewInfo.subresourceRange.levelCount = mipLevels; // Set the correct number of mip levels
-	viewInfo.subresourceRange.baseArrayLayer = 0;
-	viewInfo.subresourceRange.layerCount = 1;
+    vk::BlitImageInfo2 blitInfo{};
 
-	view = device.getLogical().createImageViewUnique(viewInfo);
+    blitInfo.setSrcImage(src)
+        .setSrcImageLayout(vk::ImageLayout::eTransferSrcOptimal)
+        .setDstImage(dst)
+        .setDstImageLayout(vk::ImageLayout::eTransferDstOptimal)
+        .setRegions(blitRegion)
+        .setFilter(vk::Filter::eLinear);
+
+    cmd.blitImage2(blitInfo);
+}
+
+void imp::gfx::CopyImageToImage(const vk::CommandBuffer cmd, Image& src, Image& dst)
+{
+    CopyImageToImage(cmd, src.getImage(), src.getExtent(), dst.getImage(), dst.getExtent());
 }
 
 
 
-
-Imp::Render::Image::~Image()
+void imp::gfx::CopyImageToSwapChain(const vk::CommandBuffer cmd, Image& src, const SwapChain& swapChain, uint32_t imageIndex)
 {
-	//std::cout << "Destroying Image: " << id << std::endl;
-	// The vk::Unique handles and VMA will take care of cleanup
-	if (allocation && allocator) {
-		// Make sure to release the allocation
-		vmaDestroyImage(*allocator, image.release(), allocation);
-	}
+    CopyImageToImage(cmd, src.getImage(), src.getExtent(), swapChain.getImages()[imageIndex], swapChain.getExtent());
 }
 
-const vk::Image& Imp::Render::Image::getImage() const
+void imp::gfx::TransitionImageLayout(const vk::CommandBuffer cmd, const vk::Image image, const vk::ImageLayout oldLayout, const vk::ImageLayout newLayout)
 {
-	return *image;
-}
+    vk::ImageMemoryBarrier2 imageBarrier{};
+    imageBarrier.setSrcStageMask(vk::PipelineStageFlagBits2::eAllCommands)
+        .setSrcAccessMask(vk::AccessFlagBits2::eMemoryWrite)
+        .setDstStageMask(vk::PipelineStageFlagBits2::eAllCommands)
+        .setDstAccessMask(vk::AccessFlagBits2::eMemoryWrite | vk::AccessFlagBits2::eMemoryRead)
+        .setOldLayout(oldLayout)
+        .setNewLayout(newLayout);
 
-const vk::Image* Imp::Render::Image::getpImage() const
-{
-	return &*image;
-}
+    vk::ImageAspectFlags aspectMask = (newLayout == vk::ImageLayout::eDepthAttachmentOptimal) ? vk::ImageAspectFlagBits::eDepth : vk::ImageAspectFlagBits::eColor;
+    imageBarrier.setSubresourceRange(vkutil::CreateImageSubresourceRange(aspectMask));
+    imageBarrier.setImage(image);
 
-const vk::ImageView& Imp::Render::Image::getView() const
-{
-	return *view;
-}
+    vk::DependencyInfo depInfo{};
+    depInfo.setImageMemoryBarriers(imageBarrier);
 
-const vk::Extent3D& Imp::Render::Image::getExtent() const
-{
-	return extent;
-}
-
-const vk::Extent2D& Imp::Render::Image::getExtent2D() const
-{
-	return { extent.width, extent.height };
-}
-
-const vk::Format& Imp::Render::Image::getFormat() const
-{
-	return format;
-}
-
-void Imp::Render::Image::transitionImageLayout(const vk::CommandBuffer& commandBuffer, const vk::ImageLayout& oldLayout, const vk::ImageLayout& newLayout)
-{
-	vk::ImageMemoryBarrier2 imageBarrier{};
-	imageBarrier.setSrcStageMask(vk::PipelineStageFlagBits2::eAllCommands);
-	imageBarrier.setSrcAccessMask(vk::AccessFlagBits2::eMemoryWrite);
-	imageBarrier.setDstStageMask(vk::PipelineStageFlagBits2::eAllCommands);
-	imageBarrier.setDstAccessMask(vk::AccessFlagBits2::eMemoryWrite | vk::AccessFlagBits2::eMemoryRead);
-
-	imageBarrier.setOldLayout(oldLayout);
-	imageBarrier.setNewLayout(newLayout);
-
-	vk::ImageAspectFlags aspectMask = (newLayout == vk::ImageLayout::eDepthAttachmentOptimal) ? vk::ImageAspectFlagBits::eDepth : vk::ImageAspectFlagBits::eColor;
-	imageBarrier.setSubresourceRange({ aspectMask, 0, vk::RemainingMipLevels, 0, vk::RemainingArrayLayers });
-	imageBarrier.setImage(*image);
-
-	vk::DependencyInfo depInfo{};
-	depInfo.setImageMemoryBarriers(imageBarrier);
-
-	commandBuffer.pipelineBarrier2(depInfo);
-}
-
-Imp::Render::UniqueImage Imp::Render::CreateDrawImage(const Device& device, Vma& allocator, vk::Extent2D extent, vk::Format format)
-{
-	return UniqueImage(new Image(device, allocator, { extent.width,extent.height,1 },
-								 format,
-								 (vk::ImageUsageFlagBits::eTransferSrc | vk::ImageUsageFlagBits::eTransferDst |
-								  vk::ImageUsageFlagBits::eStorage | vk::ImageUsageFlagBits::eColorAttachment),
-								 vk::ImageAspectFlagBits::eColor));
-}
-
-Imp::Render::UniqueImage Imp::Render::CreateDepthImage(const Device& device, Vma& allocator, vk::Extent2D extent)
-{
-	return UniqueImage(new Image(device, allocator, { extent.width,extent.height,1 },
-								 vk::Format::eD32Sfloat,
-								 (vk::ImageUsageFlagBits::eDepthStencilAttachment),
-								 vk::ImageAspectFlagBits::eDepth));
-}
-
-Imp::Render::UniqueImage Imp::Render::CreateImage(const Device& device, Vma& allocator, vk::Extent3D size,
-												  vk::Format format, vk::ImageUsageFlags usage, bool mipmapped)
-{
-
-	if (mipmapped) {
-		usage |= vk::ImageUsageFlagBits::eTransferSrc;
-	}
-	return UniqueImage(new Image(device, allocator, size, format, usage, vk::ImageAspectFlagBits::eColor,mipmapped));
-}
-
-Imp::Render::UniqueImage Imp::Render::CreateImage(const Device& device, Vma& allocator, const ImmediateCommands& transferCommands, const vk::Queue& transferQueue, void* data, vk::Extent3D size, vk::Format format, vk::ImageUsageFlags usage, const vk::Queue* graphicsQueue, bool mipmapped)
-{
-	if (mipmapped) {
-		usage |= vk::ImageUsageFlagBits::eTransferSrc;
-	}
-	size_t data_size = size.depth * size.width * size.height * 4;
-
-	auto uploadBuffer = CreateUniqueBuffer(allocator, data_size, vk::BufferUsageFlagBits::eTransferSrc, VMA_MEMORY_USAGE_CPU_TO_GPU);
-
-	memcpy(uploadBuffer->getAllocationInfo().pMappedData, data, data_size);
-
-	// Include necessary usage flags
-	usage |= vk::ImageUsageFlagBits::eTransferDst;
-
-	auto newImage = CreateImage(device, allocator, size, format, usage, mipmapped);
-
-	transferCommands.immediateSubmit(transferQueue, device, [&](const vk::CommandBuffer& cmd) {
-		// Transition image to transfer destination layout
-		TransitionImageLayout(newImage->getImage(), cmd, vk::ImageLayout::eUndefined, vk::ImageLayout::eTransferDstOptimal);
-
-		vk::BufferImageCopy copyRegion{
-		   0, 0, 0,
-		   vk::ImageSubresourceLayers{vk::ImageAspectFlagBits::eColor, 0, 0, 1},
-		   {}, size
-		};
-		cmd.copyBufferToImage(uploadBuffer->getBuffer(), newImage->getImage(), vk::ImageLayout::eTransferDstOptimal, copyRegion);
-
-		// Transition image to shader read layout
-									 });
-	SubmitTemporaryCommandBuffer(device, *graphicsQueue, [&](vk::CommandBuffer graphicsCmd) {
-		if (mipmapped)
-			GenerateMipmaps(graphicsCmd, newImage->getImage(), { size.width, size.height });
-		else
-			TransitionImageLayout(newImage->getImage(), graphicsCmd, vk::ImageLayout::eTransferDstOptimal, vk::ImageLayout::eShaderReadOnlyOptimal);
-								 });
-	return std::move(newImage);
-}
-
-Imp::Render::SharedImage Imp::Render::CreateSharedImage(const Device& device, Vma& allocator, vk::Extent3D size,
-														vk::Format format, vk::ImageUsageFlags usage, bool mipmapped)
-{
-	if (mipmapped) {
-		usage |= vk::ImageUsageFlagBits::eTransferSrc;
-	}
-	return SharedImage(new Image(device, allocator, size, format, usage, vk::ImageAspectFlagBits::eColor,mipmapped));
-}
-
-Imp::Render::SharedImage Imp::Render::CreateSharedImage(const Device& device, Vma& allocator,
-														const ImmediateCommands& transferCommands, const vk::Queue& transferQueue, void* data, vk::Extent3D size,
-														vk::Format format, vk::ImageUsageFlags usage, const vk::Queue* graphicsQueue , bool mipmapped)
-{
-	if (mipmapped)
-	{
-		usage |= vk::ImageUsageFlagBits::eTransferSrc;
-	}
-	
-	size_t data_size = size.depth * size.width * size.height * 4;
-
-	auto uploadBuffer = CreateUniqueBuffer(allocator, data_size, vk::BufferUsageFlagBits::eTransferSrc, VMA_MEMORY_USAGE_CPU_TO_GPU);
-
-	memcpy(uploadBuffer->getAllocationInfo().pMappedData, data, data_size);
-
-	// Include necessary usage flags
-	usage |= vk::ImageUsageFlagBits::eTransferDst;
-
-	auto newImage = CreateSharedImage(device, allocator, size, format, usage, mipmapped);
-
-	transferCommands.immediateSubmit(transferQueue, device, [&](const vk::CommandBuffer& cmd) {
-		// Transition image to transfer destination layout
-		TransitionImageLayout(newImage->getImage(), cmd, vk::ImageLayout::eUndefined, vk::ImageLayout::eTransferDstOptimal);
-
-		vk::BufferImageCopy copyRegion{
-		   0, 0, 0,
-		   vk::ImageSubresourceLayers{vk::ImageAspectFlagBits::eColor, 0, 0, 1},
-		   {}, size
-		};
-		cmd.copyBufferToImage(uploadBuffer->getBuffer(), newImage->getImage(), vk::ImageLayout::eTransferDstOptimal, copyRegion);
-
-
-									 });
-
-	SubmitTemporaryCommandBuffer(device, *graphicsQueue, [&](vk::CommandBuffer graphicsCmd) {
-		if (mipmapped)
-			GenerateMipmaps(graphicsCmd, newImage->getImage(), { size.width, size.height });
-		else
-			TransitionImageLayout(newImage->getImage(), graphicsCmd, vk::ImageLayout::eTransferDstOptimal, vk::ImageLayout::eShaderReadOnlyOptimal);
-								 });
-
-	return (newImage);
-}
-
-
-void Imp::Render::CopyImageToImage(const CommandBuffer& cmd, Image& src, Image& dst)
-{
-	vk::ImageBlit2 blitRegion{};
-	auto srcExtent = src.getExtent();
-	blitRegion.srcOffsets[1].setX(srcExtent.width);
-	blitRegion.srcOffsets[1].setY(srcExtent.height);
-	blitRegion.srcOffsets[1].setZ(1);
-	auto dstExtent = dst.getExtent();
-	blitRegion.dstOffsets[1].setX(dstExtent.width);
-	blitRegion.dstOffsets[1].setY(dstExtent.height);
-	blitRegion.dstOffsets[1].setZ(1);
-	blitRegion.setSrcSubresource({ vk::ImageAspectFlagBits::eColor, 0, 0, 1 });
-	blitRegion.setDstSubresource({ vk::ImageAspectFlagBits::eColor, 0, 0, 1 });
-	vk::BlitImageInfo2 blitInfo{};
-	blitInfo.setSrcImage(src.getImage());
-	blitInfo.setSrcImageLayout(vk::ImageLayout::eTransferSrcOptimal);
-	blitInfo.setDstImage(dst.getImage());
-	blitInfo.setDstImageLayout(vk::ImageLayout::eTransferDstOptimal);
-	blitInfo.setRegions(blitRegion);
-	blitInfo.setFilter(vk::Filter::eLinear);
-	blitInfo.setRegionCount(1);
-
-	cmd.getBuffer().blitImage2(blitInfo);
-}
-
-void Imp::Render::CopyImageToSwapChain(const vk::CommandBuffer& cmd, Image& src, const SwapChain& swapChain, uint32_t imageIndex)
-{
-	vk::ImageBlit2 blitRegion{};
-	auto srcExtent = src.getExtent();
-	blitRegion.srcOffsets[1].setX(srcExtent.width);
-	blitRegion.srcOffsets[1].setY(srcExtent.height);
-	blitRegion.srcOffsets[1].setZ(1);
-	auto dstExtent = swapChain.getExtent();
-	blitRegion.dstOffsets[1].setX(dstExtent.width);
-	blitRegion.dstOffsets[1].setY(dstExtent.height);
-	blitRegion.dstOffsets[1].setZ(1);
-	blitRegion.setSrcSubresource({ vk::ImageAspectFlagBits::eColor, 0, 0, 1 });
-	blitRegion.setDstSubresource({ vk::ImageAspectFlagBits::eColor, 0, 0, 1 });
-	vk::BlitImageInfo2 blitInfo{};
-	blitInfo.setSrcImage(src.getImage());
-	blitInfo.setSrcImageLayout(vk::ImageLayout::eTransferSrcOptimal);
-	blitInfo.setDstImage(swapChain.getImages()[imageIndex]);
-	blitInfo.setDstImageLayout(vk::ImageLayout::eTransferDstOptimal);
-	blitInfo.setRegions(blitRegion);
-	blitInfo.setFilter(vk::Filter::eLinear);
-	blitInfo.setRegionCount(1);
-
-	cmd.blitImage2(blitInfo);
-}
-
-
-void Imp::Render::TransitionImageLayout(const vk::Image& image, const vk::CommandBuffer& commandBuffer,
-										const vk::ImageLayout& oldLayout, const vk::ImageLayout& newLayout)
-{
-	vk::ImageMemoryBarrier2 imageBarrier{};
-	imageBarrier.setSrcStageMask(vk::PipelineStageFlagBits2::eAllCommands);
-	imageBarrier.setSrcAccessMask(vk::AccessFlagBits2::eMemoryWrite);
-	imageBarrier.setDstStageMask(vk::PipelineStageFlagBits2::eAllCommands);
-	imageBarrier.setDstAccessMask(vk::AccessFlagBits2::eMemoryWrite | vk::AccessFlagBits2::eMemoryRead);
-
-	imageBarrier.setOldLayout(oldLayout);
-	imageBarrier.setNewLayout(newLayout);
-
-	vk::ImageAspectFlags aspectMask = (newLayout == vk::ImageLayout::eDepthAttachmentOptimal) ? vk::ImageAspectFlagBits::eDepth : vk::ImageAspectFlagBits::eColor;
-	imageBarrier.setSubresourceRange({ aspectMask, 0, vk::RemainingMipLevels, 0, vk::RemainingArrayLayers });
-	imageBarrier.setImage(image);
-
-	vk::DependencyInfo depInfo{};
-	depInfo.setImageMemoryBarriers(imageBarrier);
-
-	commandBuffer.pipelineBarrier2(depInfo);
+    cmd.pipelineBarrier2(depInfo);
 }

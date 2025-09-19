@@ -8,13 +8,13 @@
 
 
 
-void Imp::Render::MeshNode::draw(const glm::mat4& topMatrix, DrawContext& ctx)
+void imp::gfx::MeshNode::draw(const glm::mat4& topMatrix, DrawContext& ctx)
 {
 	const glm::mat4 nodeMatrix = topMatrix * worldTransform;
 	//std::cout << "Drawing: " << mesh->name << "\n";
 	for (auto& s : mesh->surfaces) {
 
-		RenderObject def{s.count,s.startIndex,mesh->meshBuffer->getIndexBuffer()->getBuffer(),s.material,s.bounds,nodeMatrix,mesh->meshBuffer->getVertexAddress()};
+		RenderObject def{s.count,s.startIndex,mesh->meshBuffer->getIndexBuffer().getBuffer(),s.material,s.bounds,nodeMatrix,mesh->meshBuffer->getVertexAddress()};
 		if (s.material->passType== MaterialPass::Transparent) {
 			ctx.transparent.push_back(def);
 		} else {
@@ -26,14 +26,14 @@ void Imp::Render::MeshNode::draw(const glm::mat4& topMatrix, DrawContext& ctx)
 	Node::draw(topMatrix, ctx);
 }
 
-void Imp::Render::MeshNode::draw(const glm::mat4& topMatrix, DrawContext& ctx,
+void imp::gfx::MeshNode::draw(const glm::mat4& topMatrix, DrawContext& ctx,
 	std::shared_ptr<Material>& materialOverride)
 {
 	const glm::mat4 nodeMatrix = topMatrix * worldTransform;
 	//std::cout << "Drawing: " << mesh->name << "\n";
 	for (auto& s : mesh->surfaces) {
 
-		RenderObject def{ s.count,s.startIndex,mesh->meshBuffer->getIndexBuffer()->getBuffer(),materialOverride,s.bounds,nodeMatrix,mesh->meshBuffer->getVertexAddress() };
+		RenderObject def{ s.count,s.startIndex,mesh->meshBuffer->getIndexBuffer().getBuffer(),materialOverride,s.bounds,nodeMatrix,mesh->meshBuffer->getVertexAddress() };
 		if (materialOverride->passType == MaterialPass::Transparent) {
 			ctx.transparent.push_back(def);
 		} else {

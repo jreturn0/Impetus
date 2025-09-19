@@ -1,6 +1,6 @@
 #include "ResourceManager.h"
 
- ID Imp::ResourceManager::GetPathID(const std::string& path)
+ ID imp::ResourceManager::GetPathID(const std::string& path)
 {
 	if (auto it = pathIDMap.find(path); it != pathIDMap.end()) {
 		return it->second;

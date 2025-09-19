@@ -1,7 +1,7 @@
 ﻿#pragma once
 #include <cstdint>
 
-namespace Imp::Render {
+namespace imp::gfx {
 	enum class MaterialPass : uint8_t
 	{
 		MainColor,

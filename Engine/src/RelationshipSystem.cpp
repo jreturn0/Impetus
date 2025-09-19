@@ -3,15 +3,15 @@
 #include "Components/RelationshipComponent.h"
 #include "Components/TransformComponent.h"
 
-void Imp::RelationshipSystem::initialize(entt::registry& registry)
+void imp::RelationshipSystem::initialize(entt::registry& registry)
 {}
 
-void Imp::RelationshipSystem::update(entt::registry& registry, const float deltaTime)
+void imp::RelationshipSystem::update(entt::registry& registry, const float deltaTime)
 {
-	auto&& group = registry.group<Imp::RelationshipComponent>(entt::get<TransformComponent>);
+	auto&& group = registry.group<imp::RelationshipComponent>(entt::get<TransformComponent>);
 	group.sort([&registry](const entt::entity lhs, const entt::entity rhs) {
 		//const auto& lhsRel = registry.get<Imp::RelationshipComponent>(lhs);
-		const auto& rhsRel = registry.get<Imp::RelationshipComponent>(rhs);
+		const auto& rhsRel = registry.get<imp::RelationshipComponent>(rhs);
 
 		// Check if lhs is an ancestor of rhs
 		entt::entity current = rhsRel.parent;
@@ -19,7 +19,7 @@ void Imp::RelationshipSystem::update(entt::registry& registry, const float delta
 			if (current == lhs) {
 				return true;  // lhs should come before rhs
 			}
-			if (auto&& rel = registry.try_get<Imp::RelationshipComponent>(current))
+			if (auto&& rel = registry.try_get<imp::RelationshipComponent>(current))
 				current = rel->parent;
 			else
 				return false;
@@ -55,5 +55,5 @@ void Imp::RelationshipSystem::update(entt::registry& registry, const float delta
 
 }
 
-void Imp::RelationshipSystem::cleanup(entt::registry& registry)
+void imp::RelationshipSystem::cleanup(entt::registry& registry)
 {}

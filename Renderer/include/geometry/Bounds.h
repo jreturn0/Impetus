@@ -1,7 +1,7 @@
 ﻿#pragma once
 #include <glm/vec3.hpp>
 
-namespace Imp::Render {
+namespace imp::gfx {
 	struct Bounds
 	{
 		glm::vec3 origin;

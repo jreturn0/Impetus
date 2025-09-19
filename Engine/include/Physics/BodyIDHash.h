@@ -4,7 +4,7 @@
 #include <Jolt/Jolt.h>
 #include <Jolt/Physics/Body/BodyID.h>
 
-namespace Imp::Phys
+namespace imp::Phys
 {
 	//JPH::BodyID custom hash function
 	struct BodyIDHash

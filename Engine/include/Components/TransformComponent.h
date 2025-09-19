@@ -3,7 +3,7 @@
 #include <glm/gtx/quaternion.hpp>
 
 
-namespace Imp
+namespace imp
 {
 	struct TransformComponent
 	{

@@ -11,10 +11,10 @@
 
 void ProjectileSystem::update(entt::registry& registry, const float deltaTime)
 {
-	auto&& group = registry.group<ProjectileTag>(entt::get<Imp::TransformComponent, DamageComponent, Imp::CollisionInfoComponent>);
+	auto&& group = registry.group<ProjectileTag>(entt::get<imp::TransformComponent, DamageComponent, imp::CollisionInfoComponent>);
 	FixedQueue<entt::entity, 64> queue{};
-	Imp::ForEachParallel(group, [&registry, &group, &queue](auto entity) {
-		auto&& [transform, damage, collisionInfo] = group.get<Imp::TransformComponent, DamageComponent, Imp::CollisionInfoComponent>(entity);
+	imp::ForEachParallel(group, [&registry, &group, &queue](auto entity) {
+		auto&& [transform, damage, collisionInfo] = group.get<imp::TransformComponent, DamageComponent, imp::CollisionInfoComponent>(entity);
 
 		if (!collisionInfo.collidingEntities.empty()) {
 			queue.enqueue(entity);

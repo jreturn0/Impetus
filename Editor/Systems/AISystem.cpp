@@ -13,26 +13,26 @@ struct TargetComponent;
 
 void AISystem::update(entt::registry& registry, const float deltaTime)
 {
-	auto&& group = registry.group<TargetComponent>(entt::get< MoveDirectionComponent, Imp::PhysicsBodyComponent>);
-	auto&& bodyInterface = registry.ctx().get<CtxRef<Imp::Phys::Physics>>().get().getBodyInterface();
-	Imp::ForEachParallel(group,
+	auto&& group = registry.group<TargetComponent>(entt::get< MoveDirectionComponent, imp::PhysicsBodyComponent>);
+	auto&& bodyInterface = registry.ctx().get<CtxRef<imp::Phys::Physics>>().get().getBodyInterface();
+	imp::ForEachParallel(group,
 						 [&](auto entity) {
-							 auto&& [target, direction, physics] = group.get<TargetComponent, MoveDirectionComponent, Imp::PhysicsBodyComponent>(entity);
+							 auto&& [target, direction, physics] = group.get<TargetComponent, MoveDirectionComponent, imp::PhysicsBodyComponent>(entity);
 
 							 //check if target is still alive
 							 if (!registry.valid(target.targetEntity)) {
 								 // registry.remove<TargetComponent>(entity);
 								 return;
 							 }
-							 auto pos = Imp::Phys::ToGLM(bodyInterface.GetPosition(physics.id));
+							 auto pos = imp::Phys::ToGLM(bodyInterface.GetPosition(physics.id));
 
 							 glm::vec3 targetPos;
 
 							 // check and get if target has physics body else get transform component
-							 if (auto&& targetPhysics = registry.try_get<Imp::PhysicsBodyComponent>(target.targetEntity)) {
-								 targetPos = Imp::Phys::ToGLM(bodyInterface.GetPosition(targetPhysics->id));
+							 if (auto&& targetPhysics = registry.try_get<imp::PhysicsBodyComponent>(target.targetEntity)) {
+								 targetPos = imp::Phys::ToGLM(bodyInterface.GetPosition(targetPhysics->id));
 							 } else {
-								 auto&& targetTransform = registry.try_get<Imp::TransformComponent>(target.targetEntity);
+								 auto&& targetTransform = registry.try_get<imp::TransformComponent>(target.targetEntity);
 								 if (!targetTransform) {
 									 return;
 								 }

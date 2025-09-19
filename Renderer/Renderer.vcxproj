@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -122,7 +122,7 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;GLM_FORCE_SSE2;GLM_ENABLE_EXPERIMENTAL;GLM_FORCE_DEPTH_ZERO_TO_ONE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>$(VULKAN_SDK)/Include/;include/;$(SolutionDir)SharedUtils/include/;$(SolutionDir)libs\x64-windows\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(VULKAN_SDK)/Include/;include/;$(SolutionDir)MyUtils/include/;$(SolutionDir)libs\x64-windows\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
@@ -145,7 +145,7 @@
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>$(VULKAN_SDK)/Include/;include/;$(SolutionDir)SharedUtils/include/;$(SolutionDir)libs\x64-windows\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(VULKAN_SDK)/Include/;include/;$(SolutionDir)MyUtils/include/;$(SolutionDir)libs\x64-windows\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
@@ -162,9 +162,10 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\Image.cpp" />
     <ClCompile Include="src\Buffer.cpp" />
-    <ClCompile Include="src\CommandBuffer.cpp" />
-    <ClCompile Include="src\CommandPool.cpp" />
+    <ClCompile Include="src\legacy\CommandBuffer.cpp" />
+    <ClCompile Include="src\legacy\CommandPool.cpp" />
     <ClCompile Include="src\ComputePipeline.cpp" />
     <ClCompile Include="src\CreateRenderer.cpp" />
     <ClCompile Include="src\DebugMessenger.cpp" />
@@ -177,51 +178,53 @@
     <ClCompile Include="src\GPUMeshBuffers.cpp" />
     <ClCompile Include="src\GraphicsPipeline.cpp" />
     <ClCompile Include="src\GUI.cpp" />
-    <ClCompile Include="src\Image.cpp" />
+    <ClCompile Include="src\legacy\OldImage.cpp" />
     <ClCompile Include="src\ImmediateCommands.cpp" />
-    <ClCompile Include="src\Instance.cpp" />
+    <ClCompile Include="src\legacy\Instance.cpp" />
     <ClCompile Include="src\LoadedGLTF.cpp" />
-    <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\Mesh.cpp" />
     <ClCompile Include="src\MeshLoader.cpp" />
     <ClCompile Include="src\MeshNode.cpp" />
     <ClCompile Include="src\MetallicRoughness.cpp" />
     <ClCompile Include="src\Node.cpp" />
-    <ClCompile Include="src\OldRenderer.cpp" />
+    <ClCompile Include="src\legacy\OldRenderer.cpp" />
     <ClCompile Include="src\PipelineBuilder.cpp" />
-    <ClCompile Include="src\Queue.cpp" />
+    <ClCompile Include="src\legacy\Queue.cpp" />
     <ClCompile Include="src\QueueFamilyIndices.cpp" />
     <ClCompile Include="src\Renderer.cpp" />
     <ClCompile Include="src\ResourceCache.cpp" />
     <ClCompile Include="src\ShaderCompiler.cpp" />
     <ClCompile Include="src\ShaderLoader.cpp" />
     <ClCompile Include="src\ShaderReflect.cpp" />
-    <ClCompile Include="src\SwapChain.cpp" />
+    <ClCompile Include="src\legacy\OldSwapChain.cpp" />
     <ClCompile Include="src\VKRenderer.cpp" />
     <ClCompile Include="src\VKUtils.cpp" />
-    <ClCompile Include="src\VKWindow.cpp" />
-    <ClCompile Include="src\Vma.cpp" />
+    <ClCompile Include="src\legacy\VKWindow.cpp" />
+    <ClCompile Include="src\legacy\OldVma.cpp" />
     <ClCompile Include="src\Window.cpp" />
-    <ClCompile Include="src\_VKMaterial_.cpp" />
+    <ClCompile Include="src\VulkanContext.cpp" />
+    <ClCompile Include="src\VmaUsage.cpp" />
+    <ClCompile Include="src\SwapChain.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="include\core\Image.h" />
     <ClInclude Include="include\core\Buffer.h" />
-    <ClInclude Include="include\core\CommandBuffer.h" />
-    <ClInclude Include="include\core\CommandPool.h" />
+    <ClInclude Include="include\legacy\OldCommandBuffer.h" />
+    <ClInclude Include="include\legacy\OldCommandPool.h" />
     <ClInclude Include="include\core\ComputeEffect.h" />
     <ClInclude Include="include\core\ComputePipeline.h" />
-    <ClInclude Include="include\core\DebugMessenger.h" />
-    <ClInclude Include="include\core\Device.h" />
+    <ClInclude Include="include\legacy\OldDebugMessenger.h" />
+    <ClInclude Include="include\legacy\OldDevice.h" />
     <ClInclude Include="include\core\FrameData.h" />
-    <ClInclude Include="include\core\GraphicsPipeline.h" />
-    <ClInclude Include="include\core\Image.h" />
+    <ClInclude Include="include\legacy\OldGraphicsPipeline.h" />
+    <ClInclude Include="include\legacy\OldImage.h" />
     <ClInclude Include="include\core\ImmediateCommands.h" />
-    <ClInclude Include="include\core\Instance.h" />
-    <ClInclude Include="include\core\Queue.h" />
+    <ClInclude Include="include\legacy\OldInstance.h" />
+    <ClInclude Include="include\legacy\OldQueue.h" />
     <ClInclude Include="include\core\QueueFamilyIndices.h" />
-    <ClInclude Include="include\core\SwapChain.h" />
+    <ClInclude Include="include\legacy\OldSwapChain.h" />
     <ClInclude Include="include\core\SwapChainSupportDetails.h" />
-    <ClInclude Include="include\core\Vma.h" />
+    <ClInclude Include="include\legacy\OldVma.h" />
     <ClInclude Include="include\CreateRenderer.h" />
     <ClInclude Include="include\geometry\Bounds.h" />
     <ClInclude Include="include\geometry\GeoSurface.h" />
@@ -234,7 +237,6 @@
     <ClInclude Include="include\materials\MaterialInstance.h" />
     <ClInclude Include="include\materials\MaterialPass.h" />
     <ClInclude Include="include\materials\MetallicRoughness.h" />
-    <ClInclude Include="include\materials\_VKMaterial_.h" />
     <ClInclude Include="include\MVPUbo.h" />
     <ClInclude Include="include\nodes\IRenderable.h" />
     <ClInclude Include="include\nodes\MeshNode.h" />
@@ -260,13 +262,17 @@
     <ClInclude Include="include\utils\shader\ShaderReflect.h" />
     <ClInclude Include="include\utils\VKCommon.hpp" />
     <ClInclude Include="include\utils\VkConstants.h" />
+    <ClInclude Include="include\utils\VKInclude.h" />
     <ClInclude Include="include\utils\VKUtils.h" />
     <ClInclude Include="include\VKRenderer.h" />
     <ClInclude Include="include\window\VKWindow.h" />
     <ClInclude Include="include\window\Window.h" />
+    <ClInclude Include="include\core\VulkanContext.h" />
+    <ClInclude Include="include\core\VmaUsage.h" />
+    <ClInclude Include="include\core\SwapChain.h" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\SharedUtils\SharedUtils.vcxproj">
+    <ProjectReference Include="..\MyUtils\SharedUtils.vcxproj">
       <Project>{4d043816-51bb-4563-9f40-fab668c7894e}</Project>
     </ProjectReference>
   </ItemGroup>

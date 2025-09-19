@@ -15,16 +15,13 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\_VKMaterial_.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\Buffer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\CommandBuffer.cpp">
+    <ClCompile Include="src\legacy\CommandBuffer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\CommandPool.cpp">
+    <ClCompile Include="src\legacy\CommandPool.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\ComputePipeline.cpp">
@@ -63,19 +60,16 @@
     <ClCompile Include="src\GUI.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Image.cpp">
+    <ClCompile Include="src\legacy\OldImage.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\ImmediateCommands.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Instance.cpp">
+    <ClCompile Include="src\legacy\Instance.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\LoadedGLTF.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Mesh.cpp">
@@ -93,13 +87,13 @@
     <ClCompile Include="src\Node.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\OldRenderer.cpp">
+    <ClCompile Include="src\legacy\OldRenderer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\PipelineBuilder.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Queue.cpp">
+    <ClCompile Include="src\legacy\Queue.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\QueueFamilyIndices.cpp">
@@ -120,7 +114,7 @@
     <ClCompile Include="src\ShaderReflect.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\SwapChain.cpp">
+    <ClCompile Include="src\legacy\OldSwapChain.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\VKRenderer.cpp">
@@ -129,13 +123,25 @@
     <ClCompile Include="src\VKUtils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\VKWindow.cpp">
+    <ClCompile Include="src\legacy\VKWindow.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Vma.cpp">
+    <ClCompile Include="src\legacy\OldVma.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Window.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\VulkanContext.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\VmaUsage.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\SwapChain.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Image.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -143,10 +149,10 @@
     <ClInclude Include="include\core\Buffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\core\CommandBuffer.h">
+    <ClInclude Include="include\legacy\OldCommandBuffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\core\CommandPool.h">
+    <ClInclude Include="include\legacy\OldCommandPool.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\core\ComputeEffect.h">
@@ -155,40 +161,40 @@
     <ClInclude Include="include\core\ComputePipeline.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\core\DebugMessenger.h">
+    <ClInclude Include="include\legacy\OldDebugMessenger.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\core\Device.h">
+    <ClInclude Include="include\legacy\OldDevice.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\core\FrameData.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\core\GraphicsPipeline.h">
+    <ClInclude Include="include\legacy\OldGraphicsPipeline.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\core\Image.h">
+    <ClInclude Include="include\legacy\OldImage.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\core\ImmediateCommands.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\core\Instance.h">
+    <ClInclude Include="include\legacy\OldInstance.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\core\Queue.h">
+    <ClInclude Include="include\legacy\OldQueue.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\core\QueueFamilyIndices.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\core\SwapChain.h">
+    <ClInclude Include="include\legacy\OldSwapChain.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\core\SwapChainSupportDetails.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\core\Vma.h">
+    <ClInclude Include="include\legacy\OldVma.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\geometry\Bounds.h">
@@ -210,9 +216,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\gpudata\GPUSceneData.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\materials\_VKMaterial_.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\materials\Material.h">
@@ -315,6 +318,21 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\utils\VkConstants.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\core\VulkanContext.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\utils\VKInclude.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\core\VmaUsage.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\core\SwapChain.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\core\Image.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

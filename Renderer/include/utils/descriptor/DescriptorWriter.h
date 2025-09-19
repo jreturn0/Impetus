@@ -4,7 +4,7 @@
 #include "utils/VKCommon.hpp"
 #include "utils/QuickMacros.h"
 
-namespace Imp::Render
+namespace imp::gfx
 {
 	struct DescriptorWriter
 	{
@@ -12,12 +12,12 @@ namespace Imp::Render
 		std::deque<vk::DescriptorBufferInfo> bufferInfos;
 		std::vector<vk::WriteDescriptorSet> writes;
 
-		void write_image(int binding, const vk::ImageView& image, const vk::Sampler& sampler, vk::ImageLayout layout,
+		void writeImage(int binding,  vk::ImageView image,  vk::Sampler sampler, vk::ImageLayout layout,
 		                 vk::DescriptorType type);
-		void write_buffer(int binding, const vk::Buffer& buffer, size_t size, size_t offset, vk::DescriptorType type);
+		void writeBuffer(int binding, vk::Buffer buffer, size_t size, size_t offset, vk::DescriptorType type);
 
 		void clear();
-		void update_set(const vk::Device& device, vk::DescriptorSet& set);
+		void updateSet( vk::Device device, vk::DescriptorSet set);
 		
 	};
 }

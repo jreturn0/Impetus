@@ -49,7 +49,7 @@ using namespace JPH::literals;
 
 
 
-namespace Imp {
+namespace imp {
 	namespace Phys {
 		inline JPH::Vec3 ToJPH(const glm::vec3& v)
 		{

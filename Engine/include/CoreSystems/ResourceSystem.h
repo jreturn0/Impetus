@@ -1,6 +1,6 @@
 #pragma once
 #include "System.h"
-namespace Imp {
+namespace imp {
 	class ResourceSystem : public System
 	{
 	private:

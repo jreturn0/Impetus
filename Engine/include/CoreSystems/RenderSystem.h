@@ -3,7 +3,7 @@
 
 #include "System.h"
 
-namespace Imp {
+namespace imp {
 
 
 	class RenderSystem final : public System

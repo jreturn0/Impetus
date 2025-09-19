@@ -2,7 +2,7 @@
 #include "utils/VKCommon.hpp"
 #include "utils/QuickMacros.h"
 
-namespace Imp::Render
+namespace imp::gfx
 {
 	class Device;
 	using UniqueQueue = std::unique_ptr<class Queue>;

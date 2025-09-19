@@ -1,0 +1,358 @@
+{
+    "value0": 3,
+    "value1": 3,
+    "value2": 0,
+    "value3": 1,
+    "value4": 2,
+    "value5": 1,
+    "value6": 1,
+    "value7": {
+        "position": {
+            "x": -1.7144418954849244,
+            "y": -2.580258369445801,
+            "z": 92.35721588134766
+        },
+        "rotation": {
+            "x": -0.054783839732408527,
+            "y": -0.3320113718509674,
+            "z": -0.019319329410791398,
+            "w": 0.9414849877357483
+        },
+        "scale": {
+            "x": 1.0,
+            "y": 1.0,
+            "z": 1.0
+        },
+        "dirty": false
+    },
+    "value8": 0,
+    "value9": 1,
+    "value10": 0,
+    "value11": {
+        "keyStates": [
+            {
+                "key": 87,
+                "value": 0
+            },
+            {
+                "key": 65,
+                "value": 0
+            },
+            {
+                "key": 340,
+                "value": 0
+            },
+            {
+                "key": 83,
+                "value": 0
+            },
+            {
+                "key": 68,
+                "value": 0
+            },
+            {
+                "key": 259,
+                "value": 0
+            },
+            {
+                "key": 32,
+                "value": 0
+            },
+            {
+                "key": 293,
+                "value": 0
+            },
+            {
+                "key": 69,
+                "value": 0
+            },
+            {
+                "key": 45,
+                "value": 0
+            },
+            {
+                "key": 67,
+                "value": 0
+            },
+            {
+                "key": 78,
+                "value": 0
+            },
+            {
+                "key": 341,
+                "value": 0
+            },
+            {
+                "key": 88,
+                "value": 0
+            },
+            {
+                "key": 77,
+                "value": 0
+            },
+            {
+                "key": 262,
+                "value": 0
+            },
+            {
+                "key": 80,
+                "value": 0
+            },
+            {
+                "key": 76,
+                "value": 0
+            },
+            {
+                "key": 263,
+                "value": 0
+            },
+            {
+                "key": 261,
+                "value": 0
+            },
+            {
+                "key": 71,
+                "value": 0
+            },
+            {
+                "key": 70,
+                "value": 0
+            },
+            {
+                "key": 84,
+                "value": 0
+            },
+            {
+                "key": 46,
+                "value": 0
+            },
+            {
+                "key": 257,
+                "value": 0
+            },
+            {
+                "key": 297,
+                "value": 0
+            },
+            {
+                "key": 292,
+                "value": 0
+            }
+        ],
+        "mouseButtonStates": [
+            {
+                "key": 0,
+                "value": 1
+            },
+            {
+                "key": 1,
+                "value": 0
+            },
+            {
+                "key": 2,
+                "value": 0
+            }
+        ],
+        "mouseX": 646.0,
+        "mouseY": 594.0,
+        "lastMouseX": 646.0,
+        "lastMouseY": 594.0,
+        "scrollX": 0.0,
+        "scrollY": 0.0,
+        "cursorHidden": false
+    },
+    "value12": 1,
+    "value13": 1,
+    "value14": 0,
+    "value15": 1,
+    "value16": 1,
+    "value17": {
+        "fov": 85.0,
+        "nearPlane": 0.009999999776482582,
+        "farPlane": 1000.0,
+        "pitch": -0.11624643206596375,
+        "yaw": -0.6780610680580139,
+        "type": 1,
+        "interpolate": true
+    },
+    "value18": 1,
+    "value19": 2,
+    "value20": {
+        "gltf": "structure.glb",
+        "name": "Root",
+        "materialOverrideName": "",
+        "localTransform": {
+            "value0": {
+                "x": 1.0,
+                "y": 0.0,
+                "z": 0.0,
+                "w": 0.0
+            },
+            "value1": {
+                "x": 0.0,
+                "y": 1.0,
+                "z": 0.0,
+                "w": 0.0
+            },
+            "value2": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0,
+                "w": 0.0
+            },
+            "value3": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0,
+                "w": 1.0
+            }
+        },
+        "visible": true
+    },
+    "value21": 0,
+    "value22": 0,
+    "value23": 0,
+    "value24": 0,
+    "value25": 0,
+    "value26": 0,
+    "value27": 0,
+    "value28": 0,
+    "value29": 0,
+    "value30": 0,
+    "value31": 0,
+    "value32": 0,
+    "value33": 0,
+    "SystemManager": {
+        "systems": [
+            {
+                "value0": true,
+                "value1": "imp::InputSystem"
+            },
+            {
+                "value0": true,
+                "value1": "imp::ResourceSystem"
+            },
+            {
+                "value0": true,
+                "value1": "imp::TransformSystem"
+            },
+            {
+                "value0": true,
+                "value1": "CameraControllerSystem"
+            },
+            {
+                "value0": true,
+                "value1": "imp::CameraSystem"
+            },
+            {
+                "value0": true,
+                "value1": "imp::RenderSystem"
+            },
+            {
+                "value0": true,
+                "value1": "EditorGuiSystem"
+            },
+            {
+                "value0": true,
+                "value1": "imp::EndRenderSystem"
+            }
+        ],
+        "preFixedSystems": [
+            {
+                "value0": true,
+                "value1": "imp::PrePhysicsSystem"
+            }
+        ],
+        "fixedSystems": [
+            {
+                "value0": true,
+                "value1": "imp::PhysicsSystem"
+            }
+        ],
+        "postFixedSystems": [
+            {
+                "value0": true,
+                "value1": "imp::PostPhysicsSystem"
+            }
+        ],
+        "systemMetaMap": [
+            {
+                "key": "imp::TransformSystem",
+                "value": {
+                    "value0": 2,
+                    "value1": 0
+                }
+            },
+            {
+                "key": "imp::InputSystem",
+                "value": {
+                    "value0": 0,
+                    "value1": 0
+                }
+            },
+            {
+                "key": "imp::ResourceSystem",
+                "value": {
+                    "value0": 1,
+                    "value1": 0
+                }
+            },
+            {
+                "key": "imp::PrePhysicsSystem",
+                "value": {
+                    "value0": 0,
+                    "value1": 2
+                }
+            },
+            {
+                "key": "CameraControllerSystem",
+                "value": {
+                    "value0": 3,
+                    "value1": 0
+                }
+            },
+            {
+                "key": "imp::PhysicsSystem",
+                "value": {
+                    "value0": 0,
+                    "value1": 1
+                }
+            },
+            {
+                "key": "imp::PostPhysicsSystem",
+                "value": {
+                    "value0": 0,
+                    "value1": 3
+                }
+            },
+            {
+                "key": "imp::EndRenderSystem",
+                "value": {
+                    "value0": 7,
+                    "value1": 0
+                }
+            },
+            {
+                "key": "imp::CameraSystem",
+                "value": {
+                    "value0": 4,
+                    "value1": 0
+                }
+            },
+            {
+                "key": "imp::RenderSystem",
+                "value": {
+                    "value0": 5,
+                    "value1": 0
+                }
+            },
+            {
+                "key": "EditorGuiSystem",
+                "value": {
+                    "value0": 6,
+                    "value1": 0
+                }
+            }
+        ]
+    }
+}

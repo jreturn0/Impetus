@@ -1,7 +1,7 @@
 ﻿#pragma once
 #include <string>
 #include <glm/mat4x4.hpp>
-namespace Imp
+namespace imp
 {
 	struct ModelComponent
 	{

@@ -3,7 +3,7 @@
 #include <entt/entity/registry.hpp>
 #include <entt/signal/dispatcher.hpp>
 
-namespace Imp
+namespace imp
 {
 	template<typename T, typename F>
 	void ForEachParallel(T& contiguousContainer, F&& function)

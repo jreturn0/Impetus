@@ -2,8 +2,9 @@
 
 #include <glm/mat4x4.hpp>
 #include <memory>
-namespace Imp::Render {
+namespace imp::gfx {
     struct DrawContext;
+    struct Material;
     class IRenderable
     {
     public:
@@ -11,6 +12,6 @@ namespace Imp::Render {
 
     private:
         virtual void draw(const glm::mat4& topMatrix, DrawContext& ctx) = 0;
-        virtual void draw(const glm::mat4& topMatrix, DrawContext& ctx, std::shared_ptr<struct Material>& materialOverride) = 0;
+        virtual void draw(const glm::mat4& topMatrix, DrawContext& ctx, std::shared_ptr<Material>& materialOverride) = 0;
     };
 }

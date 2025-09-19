@@ -30,7 +30,7 @@ void EnemySystem::update(entt::registry& registry, const float deltaTime)
 {
 
 
-	auto&& group = registry.group<EnemyTag>(entt::get<HealthComponent, DamageComponent, Imp::CollisionInfoComponent>);
+	auto&& group = registry.group<EnemyTag>(entt::get<HealthComponent, DamageComponent, imp::CollisionInfoComponent>);
 
 	FixedQueue<entt::entity, 64> queue{};
 
@@ -38,8 +38,8 @@ void EnemySystem::update(entt::registry& registry, const float deltaTime)
 
 
 
-	Imp::ForEachParallel(group, [&registry, &group, &queue](auto entity) {
-		auto&& [health, damage, collisionInfo] = group.get<HealthComponent, DamageComponent, Imp::CollisionInfoComponent>(entity);
+	imp::ForEachParallel(group, [&registry, &group, &queue](auto entity) {
+		auto&& [health, damage, collisionInfo] = group.get<HealthComponent, DamageComponent, imp::CollisionInfoComponent>(entity);
 
 		if (health.health <= 0) {
 			queue.enqueue(entity);

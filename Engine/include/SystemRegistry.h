@@ -7,7 +7,7 @@
 #include "System.h"
 #include "RegisterMacro.h"
 
-namespace Imp {
+namespace imp {
 
 	class SystemRegistry
 	{
@@ -32,7 +32,7 @@ namespace Imp {
 			SystemRegistrar()
 			{
 				try {
-					Imp::SystemRegistry::RegisterSystem<Type>();
+					imp::SystemRegistry::RegisterSystem<Type>();
 				}
 				catch (const std::exception& e) {
 					Debug::Exception("Error registering System: {}: {}", typeid(Type).name(), e.what());
@@ -43,7 +43,7 @@ namespace Imp {
 	}
 
 #define REGISTER_SYSTEM(Type) \
-	inline static Imp::Register::SystemRegistrar<Type> UNIQUE_NAME(autoRegisterInstance_){};
+	inline static imp::Register::SystemRegistrar<Type> UNIQUE_NAME(autoRegisterInstance_){};
 }
 
 

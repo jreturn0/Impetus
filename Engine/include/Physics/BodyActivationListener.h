@@ -2,7 +2,7 @@
 #include "Debug.h"
 #include <Jolt/Jolt.h>
 #include <Jolt/Physics/Body/BodyActivationListener.h>
-namespace Imp::Phys {
+namespace imp::Phys {
 	class BodyActivationListener final : public JPH::BodyActivationListener
 	{
 	public:

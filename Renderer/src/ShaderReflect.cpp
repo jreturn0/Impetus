@@ -7,7 +7,7 @@
 #include <spirv-reflect/spirv_reflect.h>
 
 // Function to read SPIR-V binary from file
-std::vector<uint32_t> Imp::Render::readSPVFile(const std::string& filename)
+std::vector<uint32_t> imp::gfx::readSPVFile(const std::string& filename)
 {
     std::ifstream file(filename, std::ios::ate | std::ios::binary);
     if (!file.is_open()) {
@@ -23,7 +23,7 @@ std::vector<uint32_t> Imp::Render::readSPVFile(const std::string& filename)
 
     return buffer;
 }
-void Imp::Render::ReflectShader(const std::vector<uint32_t>& spirvCode)
+void imp::gfx::ReflectShader(const std::vector<uint32_t>& spirvCode)
 {
 
     SpvReflectShaderModule module;
@@ -69,7 +69,7 @@ void Imp::Render::ReflectShader(const std::vector<uint32_t>& spirvCode)
 
 
 
-std::vector<vk::UniqueDescriptorSetLayout> Imp::Render::CreateDescriptorSetLayoutsFromShader(
+std::vector<vk::UniqueDescriptorSetLayout> imp::gfx::CreateDescriptorSetLayoutsFromShader(
 	const vk::Device& device,
 	const std::vector<uint32_t>& spirvCode,
 	vk::ShaderStageFlagBits shaderStage)
@@ -118,7 +118,7 @@ std::vector<vk::UniqueDescriptorSetLayout> Imp::Render::CreateDescriptorSetLayou
 	return layouts;
 }
 
-std::vector<vk::PushConstantRange> Imp::Render::CreatePushConstantRangesFromShader(
+std::vector<vk::PushConstantRange> imp::gfx::CreatePushConstantRangesFromShader(
 	const std::vector<uint32_t>& spirvCode,
 	vk::ShaderStageFlagBits shaderStage)
 {
@@ -159,7 +159,7 @@ std::vector<vk::PushConstantRange> Imp::Render::CreatePushConstantRangesFromShad
 }
 
 
-vk::UniquePipelineLayout Imp::Render::CreatePipelineLayoutFromShaders(
+vk::UniquePipelineLayout imp::gfx::CreatePipelineLayoutFromShaders(
     const vk::Device& device,
     const std::vector<std::vector<uint8_t>>& spirvBinaries,
     const std::vector<vk::ShaderStageFlagBits>& shaderStages)

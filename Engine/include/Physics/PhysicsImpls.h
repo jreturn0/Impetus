@@ -2,7 +2,7 @@
 
 #include "PhysicsCommon.h"
 
-namespace Imp::Phys {
+namespace imp::Phys {
 	struct RayHit
 	{
 		bool hit;
@@ -93,21 +93,21 @@ namespace Imp::Phys {
 
 		virtual JPH::uint					GetNumBroadPhaseLayers() const override
 		{
-			return Imp::Phys::BroadPhaseLayers::NUM_LAYERS;
+			return imp::Phys::BroadPhaseLayers::NUM_LAYERS;
 		}
 
 		virtual JPH::BroadPhaseLayer			GetBroadPhaseLayer(JPH::ObjectLayer inLayer) const override
 		{
 			JPH_ASSERT(inLayer < 16);
-			return Imp::Phys::CastBroadPhaseLayer(inLayer & Imp::Phys::ObjectLayers::MOVING);
+			return imp::Phys::CastBroadPhaseLayer(inLayer & imp::Phys::ObjectLayers::MOVING);
 		}
 
 #if defined(JPH_EXTERNAL_PROFILE) || defined(JPH_PROFILE_ENABLED)
 		virtual const char* GetBroadPhaseLayerName(JPH::BroadPhaseLayer inLayer) const override
 		{
 			switch (static_cast<JPH::BroadPhaseLayer::Type>(inLayer)) {
-			case static_cast<JPH::BroadPhaseLayer::Type>(Imp::Phys::BroadPhaseLayers::NON_MOVING):	return "NON_MOVING";
-			case static_cast<JPH::BroadPhaseLayer::Type>(Imp::Phys::BroadPhaseLayers::MOVING):		return "MOVING";
+			case static_cast<JPH::BroadPhaseLayer::Type>(imp::Phys::BroadPhaseLayers::NON_MOVING):	return "NON_MOVING";
+			case static_cast<JPH::BroadPhaseLayer::Type>(imp::Phys::BroadPhaseLayers::MOVING):		return "MOVING";
 			default:													JPH_ASSERT(false); return "INVALID";
 			}
 		}
@@ -123,9 +123,9 @@ namespace Imp::Phys {
 		virtual bool ShouldCollide(JPH::ObjectLayer inLayer1, JPH::BroadPhaseLayer inLayer2) const override
 		{
 			//Debug::Info("ObjectVsBroadPhaseLayerFilterImpl::ShouldCollide({}, {})", static_cast<uint16_t>(inLayer1 & Imp::Phys::ObjectLayers::MOVING), (uint16_t)inLayer2.GetValue());
-			if (!(inLayer1 & Imp::Phys::ObjectLayers::MOVING))
-				return inLayer2 == JPH::BroadPhaseLayer(Imp::Phys::BroadPhaseLayers::MOVING);
-			if (inLayer1 & Imp::Phys::ObjectLayers::MOVING)
+			if (!(inLayer1 & imp::Phys::ObjectLayers::MOVING))
+				return inLayer2 == JPH::BroadPhaseLayer(imp::Phys::BroadPhaseLayers::MOVING);
+			if (inLayer1 & imp::Phys::ObjectLayers::MOVING)
 				return true;
 			return false;
 		}

@@ -122,7 +122,7 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;GLM_FORCE_SSE2;GLM_FORCE_DEPTH_ZERO_TO_ONE;JPH_FLOATING_POINT_EXCEPTIONS_ENABLED;GLM_ENABLE_EXPERIMENTAL;JPH_DEBUG_RENDERER;JPH_PROFILE_ENABLED;JPH_USE_AVX2;JPH_USE_AVX;JPH_USE_SSE4_1;JPH_USE_SSE4_2;JPH_USE_LZCNT;JPH_USE_TZCNT;JPH_USE_F16C;JPH_USE_FMADD;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>$(SolutionDir)Engine\include\;$(SolutionDir)Renderer\include\;$(SolutionDir)SharedUtils/include/;$(SolutionDir)libs\x64-windows\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Engine\include\;$(SolutionDir)Renderer\include\;$(SolutionDir)MyUtils/include/;$(SolutionDir)libs\x64-windows\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -138,7 +138,7 @@
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;GLM_FORCE_SSE2;GLM_FORCE_DEPTH_ZERO_TO_ONE;JPH_FLOATING_POINT_EXCEPTIONS_ENABLED;GLM_ENABLE_EXPERIMENTAL;JPH_DEBUG_RENDERER;JPH_PROFILE_ENABLED;JPH_USE_AVX2;JPH_USE_AVX;JPH_USE_SSE4_1;JPH_USE_SSE4_2;JPH_USE_LZCNT;JPH_USE_TZCNT;JPH_USE_F16C;JPH_USE_FMADD;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>$(SolutionDir)Engine\include\;$(SolutionDir)Renderer\include\;$(SolutionDir)SharedUtils/include/;$(SolutionDir)libs\x64-windows\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Engine\include\;$(SolutionDir)Renderer\include\;$(SolutionDir)MyUtils/include/;$(SolutionDir)libs\x64-windows\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -203,11 +203,11 @@
     <ProjectReference Include="..\Engine\Engine.vcxproj">
       <Project>{5c8696b8-a791-407e-b7ee-3c72a28d422e}</Project>
     </ProjectReference>
+    <ProjectReference Include="..\MyUtils\SharedUtils.vcxproj">
+      <Project>{4d043816-51bb-4563-9f40-fab668c7894e}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\Renderer\Renderer.vcxproj">
       <Project>{e47f8775-4570-4e56-8924-e2659d8c5817}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\SharedUtils\SharedUtils.vcxproj">
-      <Project>{4d043816-51bb-4563-9f40-fab668c7894e}</Project>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

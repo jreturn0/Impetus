@@ -4,7 +4,7 @@
 
 #include "PhysicsCommon.h"
 
-namespace Imp::Phys
+namespace imp::Phys
 {
 	enum class ContactEventType : uint8_t
 	{

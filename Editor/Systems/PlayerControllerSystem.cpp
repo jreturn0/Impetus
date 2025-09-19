@@ -14,8 +14,8 @@ void PlayerControllerSystem::update(entt::registry& registry, const float deltaT
 
 	auto&& direction = group.get<MoveDirectionComponent>(group.front());
 
-	auto&& view = registry.view<Imp::InputStateComponent>();
-	auto&& input = view.get<Imp::InputStateComponent>(view.front());
+	auto&& view = registry.view<imp::InputStateComponent>();
+	auto&& input = view.get<imp::InputStateComponent>(view.front());
 
 
 	auto strafe = glm::vec3{ 0.f };

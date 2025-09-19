@@ -18,34 +18,34 @@
 
 int main()
 {
-	//try {
+    //try {
+    
 
+    //	std::string str;
+    //	std::cin >> str;
+    Debug::Init();
+    auto engine = imp::Impetus("Impetus", 60);
+    //engine.registerResourceAndLoader<MyResource, MyResourceLoader>();
+    engine.emplaceAndRegisterSystem<imp::InputSystem>();
+    engine.emplaceAndRegisterSystem<imp::ResourceSystem>();
+    engine.emplaceAndRegisterSystem<imp::TransformSystem>();
+    engine.emplaceAndRegisterSystem<imp::PrePhysicsSystem>(imp::UpdateType::PreFixed);
+    engine.emplaceAndRegisterSystem<imp::PhysicsSystem>(imp::UpdateType::Fixed);
+    engine.emplaceAndRegisterSystem<imp::PostPhysicsSystem>(imp::UpdateType::PostFixed);
+    engine.emplaceAndRegisterSystem<CameraControllerSystem>();
+    engine.emplaceAndRegisterSystem<imp::CameraSystem>();
+    engine.emplaceAndRegisterSystem<imp::RenderSystem>();
+    engine.emplaceAndRegisterSystem<EditorGuiSystem>();
+    engine.emplaceAndRegisterSystem<imp::EndRenderSystem>();
+    //engine.emplaceAndRegisterSystem<TestSystem>();
+    //engine.emplaceAndRegisterSystem<MoreTestSystem>();
+    engine.init();
+    engine.run();
+    //	std::cin >> str;
 
-		//	std::string str;
-		//	std::cin >> str;
-		Debug::Init();
-	auto engine = Imp::Impetus(1920, 1080, "Impetus",60);
-		//engine.registerResourceAndLoader<MyResource, MyResourceLoader>();
-		engine.emplaceAndRegisterSystem<Imp::InputSystem>();
-		engine.emplaceAndRegisterSystem<Imp::ResourceSystem>();
-		engine.emplaceAndRegisterSystem<Imp::TransformSystem>();
-		engine.emplaceAndRegisterSystem<Imp::PrePhysicsSystem>(Imp::UpdateType::PreFixed);
-		engine.emplaceAndRegisterSystem<Imp::PhysicsSystem>(Imp::UpdateType::Fixed);
-		engine.emplaceAndRegisterSystem<Imp::PostPhysicsSystem>(Imp::UpdateType::PostFixed);
-		engine.emplaceAndRegisterSystem<CameraControllerSystem>();
-		engine.emplaceAndRegisterSystem<Imp::CameraSystem>();
-		engine.emplaceAndRegisterSystem<Imp::RenderSystem>();
-		engine.emplaceAndRegisterSystem<EditorGuiSystem>();
-		engine.emplaceAndRegisterSystem<Imp::EndRenderSystem>();
-		//engine.emplaceAndRegisterSystem<TestSystem>();
-		//engine.emplaceAndRegisterSystem<MoreTestSystem>();
-		engine.init();
-		engine.run();
-		//	std::cin >> str;
+//} catch (const std::exception& e) {
+//	Imp::Debug::Error("Caught exception: {}", e.what());
+//	std::cin.get();
 
-	//} catch (const std::exception& e) {
-	//	Imp::Debug::Error("Caught exception: {}", e.what());
-	//	std::cin.get();
-
-	//}
+//}
 }

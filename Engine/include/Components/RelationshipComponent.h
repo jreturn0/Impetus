@@ -2,7 +2,7 @@
 #include <vector>
 #include <entt/entity/entity.hpp>
 #include <glm/mat4x4.hpp>
-namespace Imp
+namespace imp
 {
 	struct RelationshipComponent
 	{

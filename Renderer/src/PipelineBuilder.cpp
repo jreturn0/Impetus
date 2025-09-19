@@ -1,164 +1,173 @@
 ﻿#include "utils/PipelineBuilder.h"
 
-#include "core/Device.h"
 
-void Imp::Render::PipelineBuilder::disableBlending()
-{
-	colorBlendAttachment.setColorWriteMask(vk::ColorComponentFlagBits::eR | vk::ColorComponentFlagBits::eG | vk::ColorComponentFlagBits::eB | vk::ColorComponentFlagBits::eA);
-	colorBlendAttachment.setBlendEnable(vk::False);
-}
-void Imp::Render::PipelineBuilder::enableBlendingAdditive()
-{
-	colorBlendAttachment.setColorWriteMask(vk::ColorComponentFlagBits::eR | vk::ColorComponentFlagBits::eG | vk::ColorComponentFlagBits::eB | vk::ColorComponentFlagBits::eA);
-	colorBlendAttachment.setBlendEnable(vk::True);
-	colorBlendAttachment.setSrcColorBlendFactor(vk::BlendFactor::eSrcAlpha);
-	colorBlendAttachment.setDstColorBlendFactor(vk::BlendFactor::eOne);
-	colorBlendAttachment.setColorBlendOp(vk::BlendOp::eAdd);
-	colorBlendAttachment.setSrcAlphaBlendFactor(vk::BlendFactor::eOne);
-	colorBlendAttachment.setDstAlphaBlendFactor(vk::BlendFactor::eZero);
-	colorBlendAttachment.setAlphaBlendOp(vk::BlendOp::eAdd);
-
-}
-void Imp::Render::PipelineBuilder::enableBlendingAlphaBlend()
-{
-	colorBlendAttachment.setColorWriteMask(vk::ColorComponentFlagBits::eR | vk::ColorComponentFlagBits::eG | vk::ColorComponentFlagBits::eB | vk::ColorComponentFlagBits::eA);
-	colorBlendAttachment.setBlendEnable(vk::True);
-	colorBlendAttachment.setSrcColorBlendFactor(vk::BlendFactor::eSrcAlpha);
-	colorBlendAttachment.setDstColorBlendFactor(vk::BlendFactor::eOneMinusSrcAlpha);
-	colorBlendAttachment.setColorBlendOp(vk::BlendOp::eAdd);
-	colorBlendAttachment.setSrcAlphaBlendFactor(vk::BlendFactor::eOne);
-	colorBlendAttachment.setDstAlphaBlendFactor(vk::BlendFactor::eZero);
-	colorBlendAttachment.setAlphaBlendOp(vk::BlendOp::eAdd);
-
-}
-
-void Imp::Render::PipelineBuilder::setColorAttachmentFormat(vk::Format format)
-{
-	colorFormat = format;
-	renderInfo.setColorAttachmentFormats(colorFormat);
-}
-
-void Imp::Render::PipelineBuilder::setDepthFormat(vk::Format format)
-{
-	renderInfo.setDepthAttachmentFormat(format);
-}
-
-
-void Imp::Render::PipelineBuilder::disableDepthTest()
-{
-	depthStencil.setDepthTestEnable(vk::False);
-	depthStencil.setDepthWriteEnable(vk::False);
-	depthStencil.setDepthCompareOp(vk::CompareOp::eNever);
-	depthStencil.setDepthBoundsTestEnable(vk::False);
-	depthStencil.setStencilTestEnable(vk::False);
-	depthStencil.setMinDepthBounds(0.f);
-	depthStencil.setMaxDepthBounds(1.f);
-
-
-
-}
-
-void Imp::Render::PipelineBuilder::enableDepthTest(bool depthWriteEnable, vk::CompareOp op)
-{
-
-
-	depthStencil = vk::PipelineDepthStencilStateCreateInfo{}
-		.setDepthTestEnable(vk::True)
-		.setDepthWriteEnable(depthWriteEnable ? vk::True : vk::False)
-		.setDepthCompareOp(op)
-		.setDepthBoundsTestEnable(vk::False)
-		.setStencilTestEnable(vk::False)
-		.setMinDepthBounds(0.0f)
-		.setMaxDepthBounds(1.0f);
-
-}
-
-Imp::Render::PipelineBuilder::PipelineBuilder() :  shaderStages({}), inputAssembly({}), rasterizer({}), colorBlendAttachment({}), multisampling({}), depthStencil({}), renderInfo({}), colorFormat(vk::Format::eUndefined)
+imp::gfx::PipelineBuilder::PipelineBuilder() : m_shaderStages({}), m_inputAssembly({}), m_rasterizer({}), m_colorBlendAttachment({}), m_multisampling({}), m_depthStencil({}), m_renderInfo({}), m_colorFormat(vk::Format::eUndefined)
 {
 
 }
 
-void Imp::Render::PipelineBuilder::clear()
+void imp::gfx::PipelineBuilder::clear()
 {
-	shaderStages.clear();
-	inputAssembly = vk::PipelineInputAssemblyStateCreateInfo{};
-	rasterizer = vk::PipelineRasterizationStateCreateInfo{};
-	colorBlendAttachment = vk::PipelineColorBlendAttachmentState{};
-	multisampling = vk::PipelineMultisampleStateCreateInfo{};
-	depthStencil = vk::PipelineDepthStencilStateCreateInfo{};
-	renderInfo = vk::PipelineRenderingCreateInfo{};
-	colorFormat = vk::Format::eUndefined;
+    m_shaderStages.clear();
+    m_inputAssembly = vk::PipelineInputAssemblyStateCreateInfo{};
+    m_rasterizer = vk::PipelineRasterizationStateCreateInfo{};
+    m_colorBlendAttachment = vk::PipelineColorBlendAttachmentState{};
+    m_multisampling = vk::PipelineMultisampleStateCreateInfo{};
+    m_depthStencil = vk::PipelineDepthStencilStateCreateInfo{};
+    m_renderInfo = vk::PipelineRenderingCreateInfo{};
+    m_colorFormat = vk::Format::eUndefined;
 
 }
-vk::UniquePipeline Imp::Render::PipelineBuilder::	buildPipeline(const Device& device, const vk::PipelineLayout& layout)
+
+vk::raii::Pipeline imp::gfx::PipelineBuilder::buildPipeline(const vk::raii::Device& device, vk::PipelineLayout layout) const
 {
-	vk::PipelineViewportStateCreateInfo viewportState({}, 1, nullptr, 1, nullptr);
-	vk::PipelineColorBlendStateCreateInfo colorBlending({}, vk::False, vk::LogicOp::eCopy, colorBlendAttachment);
-	vk::PipelineVertexInputStateCreateInfo vertexInput{};
-	vk::DynamicState dynamicStates[] = { vk::DynamicState::eViewport, vk::DynamicState::eScissor };
-	vk::PipelineDynamicStateCreateInfo dynamicState({}, dynamicStates);
-	//std::cout << "Color Format: " << vk::to_string(colorFormat) << std::endl;
-	//std::cout << "Depth Format: " << static_cast<uint32_t>(depthFormat) << std::endl;
-	
-	vk::GraphicsPipelineCreateInfo pipelineInfo(
-		{}, // Flags
-		shaderStages,
-		&vertexInput,
-		&inputAssembly,
-		nullptr, // Tessellation state
-		&viewportState,
-		&rasterizer,
-		&multisampling,
-		&depthStencil,
-		&colorBlending,
-		&dynamicState,
-		layout,
-		nullptr, // Render pass
-		0, // Subpass
-		nullptr, // Base pipeline handle
-		-1, // Base pipeline index
-		&renderInfo // Ensure renderInfo is correctly linked
-	);
+    auto viewportState = vk::PipelineViewportStateCreateInfo{}
+        .setViewportCount(1)
+        .setPViewports(nullptr)
+        .setScissorCount(1)
+        .setPScissors(nullptr);
+    auto colorBlending = vk::PipelineColorBlendStateCreateInfo{}
+        .setLogicOpEnable(vk::False)
+        .setLogicOp(vk::LogicOp::eCopy)
+        .setAttachments(m_colorBlendAttachment);
+    vk::PipelineVertexInputStateCreateInfo vertexInput{};
+    vk::DynamicState dynamicStates[] = { vk::DynamicState::eViewport, vk::DynamicState::eScissor };
+    vk::PipelineDynamicStateCreateInfo dynamicState({}, dynamicStates);
+    auto pipelineInfo = vk::GraphicsPipelineCreateInfo{}
+        .setStages(m_shaderStages)
+        .setPVertexInputState(&vertexInput)
+        .setPInputAssemblyState(&m_inputAssembly)
+        .setPViewportState(&viewportState)
+        .setPRasterizationState(&m_rasterizer)
+        .setPMultisampleState(&m_multisampling)
+        .setPDepthStencilState(&m_depthStencil)
+        .setPColorBlendState(&colorBlending)
+        .setPDynamicState(&dynamicState)
+        .setLayout(layout)
+        .setRenderPass(nullptr)
+        .setSubpass(0)
+        .setBasePipelineHandle(nullptr)
+        .setBasePipelineIndex(-1)
+        .setPNext(&m_renderInfo);
 
-	auto result = device.getLogical().createGraphicsPipelineUnique({}, pipelineInfo);
-	vkutil::CheckResult(result.result);
 
-	return std::move(result.value);
+
+
+    vk::raii::Pipeline pipeline{ nullptr };
+    try {
+        pipeline = device.createGraphicsPipeline(nullptr, pipelineInfo);
+    }
+    catch (const vk::SystemError& err) {
+        Debug::FatalError("Failed to create graphics pipeline: {}", err.what());
+    }
+
+    return pipeline;
+}
+
+imp::gfx::PipelineBuilder& imp::gfx::PipelineBuilder::setBlendingMode(BlendingMode mode)
+{
+    switch (mode) {
+    case BlendingMode::None:
+        m_colorBlendAttachment.setColorWriteMask(vk::ColorComponentFlagBits::eR | vk::ColorComponentFlagBits::eG | vk::ColorComponentFlagBits::eB | vk::ColorComponentFlagBits::eA)
+            .setBlendEnable(vk::False);
+        return *this;
+    case BlendingMode::Additive:
+        m_colorBlendAttachment.setColorWriteMask(vk::ColorComponentFlagBits::eR | vk::ColorComponentFlagBits::eG | vk::ColorComponentFlagBits::eB | vk::ColorComponentFlagBits::eA)
+            .setBlendEnable(vk::True)
+            .setSrcColorBlendFactor(vk::BlendFactor::eSrcAlpha)
+            .setDstColorBlendFactor(vk::BlendFactor::eOne)
+            .setColorBlendOp(vk::BlendOp::eAdd)
+            .setSrcAlphaBlendFactor(vk::BlendFactor::eOne)
+            .setDstAlphaBlendFactor(vk::BlendFactor::eZero)
+            .setAlphaBlendOp(vk::BlendOp::eAdd);
+        return *this;
+    case BlendingMode::AlphaBlend:
+        m_colorBlendAttachment.setColorWriteMask(vk::ColorComponentFlagBits::eR | vk::ColorComponentFlagBits::eG | vk::ColorComponentFlagBits::eB | vk::ColorComponentFlagBits::eA)
+            .setBlendEnable(vk::True)
+            .setSrcColorBlendFactor(vk::BlendFactor::eSrcAlpha)
+            .setDstColorBlendFactor(vk::BlendFactor::eOneMinusSrcAlpha)
+            .setColorBlendOp(vk::BlendOp::eAdd)
+            .setSrcAlphaBlendFactor(vk::BlendFactor::eOne)
+            .setDstAlphaBlendFactor(vk::BlendFactor::eZero)
+            .setAlphaBlendOp(vk::BlendOp::eAdd);
+        return *this;
+    default:
+        Debug::FatalError("Unknown blending mode");
+        return *this;
+    }
 }
 
 
-void Imp::Render::PipelineBuilder::setShaderStages(const vk::ShaderModule& vertex, const vk::ShaderModule& fragment)
+
+imp::gfx::PipelineBuilder& imp::gfx::PipelineBuilder::setColorAttachmentFormat(vk::Format format)
 {
-	auto vertexStage = vk::PipelineShaderStageCreateInfo({}, vk::ShaderStageFlagBits::eVertex, vertex, "main");
-	auto fragmentStage = vk::PipelineShaderStageCreateInfo({}, vk::ShaderStageFlagBits::eFragment, fragment, "main");
-	shaderStages.emplace_back(vertexStage);
-	shaderStages.emplace_back(fragmentStage);
+    m_colorFormat = format;
+    m_renderInfo.setColorAttachmentFormats(m_colorFormat);
+    return *this;
 }
 
-void Imp::Render::PipelineBuilder::setInputTopology(vk::PrimitiveTopology topology)
+imp::gfx::PipelineBuilder& imp::gfx::PipelineBuilder::setDepthFormat(vk::Format format)
 {
-	inputAssembly.setTopology(topology);
-	inputAssembly.setPrimitiveRestartEnable(vk::False); //vk::PipelineInputAssemblyStateCreateInfo({}, topology, vk::False);
+    m_renderInfo.setDepthAttachmentFormat(format);
+    return *this;
 }
 
-void Imp::Render::PipelineBuilder::setPolygonMode(vk::PolygonMode mode)
+imp::gfx::PipelineBuilder& imp::gfx::PipelineBuilder::setDepthTest(bool depthTestEnable, bool depthWriteEnable, vk::CompareOp op)
 {
-	rasterizer.setPolygonMode(mode);
-	rasterizer.setLineWidth(1.f);
+    m_depthStencil = vk::PipelineDepthStencilStateCreateInfo{}
+        .setDepthTestEnable(depthTestEnable)
+        .setDepthWriteEnable(depthWriteEnable)
+        .setDepthCompareOp(op)
+        .setDepthBoundsTestEnable(vk::False)
+        .setStencilTestEnable(vk::False)
+        .setMinDepthBounds(0.f)        
+        .setMaxDepthBounds(1.f);
+    return *this;
 }
 
-void Imp::Render::PipelineBuilder::setCullMode(vk::CullModeFlags mode, vk::FrontFace frontFace)
+imp::gfx::PipelineBuilder& imp::gfx::PipelineBuilder::setShaderStages(vk::ShaderModule vertex, vk::ShaderModule fragment)
 {
-	rasterizer.setCullMode(mode);
-	rasterizer.setFrontFace(frontFace);
+    auto vertexStage = vk::PipelineShaderStageCreateInfo{}
+        .setStage(vk::ShaderStageFlagBits::eVertex)
+        .setModule(vertex)
+        .setPName("main");
+    auto fragmentStage = vk::PipelineShaderStageCreateInfo{}
+        .setStage(vk::ShaderStageFlagBits::eFragment)
+        .setModule(fragment)
+        .setPName("main");
+    m_shaderStages.emplace_back(vertexStage);
+    m_shaderStages.emplace_back(fragmentStage);
+    return *this;
 }
 
-void Imp::Render::PipelineBuilder::setMultisamplingNone()
+imp::gfx::PipelineBuilder& imp::gfx::PipelineBuilder::setInputTopology(vk::PrimitiveTopology topology)
 {
-	multisampling.setSampleShadingEnable(vk::False);
-	multisampling.setRasterizationSamples(vk::SampleCountFlagBits::e1);
-	multisampling.setMinSampleShading(1.f);
-	multisampling.setPSampleMask(nullptr);
-	multisampling.setAlphaToCoverageEnable(vk::False);
-	multisampling.setAlphaToOneEnable(vk::False);
+    m_inputAssembly.setTopology(topology)
+        .setPrimitiveRestartEnable(vk::False); 
+    return *this;
+}
+
+imp::gfx::PipelineBuilder& imp::gfx::PipelineBuilder::setPolygonMode(vk::PolygonMode mode)
+{
+    m_rasterizer.setPolygonMode(mode)
+        .setLineWidth(1.f);
+    return *this;
+}
+
+imp::gfx::PipelineBuilder& imp::gfx::PipelineBuilder::setCullMode(vk::CullModeFlags mode, vk::FrontFace frontFace)
+{
+    m_rasterizer.setCullMode(mode)
+        .setFrontFace(frontFace);
+    return *this;
+}
+
+imp::gfx::PipelineBuilder& imp::gfx::PipelineBuilder::setMultisampling(vk::SampleCountFlagBits samples)
+{
+    m_multisampling.setSampleShadingEnable(samples != vk::SampleCountFlagBits::e1)
+        .setRasterizationSamples(samples)
+        .setMinSampleShading(1.f)
+        .setPSampleMask(nullptr)
+        .setAlphaToCoverageEnable(vk::False)
+        .setAlphaToOneEnable(vk::False);
+    return *this;
 }

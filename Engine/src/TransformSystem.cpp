@@ -19,8 +19,8 @@
 namespace {
 	void UpdateModelMatrix(entt::registry& registry, entt::entity entity)
 	{
-		auto* transform = registry.try_get<Imp::TransformComponent>(entity);
-		auto* model = registry.try_get<Imp::ModelComponent>(entity);
+		auto* transform = registry.try_get<imp::TransformComponent>(entity);
+		auto* model = registry.try_get<imp::ModelComponent>(entity);
 
 
 		if (transform && model) {
@@ -30,10 +30,10 @@ namespace {
 			glm::mat4 scale = glm::scale(glm::mat4(1.0f), transform->scale);
 			model->localTransform = translation * rotation * scale;
 
-			auto* relationship = registry.try_get<Imp::RelationshipComponent>(entity);
+			auto* relationship = registry.try_get<imp::RelationshipComponent>(entity);
 			// Compute the global transform
 			if (relationship && relationship->parent != entt::null) {
-				if (const auto* parentModel = registry.try_get<Imp::ModelComponent>(relationship->parent)) {
+				if (const auto* parentModel = registry.try_get<imp::ModelComponent>(relationship->parent)) {
 					model->localTransform = parentModel->localTransform * model->localTransform;
 				}
 			} else {
@@ -75,14 +75,14 @@ namespace {
 	//}
 }
 
-void Imp::TransformSystem::initialize(entt::registry& registry)
+void imp::TransformSystem::initialize(entt::registry& registry)
 {
 	//	observer.connect(registry, entt::collector.update<TransformComponent>());
 
-	time = &registry.ctx().get<CtxRef<Imp::Clock>>().get();
+	time = &registry.ctx().get<CtxRef<imp::Clock>>().get();
 
 }
-void Imp::TransformSystem::update(entt::registry& registry, const float deltaTime)
+void imp::TransformSystem::update(entt::registry& registry, const float deltaTime)
 {
 
 
@@ -100,18 +100,18 @@ void Imp::TransformSystem::update(entt::registry& registry, const float deltaTim
 	//physics interpolation factor
 	constexpr double compare = 1.0 - DBL_EPSILON;
 	double interpolationFactor = std::min(compare, time->getAccumulatedTime() / time->getFixedStep());
-	auto&& physics = registry.ctx().get<CtxRef<Imp::Phys::Physics>>().get().getSystem().GetBodyInterfaceNoLock();
+	auto&& physics = registry.ctx().get<CtxRef<imp::Phys::Physics>>().get().getSystem().GetBodyInterfaceNoLock();
 
-	Imp::ForEachParallel(physicsGroup, [&physics, &physicsGroup, &interpolationFactor](auto entity) {
+	imp::ForEachParallel(physicsGroup, [&physics, &physicsGroup, &interpolationFactor](auto entity) {
 		auto&& [physicsBody, transform] = physicsGroup.get<PhysicsBodyComponent, TransformComponent>(entity);
-		JPH::Vec3 out1{}, out2;
+		JPH::Vec3 out1{}, out2{};
 		JPH::Quat out3{};
 		physics.GetPositionAndRotation(physicsBody.id, out1, out3);
 		transform.position = glm::mix(transform.position, Phys::ToGLM(out1), interpolationFactor);
 		transform.rotation = glm::slerp(transform.rotation, Phys::ToGLM(out3), static_cast<float>(interpolationFactor));
 						 });
 
-	Imp::ForEachParallel(transformModelGroup, [&transformModelGroup](auto entity) {
+	imp::ForEachParallel(transformModelGroup, [&transformModelGroup](auto entity) {
 		auto&& [transform, model]   = transformModelGroup.get<TransformComponent, ModelComponent>(entity);
 		const glm::mat4 translation = glm::translate(glm::mat4(1.0f), transform.position);
 		const glm::mat4 rotation    = glm::toMat4(transform.rotation);
@@ -121,4 +121,4 @@ void Imp::TransformSystem::update(entt::registry& registry, const float deltaTim
 
 }
 
-void Imp::TransformSystem::cleanup(entt::registry& registry) { System::cleanup(registry); }
+void imp::TransformSystem::cleanup(entt::registry& registry) { System::cleanup(registry); }

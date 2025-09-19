@@ -1,53 +1,53 @@
 #pragma once
 #include <chrono>
 
-namespace Imp {
-	class Clock
-	{
-	private:
-
-		using SystemClock = std::chrono::steady_clock;
-		using TimePoint = std::chrono::time_point<SystemClock>;
-		using Duration = std::chrono::duration<long long, std::nano>;
-
-
-		//variable fps members
-		unsigned  short variableTarget; // 0 means no cap
-		Duration variableTargetDuration; // target time per variableFrame
-
-
-		unsigned  short fixedTarget; // fixed fps with no variance
-		Duration fixedTargetDuration; // target time per fixedFrame
-
-
-
-		TimePoint lastFrameEnd; // time point of last frame end
-		Duration deltaTime; // time since last frame
-		Duration realElapsed; // time since start of clock
-
-
-		Duration accumulatedTime;
-		Duration maxAccumulatedTime;
-		bool fixedFrame;
-
-
-	public:
-		   Clock(const Clock&) = delete;
+namespace imp {
+    class Clock
+    {
+    public:
+        explicit Clock(unsigned short variableFpsCap, unsigned short fixedFpsCap, unsigned short maxAccumulated = 4);
+        Clock(const Clock&) = delete;
         Clock(Clock&&) = delete;
         Clock& operator=(const Clock&) = delete;
         Clock& operator=(Clock&&) = delete;
 
-        explicit Clock(unsigned short variableFpsCap, unsigned short fixedFpsCap=60, unsigned short maxAccumulated = 2);
-        void update();
-		bool isFixed() const;
-		bool fixedUpdate();
+        void update() noexcept;
+        bool fixedUpdate() noexcept;
+        inline bool isFixed() const noexcept { return m_accumulatedTime >= m_fixedTargetFrameDuration; }
 
-        inline bool isFixedFrame() const { return fixedFrame; }
-		inline double getDelta() const { return deltaTime.count() / static_cast<double>(1'000'000) / 1000; }
-		inline  double getElapsed() const { return realElapsed.count() / static_cast<double>(1'000'000) / 1000; }
-		inline  double getFixedStep() const { return fixedTargetDuration.count() / static_cast<double>(1'000'000) / 1000; }
-		inline  double getAccumulatedTime() const { return accumulatedTime.count() / static_cast<double>(1'000'000) / 1000; }
-	};
+        // Getters
+
+        inline bool isFixedFrame() const noexcept { return m_fixedFrame; }
+        inline double getDelta() const noexcept { return std::chrono::duration<double>(m_deltaTime).count(); }
+        inline double getElapsed() const noexcept { return std::chrono::duration<double>(m_elapsedTime).count(); }
+        inline double getFixedStep() const noexcept { return std::chrono::duration<double>(m_fixedTargetFrameDuration).count(); }
+        inline double getAccumulatedTime() const noexcept { return std::chrono::duration<double>(m_accumulatedTime).count(); }
+
+
+    private:
+        using SystemClock = std::chrono::steady_clock;
+        using TimePoint = SystemClock::time_point;
+        using Duration = std::chrono::nanoseconds;
+
+        // Variable targets
+        uint64_t m_targetFps;
+        Duration m_targetFrameDuration;
+
+        // Fixed targets
+        uint64_t m_fixedTargetFps;
+        Duration m_fixedTargetFrameDuration;
+
+        // Accumulation
+        Duration m_maxAccumulatedTime;
+        Duration m_accumulatedTime;
+        bool m_fixedFrame;
+
+        // Timing
+        TimePoint m_lastFrameTime;
+        TimePoint m_nextFrameTime;
+        Duration m_elapsedTime;
+        Duration m_deltaTime;
+    };
 
 
 }

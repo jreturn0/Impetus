@@ -1,23 +1,26 @@
 ﻿#pragma once
-#include "core/CommandBuffer.h"
 #include "utils/VKCommon.hpp"
-#include "utils/QuickMacros.h"
+#include <utils/Forwards.h>
 
-namespace Imp::Render
+namespace imp::gfx
 {
 	class GUI
 	{
+
+	public:
+		GUI(VulkanContext& context, Window& window, vk::Format drawFormat);
+		~GUI();
+		GUI(const GUI&) = delete; 
+		GUI& operator=(const GUI&) = delete; 
+		GUI(GUI&&) = delete; 
+		GUI& operator=(GUI&&) = delete;;
+
+
+		void startFrame();
+		void render(vk::CommandBuffer cmd);
+		void endFrame();
 	private:
 
-		vk::UniqueDescriptorPool pool;
-	public:
-		DISABLE_COPY_AND_MOVE(GUI);
-
-		GUI(class Instance &instance, class Device& device, class SwapChain& swapChain, class Queue& graphicsQueue, class VKWindow& window );
-		~GUI();
-		void startFrame();
-		void render(const vk::CommandBuffer& cmd);
-		void endFrame();
-
+		vk::raii::DescriptorPool m_descriptorPool{ nullptr };
 	};
 }

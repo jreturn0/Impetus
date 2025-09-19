@@ -1,7 +1,7 @@
 ﻿#pragma once
 #include "RenderObject.h"
 
-namespace Imp::Render
+namespace imp::gfx
 {
 	struct DrawContext
 	{

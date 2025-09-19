@@ -2,7 +2,7 @@
 #include <memory>
 
 #include "Bounds.h"
-namespace Imp::Render {
+namespace imp::gfx {
 
 	struct GeoSurface
 	{

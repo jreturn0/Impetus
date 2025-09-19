@@ -9,7 +9,7 @@
 #include "EngineStats.h"
 #include "UpdateType.h"
 
-namespace Imp {
+namespace imp {
 
 
 
@@ -31,7 +31,7 @@ namespace Imp {
 		struct Entry
 		{
 			std::unique_ptr<System> system;
-			bool status;
+			bool status{ false };
 			std::string name;
 
 			template <class Archive>

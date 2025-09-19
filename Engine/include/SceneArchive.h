@@ -1,6 +1,6 @@
 ﻿#pragma once
 #include <entt/entity/fwd.hpp>
-namespace Imp {
+namespace imp {
 	class SystemManager;
 
 	class SceneArchive

@@ -1,6 +1,6 @@
 ﻿#pragma once
 #include "System.h"
-namespace Imp {
+namespace imp {
 	class EndRenderSystem final : public  System
 	{
 		bool gui = true;

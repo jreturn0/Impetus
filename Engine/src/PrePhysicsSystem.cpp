@@ -7,13 +7,13 @@
 #include "Components/PhysicsBodyComponent.h"
 #include "Components/TransformComponent.h"
 #include "BasicEvents.h"
-void Imp::PrePhysicsSystem::initialize(entt::registry& registry)
+void imp::PrePhysicsSystem::initialize(entt::registry& registry)
 {
 	physicsSystem = &registry.ctx().get<CtxRef<Phys::Physics>>().get();
 	physicsSystem->getSystem().OptimizeBroadPhase();
 }
 
-void Imp::PrePhysicsSystem::update(entt::registry& registry, const float deltaTime)
+void imp::PrePhysicsSystem::update(entt::registry& registry, const float deltaTime)
 {
 	auto group = registry.group<>(entt::get<TransformComponent, PhysicsBodyComponent>);
 	auto& bodyInterface = physicsSystem->getBodyInterface();
@@ -32,7 +32,7 @@ void Imp::PrePhysicsSystem::update(entt::registry& registry, const float deltaTi
 
 }
 
-void Imp::PrePhysicsSystem::cleanup(entt::registry& registry)
+void imp::PrePhysicsSystem::cleanup(entt::registry& registry)
 {
 	/* Debug::Out("PrePhysicsSystem::update: entity: {}, position: {} {} {}, rotation: {} {} {} {}\n",
 			entt::to_integral(entity),

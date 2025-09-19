@@ -3,7 +3,7 @@
 #include <entt/container/dense_set.hpp>
 #include <entt/entity/entity.hpp>
 
-namespace Imp {
+namespace imp {
 
 
 

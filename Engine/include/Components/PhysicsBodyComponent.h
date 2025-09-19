@@ -6,7 +6,7 @@
 
 #include "Physics/PhysicsCommon.h"
 
-namespace Imp
+namespace imp
 {
 	//Component representation of a Jolt physics body. use patch or replace to update the Component 
 	struct PhysicsBodyComponent

@@ -6,7 +6,7 @@
 #include "InputCodes.h"
 #include <string>
 
-#include "FileDirectoryHelper.h"
+#include "FSNavigator.h"
 #include "UpdateType.h"
 #include "Events/InputEvents.h"
 #include "Events/SystemEvents.h"
@@ -21,13 +21,13 @@ using QuickSaveSceneEvent = entt::tag<"QuickSaveScene"_hs>;
 
 struct SaveSceneAsEvent
 {
-	FileDirectoryHelper path;
+	FSNavigator path;
 	std::string filename;
 };
 
 struct LoadSceneEvent
 {
-	FileDirectoryHelper path;
+	FSNavigator path;
 };
 
 

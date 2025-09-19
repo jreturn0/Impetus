@@ -10,7 +10,7 @@ namespace {
 
 
 }
-Imp::Phys::Physics::Physics(entt::dispatcher& eventDispatcher) : contactListener(eventDispatcher,bodyToEntityMap)
+imp::Phys::Physics::Physics(entt::dispatcher& eventDispatcher) : contactListener(eventDispatcher,bodyToEntityMap)
 {
 	// Register allocation hook. In this example we'll just let Jolt use malloc / free but you can override these if you want (see Memory.h).
 	// This needs to be done before any other Jolt function is called.
@@ -57,11 +57,11 @@ Imp::Phys::Physics::Physics(entt::dispatcher& eventDispatcher) : contactListener
 
 }
 
-Imp::Phys::Physics::Physics() 
+imp::Phys::Physics::Physics() 
 {
 }
 
-Imp::Phys::Physics::~Physics()
+imp::Phys::Physics::~Physics()
 {
 	JPH::UnregisterTypes();
 

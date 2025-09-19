@@ -9,7 +9,7 @@
 #include "FreeList.h"
 #include "PhysicsCommon.h"
 
-namespace Imp::Phys {
+namespace imp::Phys {
 
 	using ContactSignal = entt::sigh<void(const ContactEvent&)>;
 	using ContactSink = entt::sink<ContactSignal>;

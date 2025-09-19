@@ -19,14 +19,14 @@ struct SystemsReorderedEvent
 struct SystemReorderEvent
 {
 	std::string name;
-	Imp::UpdateType type;
+	imp::UpdateType type;
 	 size_t newIndex;
 };
 
 struct AddSystemEvent
 {
 	std::string name;
-	Imp::UpdateType type;
+	imp::UpdateType type;
 };
 
 struct RemoveSystemEvent

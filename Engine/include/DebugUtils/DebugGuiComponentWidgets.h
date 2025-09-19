@@ -12,8 +12,8 @@
 
 inline void ModelWidgetInfo(entt::registry& registry, entt::entity entity)
 {
-	auto& model = registry.get<Imp::ModelComponent>(entity);
-	auto& renderer = registry.ctx().get<CtxRef<Imp::Render::Renderer>>().get();
+	auto& model = registry.get<imp::ModelComponent>(entity);
+	auto& renderer = registry.ctx().get<CtxRef<imp::gfx::Renderer>>().get();
 
 	auto& modelNames = renderer.getLoadedGLTFNames();
 	if (modelNames.size() == 0) {

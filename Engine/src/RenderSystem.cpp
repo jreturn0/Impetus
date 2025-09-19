@@ -16,12 +16,12 @@
 #include "core/ComputeEffect.h"
 
 
-void Imp::RenderSystem::OnToggleGuiEvent()
+void imp::RenderSystem::OnToggleGuiEvent()
 {
 	gui = !gui;
 }
 
-void Imp::RenderSystem::initialize(entt::registry& registry)
+void imp::RenderSystem::initialize(entt::registry& registry)
 {
 	//observer.connect(registry, entt::collector.update<TransformComponent>());
 	registry.ctx().get<CtxRef<entt::dispatcher>>().get().sink<ToggleGuiEvent>().connect<&RenderSystem::OnToggleGuiEvent>(this);
@@ -62,9 +62,9 @@ void Imp::RenderSystem::initialize(entt::registry& registry)
 //}
 
 
-void Imp::RenderSystem::update(entt::registry& registry, const float deltaTime)
+void imp::RenderSystem::update(entt::registry& registry, const float deltaTime)
 {
-	auto& renderer = registry.ctx().get<CtxRef<Imp::Render::Renderer>>().get();
+	auto& renderer = registry.ctx().get<CtxRef<imp::gfx::Renderer>>().get();
 
 	//observer.each([&registry](const auto entity) {
 	//	UpdateModelMatrix(registry, entity);
@@ -89,7 +89,7 @@ void Imp::RenderSystem::update(entt::registry& registry, const float deltaTime)
 
 }
 
-void Imp::RenderSystem::cleanup(entt::registry& registry)
+void imp::RenderSystem::cleanup(entt::registry& registry)
 {
 	registry.ctx().get<CtxRef<entt::dispatcher>>().get().sink<ToggleGuiEvent>().disconnect(this);
 	System::cleanup(registry);

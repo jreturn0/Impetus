@@ -9,18 +9,18 @@
 
 void MovementSystem::update(entt::registry& registry, const float deltaTime)
 {
-	auto group = registry.group <MoveDirectionComponent, SpeedComponent>(entt::get<Imp::PhysicsBodyComponent>);
+	auto group = registry.group <MoveDirectionComponent, SpeedComponent>(entt::get<imp::PhysicsBodyComponent>);
 
-	auto&& bodyInterface = registry.ctx().get<CtxRef<Imp::Phys::Physics>>().get().getSystem().GetBodyInterfaceNoLock();
+	auto&& bodyInterface = registry.ctx().get<CtxRef<imp::Phys::Physics>>().get().getSystem().GetBodyInterfaceNoLock();
 
-	Imp::ForEachParallel(group, [deltaTime, &bodyInterface, &group](auto entity) {
-		auto&& [direction, speed, body] = group.get<MoveDirectionComponent, SpeedComponent, Imp::PhysicsBodyComponent>(entity);
+	imp::ForEachParallel(group, [deltaTime, &bodyInterface, &group](auto entity) {
+		auto&& [direction, speed, body] = group.get<MoveDirectionComponent, SpeedComponent, imp::PhysicsBodyComponent>(entity);
 		JPH::Vec3 lv, av, p;
 		JPH::Quat r;
 		bodyInterface.GetPositionAndRotation(body.id, p, r);
 		bodyInterface.GetLinearAndAngularVelocity(body.id, lv, av);
 
-		auto d = Imp::Phys::ToJPH(direction.direction);
+		auto d = imp::Phys::ToJPH(direction.direction);
 
 		// Add force to move body in direction of d with speed of speed.maxSpeed
 		// accelerating by force = (targetVelocity - currentVelocity) * speed.speed * deltaTime

@@ -1,5 +1,5 @@
 ﻿#pragma once
-namespace Imp {
+namespace imp {
 	enum class CameraType
 	{
 		Orthographic,

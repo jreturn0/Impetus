@@ -8,16 +8,16 @@
 #include "ResourceManager.h"
 #include"Clock.h"
 #include "ThreadPool.h"
-#include "FileDirectoryHelper.h"
+#include "FSNavigator.h"
 
 
-inline static std::ofstream logFile ("log.txt");
+
 
 
 
 struct GLFWwindow;
-namespace Imp {
-	namespace Render
+namespace imp {
+	namespace gfx
 	{
 		class Renderer;
 	}
@@ -35,7 +35,7 @@ namespace Imp {
 		std::unique_ptr < Clock >time;
 		std::unique_ptr < ResourceManager >resources;
 		std::atomic<bool> running;
-		std::unique_ptr<Render::Renderer> renderer;
+		std::unique_ptr<gfx::Renderer> renderer;
 		std::shared_ptr<Window> window;
 		std::unique_ptr < EngineStats >stats;
 		std::string scenePath;
@@ -50,7 +50,7 @@ namespace Imp {
 		void registerContextVariables();
 
 		void cleanContextVariables();
-		void loadScene(const FileDirectoryHelper& fileHelp);
+		void loadScene(const FSNavigator& fileHelp);
 		void saveScene(const std::string& filename);
 		void onLoadSceneEvent(LoadSceneEvent event);
 		void onSaveSceneEvent(SaveSceneAsEvent event);
@@ -66,9 +66,9 @@ namespace Imp {
 		auto& getRegistry() const { return *registry; }
 	
 		auto& getPhysics() const { return *physics; }
-		Render::Renderer& getRenderer() { return *renderer; }
+		gfx::Renderer& getRenderer() { return *renderer; }
 
-		Impetus(uint32_t width, uint32_t height, const char* title,int fpsCap=0);
+		Impetus( const char* title,int fpsCap=0);
 		~Impetus();
 		template<typename T,typename TLoader>
 		void registerResourceAndLoader()

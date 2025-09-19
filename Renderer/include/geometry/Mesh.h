@@ -3,19 +3,15 @@
 #include "utils/Forwards.h"
 #include "gpudata/GPUMeshBuffers.h"
 #include "GeoSurface.h"
-#include "core/Vma.h"
 
-namespace Imp::Render
+namespace imp::gfx
 {
 
 
 
 	struct Mesh
 	{
-		Mesh(const std::string& name, const Device& device, 
-			 const vk::Queue& queue, 
-			 const ImmediateCommands& transferCommands, 
-			 VmaAllocator& allocator,
+		Mesh(std::string_view name, const VulkanContext& context,
 			 std::span<GeoSurface> surfaces,
 			 std::span<uint32_t> indices, 
 			 std::span<Vertex> vertices);

@@ -6,7 +6,7 @@
 #include <condition_variable>
 #include <future>
 
-namespace Imp {
+namespace imp {
     class ThreadPool
     {
     private:
