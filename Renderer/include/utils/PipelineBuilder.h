@@ -1,45 +1,52 @@
 ﻿#pragma once
-#include "utils/VKCommon.hpp"
 #include "utils/QuickMacros.h"
+#include "utils/VKCommon.hpp"
 
-namespace Imp::Render
+namespace imp::gfx
 {
-	class PipelineBuilder
-	{
-	private:
-
-		std::vector<vk::PipelineShaderStageCreateInfo> shaderStages;
-		vk::PipelineInputAssemblyStateCreateInfo inputAssembly;
-		vk::PipelineRasterizationStateCreateInfo rasterizer;
-		vk::PipelineColorBlendAttachmentState colorBlendAttachment;
-		vk::PipelineMultisampleStateCreateInfo multisampling;
-		vk::PipelineDepthStencilStateCreateInfo depthStencil;
-		vk::PipelineRenderingCreateInfoKHR renderInfo;
-		vk::Format colorFormat;
-	
+    // Builder class for creating Vulkan graphics pipelines
+    class PipelineBuilder
+    {
+    public:
+        enum class BlendingMode
+        {
+            None,
+            Additive,
+            AlphaBlend
+        };
 
 
+        PipelineBuilder();
+        ~PipelineBuilder() = default;
+        PipelineBuilder(const PipelineBuilder&) = delete;
+        PipelineBuilder& operator=(const PipelineBuilder&) = delete;
+        PipelineBuilder(PipelineBuilder&&) = delete;
+        PipelineBuilder& operator=(PipelineBuilder&&) = delete;
 
-	public:
+        // Setters
 
-		PipelineBuilder();
+        PipelineBuilder& setBlendingMode(BlendingMode mode);
+        PipelineBuilder& setShaderStages(vk::ShaderModule vertex, vk::ShaderModule fragment);
+        PipelineBuilder& setInputTopology(vk::PrimitiveTopology topology);
+        PipelineBuilder& setPolygonMode(vk::PolygonMode mode);
+        PipelineBuilder& setCullMode(vk::CullModeFlags mode, vk::FrontFace frontFace);
+        PipelineBuilder& setColorAttachmentFormat(vk::Format format);
+        PipelineBuilder& setMultisampling(vk::SampleCountFlagBits samples);
+        PipelineBuilder& setDepthFormat(vk::Format format);
+        PipelineBuilder& setDepthTest(bool depthTestEnable, bool depthWriteEnable, vk::CompareOp op);
 
-		void clear();
+        // Methods
+        vk::raii::Pipeline buildPipeline(const vk::raii::Device& device, vk::PipelineLayout layout) const;
+        void clear();
+    private:
 
-		vk::UniquePipeline buildPipeline(const class Device& device, const vk::PipelineLayout& layout);
-		void setShaderStages(const vk::ShaderModule& vertex, const vk::ShaderModule& fragment);
-		void setInputTopology(vk::PrimitiveTopology topology);
-		void setPolygonMode(vk::PolygonMode mode);
-		void setCullMode(vk::CullModeFlags mode,vk::FrontFace frontFace);
-		void setMultisamplingNone();
-		void disableBlending();
-		void enableBlendingAdditive();
-		void enableBlendingAlphaBlend();
-		void setColorAttachmentFormat(vk::Format format);
-		void setDepthFormat(vk::Format format);
-		void disableDepthTest();
-		void enableDepthTest(bool depthWriteEnable, vk::CompareOp op);
-		DISABLE_COPY_AND_MOVE(PipelineBuilder);
-		
-	};
+        std::vector<vk::PipelineShaderStageCreateInfo> m_shaderStages;
+        vk::PipelineInputAssemblyStateCreateInfo m_inputAssembly;
+        vk::PipelineRasterizationStateCreateInfo m_rasterizer;
+        vk::PipelineColorBlendAttachmentState m_colorBlendAttachment;
+        vk::PipelineMultisampleStateCreateInfo m_multisampling;
+        vk::PipelineDepthStencilStateCreateInfo m_depthStencil;
+        vk::PipelineRenderingCreateInfoKHR m_renderInfo;
+        vk::Format m_colorFormat;
+    };
 }

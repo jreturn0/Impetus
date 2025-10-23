@@ -1,31 +1,30 @@
 ﻿#include "CoreSystems/EndRenderSystem.h"
-
-#include "BasicEvents.h"
 #include "CtxRef.h"
+#include "events/BasicEvents.h"
 #include "Renderer.h"
 
 
-void Imp::EndRenderSystem::OnToggleGuiEvent()
+void imp::EndRenderSystem::OnToggleGuiEvent()
 {
-	gui = !gui;
+    m_guiEnabled = !m_guiEnabled;
 }
 
-void Imp::EndRenderSystem::initialize(entt::registry& registry)
+void imp::EndRenderSystem::initialize(entt::registry& registry)
 {
-	registry.ctx().get<CtxRef<entt::dispatcher>>().get().sink<ToggleGuiEvent>().connect<&EndRenderSystem::OnToggleGuiEvent>(this);
+    registry.ctx().get<CtxRef<entt::dispatcher>>().get().sink<ToggleGuiEvent>().connect<&EndRenderSystem::OnToggleGuiEvent>(this);
 
-	System::initialize(registry);
+    System::initialize(registry);
 }
 
-void Imp::EndRenderSystem::update(entt::registry& registry, const float deltaTime)
+void imp::EndRenderSystem::update(entt::registry& registry, const float deltaTime)
 {
-	auto& renderer = registry.ctx().get<CtxRef<Imp::Render::Renderer>>().get();
+    auto& renderer = registry.ctx().get<CtxRef<imp::gfx::Renderer>>().get();
 #ifdef _DEBUG
-	if (gui)
-		renderer.endDrawGui();
+    if (m_guiEnabled)
+        renderer.endDrawGui();
 #endif
 
-	renderer.endFrame();
+    renderer.endFrame();
 }
 
-void Imp::EndRenderSystem::cleanup(entt::registry& registry) { System::cleanup(registry); }
+

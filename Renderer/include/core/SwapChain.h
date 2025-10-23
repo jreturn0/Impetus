@@ -1,55 +1,67 @@
-﻿#pragma once
-#include "utils/VKCommon.hpp"
-#include "utils/QuickMacros.h"
+#pragma once
+
 #include "SwapChainSupportDetails.h"
+#include <core/VulkanContext.h>
+
+namespace imp::gfx
+{
+    // Manages the Vulkan Swap Chain and its associated resources
+    class SwapChain
+    {
+    public:
+        SwapChain() = default;
+        SwapChain(const VulkanContext& context, const Window& window);
+        ~SwapChain() = default;
+        SwapChain(const SwapChain&) = delete;
+        SwapChain& operator=(const SwapChain&) = delete;
+        SwapChain(SwapChain&&) = delete;
+        SwapChain& operator=(SwapChain&&) = delete;
 
 
 
-namespace Imp {
-	class Window;
-	namespace Render {
-		class Device;
-		class VKWindow;
-		class RenderPass;
-		using UniqueSwapChain = std::unique_ptr<class SwapChain>;
-		class SwapChain
-		{
-		private:
-			SwapChainSupportDetails details;
-			vk::UniqueSwapchainKHR swapChain;
-			std::vector<vk::Image> images;
-			std::vector<vk::UniqueImageView> imageViews;
-			vk::Format format;
-			vk::Extent2D extent;
-			std::vector<vk::UniqueFramebuffer> framebuffers;
-			
-			static  vk::SurfaceFormatKHR ChooseSwapSurfaceFormat(const std::vector<vk::SurfaceFormatKHR>& formats);
-			static  vk::PresentModeKHR ChooseSwapPresentMode(const std::vector<vk::PresentModeKHR>& availablePresentModes);
-			static  vk::Extent2D ChooseSwapExtent(const vk::SurfaceCapabilitiesKHR& capabilities, const VKWindow& window);
+        // Getters
+        inline const SwapChainSupportDetails& getDetails() const noexcept { return m_supportDetails; }
+        inline vk::SurfaceFormatKHR getSurfaceFormat() const noexcept  { return m_surfaceFormat; }
+        inline vk::PresentModeKHR getPresentMode() const noexcept { return m_presentMode; }
+        inline vk::Extent2D getExtent() const noexcept { return m_extent; }
+        inline const vk::raii::SwapchainKHR& getSwapChain() const noexcept { return m_swapChain; }
+        inline const std::vector<vk::Image>& getImages() const noexcept { return m_images; }
+        inline const std::vector<vk::raii::ImageView>& getImageViews() const noexcept { return m_imageViews; }
+        inline const std::vector<vk::raii::Framebuffer>& getFramebuffers() const noexcept { return m_framebuffers; }
+        inline vk::Semaphore getPresentCompleteSemaphore(size_t index) const noexcept { return m_presentCompleteSemaphores[index]; }
+        inline vk::Semaphore getRenderFinishedSemaphore(size_t index) const noexcept { return m_renderFinishedSemaphores[index]; }
+        inline size_t getImageCount() const noexcept { return m_images.size(); }
+               
+        // Public Methods
 
-			friend UniqueSwapChain CreateUniqueSwapChain(const  Device& device, const VKWindow& window);
-			SwapChain(const Device& device, const VKWindow& window);
-			void CreateSwapChain(const Device& device, const VKWindow& window );
-			void CreateImageViews(const Device& device);
-		public:
-			DISABLE_COPY_AND_MOVE(SwapChain);
-			const SwapChainSupportDetails& getDetails() const { return details; }
-			const vk::SwapchainKHR& getSwapChain() const { return *swapChain; }
-			const std::vector<vk::Image>& getImages() const { return images; }
-			const std::vector<vk::UniqueImageView>& getImageViews() const { return imageViews; }
-			const std::vector<vk::UniqueFramebuffer>& getFramebuffers() const { return framebuffers; }
-			const vk::Format getFormat() const { return format; }
-			const vk::Extent2D& getExtent() const { return extent; }
-			
+        void recreateSwapChain(const VulkanContext& context, const Window& window);
 
-			inline operator const vk::SwapchainKHR() const { return swapChain.get(); }
-			operator vk::SwapchainKHR() { return swapChain.get(); }
+    private:
+        SwapChainSupportDetails m_supportDetails{};
+        vk::SurfaceFormatKHR m_surfaceFormat{};
+        vk::PresentModeKHR m_presentMode{};
+        vk::Extent2D m_extent{};
+        vk::raii::SwapchainKHR m_swapChain{ nullptr };
+        std::vector<vk::Image> m_images{};
+        std::vector<vk::raii::ImageView> m_imageViews{};
+        std::vector<vk::raii::Framebuffer> m_framebuffers{};
+        std::vector<vk::raii::Semaphore> m_presentCompleteSemaphores{};
+        std::vector<vk::raii::Semaphore> m_renderFinishedSemaphores{};
+
+        // Private Methods
+
+        void createSwapChain(const VulkanContext& context, const Window& window);
+        void createImageViews(const vk::raii::Device& device);
+        void cleanup();
+
+        // Static Helper Methods
+
+        static vk::SurfaceFormatKHR chooseSwapSurfaceFormat(const std::vector<vk::SurfaceFormatKHR>& formats);
+        static vk::SurfaceFormatKHR pickSwapSurfaceFormat(const vk::PhysicalDevice device, const vk::SurfaceKHR surface);
+        static vk::PresentModeKHR chooseSwapPresentMode(const std::vector<vk::PresentModeKHR>& availablePresentModes, vk::PresentModeKHR preferredMode);
+        static vk::Extent2D chooseSwapExtent(const vk::SurfaceCapabilitiesKHR& capabilities, const Window& window);
+
+    };
 
 
-			void Cleanup();
-			void RecreateSwapChain(const Device& device, const VKWindow& window);
-
-		};
-		 UniqueSwapChain CreateUniqueSwapChain(const class Device& device,const VKWindow& window);
-	}
 }

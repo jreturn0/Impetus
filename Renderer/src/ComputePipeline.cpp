@@ -1,92 +1,77 @@
 ﻿#include "core/ComputePipeline.h"
-#include "utils/descriptor/DescriptorLayoutBuilder.h"
-#include "core/Device.h"
-#include "utils/descriptor/DescriptorAllocator.h"
 #include "core/Image.h"
+#include "core/VulkanContext.h"
 #include "utils/descriptor/DescriptorAllocatorGrowable.h"
+#include "utils/descriptor/DescriptorLayoutBuilder.h"
 #include "utils/shader/ShaderLoader.h"
 
-namespace Imp::Render {
-
-	ComputePipeline::ComputePipeline(const Device& device, const Image& image, DescriptorAllocatorGrowable& descriptorAllocator, const std::string& shaderName) :
-		ComputeEffect(shaderName)
-	{
-		{
-			DescriptorLayoutBuilder builder;
-			builder.addBinding(0, vk::DescriptorType::eStorageImage);
-			descriptorSetLayout = builder.build(device.getLogical(), vk::ShaderStageFlagBits::eCompute);
-		}
-
-		descriptorSet = descriptorAllocator.allocate(device, descriptorSetLayout.get());
-		vk::DescriptorImageInfo imageInfo({}, image.getView(), vk::ImageLayout::eGeneral);
-
-		vk::WriteDescriptorSet descriptorWrite(*descriptorSet, 0, 0, vk::DescriptorType::eStorageImage, imageInfo);
-		device.getLogical().updateDescriptorSets({ descriptorWrite }, nullptr);
-
-		vk::PushConstantRange pushess(vk::ShaderStageFlagBits::eCompute, 0, sizeof(PushConstants));
-
-		vk::PipelineLayoutCreateInfo pipelineLayoutInfo({}, *descriptorSetLayout, pushess);
-
-		pipelineLayout = device.getLogical().createPipelineLayoutUnique(pipelineLayoutInfo, nullptr);
-
-		auto computeShader = ShaderLoader::CreateShaderModule(device, shaderName, vkutil::ShaderStage::Compute);
-
-		vk::PipelineShaderStageCreateInfo shaderStageInfo({}, vk::ShaderStageFlagBits::eCompute, *computeShader, "main");
-		vk::ComputePipelineCreateInfo pipelineInfo({}, shaderStageInfo, *pipelineLayout);
-
-		auto result = device.getLogical().createComputePipelineUnique(nullptr, pipelineInfo);
-		vkutil::CheckResult(result.result);
-		pipeline = std::move(result.value);
-	}
 
 
-	void ComputePipeline::recreate(const Device& device, const Image& image,
-		DescriptorAllocatorGrowable& descriptorAllocator)
-	{
-		
-		{
-			DescriptorLayoutBuilder builder;
-			builder.addBinding(0, vk::DescriptorType::eStorageImage);
-			descriptorSetLayout = builder.build(device.getLogical(), vk::ShaderStageFlagBits::eCompute);
-		}
+imp::gfx::ComputePipeline::ComputePipeline(const vk::raii::Device& device, const Image& image, DescriptorAllocatorGrowable& descriptorAllocator, std::string_view shaderName) :
+    ComputeEffect(shaderName)
+{
+    recreate(device, image, descriptorAllocator);
+}
 
-		descriptorSet = descriptorAllocator.allocate(device, descriptorSetLayout.get());
-		vk::DescriptorImageInfo imageInfo({}, image.getView(), vk::ImageLayout::eGeneral);
 
-		vk::WriteDescriptorSet descriptorWrite(*descriptorSet, 0, 0, vk::DescriptorType::eStorageImage, imageInfo);
-		device.getLogical().updateDescriptorSets({ descriptorWrite }, nullptr);
+void imp::gfx::ComputePipeline::recreate(const vk::raii::Device& device, const Image& image,
+    DescriptorAllocatorGrowable& descriptorAllocator)
+{
 
-		vk::PushConstantRange pushess(vk::ShaderStageFlagBits::eCompute, 0, sizeof(PushConstants));
+    {
+        DescriptorLayoutBuilder builder;
+        builder.addBinding(0, vk::DescriptorType::eStorageImage);
+        m_descriptorSetLayout = builder.build(device, vk::ShaderStageFlagBits::eCompute);
+    }
 
-		vk::PipelineLayoutCreateInfo pipelineLayoutInfo({}, *descriptorSetLayout, pushess);
+    m_descriptorSet = descriptorAllocator.allocate(device, m_descriptorSetLayout);
+    vk::DescriptorImageInfo imageInfo({}, image.getView(), vk::ImageLayout::eGeneral);
+    const auto descriptorWrite = vk::WriteDescriptorSet{}
+        .setDstSet(m_descriptorSet)
+        .setDescriptorType(vk::DescriptorType::eStorageImage)
+        .setImageInfo(imageInfo);
 
-		pipelineLayout = device.getLogical().createPipelineLayoutUnique(pipelineLayoutInfo, nullptr);
+    device.updateDescriptorSets({ descriptorWrite }, nullptr);
+    vk::PushConstantRange pushRange{ vk::ShaderStageFlagBits::eCompute, 0, sizeof(PushConstants) };
 
-		auto computeShader = ShaderLoader::CreateShaderModule(device, getName(), vkutil::ShaderStage::Compute);
+    const auto pipelineLayoutInfo = vk::PipelineLayoutCreateInfo{}
+        .setSetLayouts(*m_descriptorSetLayout)
+        .setPushConstantRanges(pushRange);
 
-		vk::PipelineShaderStageCreateInfo shaderStageInfo({}, vk::ShaderStageFlagBits::eCompute, *computeShader, "main");
-		vk::ComputePipelineCreateInfo pipelineInfo({}, shaderStageInfo, *pipelineLayout);
+    m_pipelineLayout = device.createPipelineLayout({ {}, *m_descriptorSetLayout, pushRange }, nullptr);
 
-		auto result = device.getLogical().createComputePipelineUnique(nullptr, pipelineInfo);
-		vkutil::CheckResult(result.result);
-		pipeline = std::move(result.value);
-	}
 
-	void ComputePipeline::bind(const vk::CommandBuffer& cmd)
-	{
-		cmd.bindPipeline(vk::PipelineBindPoint::eCompute, *pipeline);
-		cmd.bindDescriptorSets(vk::PipelineBindPoint::eCompute, *pipelineLayout, 0, *descriptorSet, nullptr);
-		cmd.pushConstants<PushConstants>(*pipelineLayout, vk::ShaderStageFlagBits::eCompute, 0, pushes);
-	}
+    auto computeShader = ShaderLoader::CreateShaderModule(device, getName(), vkutil::ShaderStage::Compute);
 
-	void ComputePipeline::dispatch(const vk::CommandBuffer& cmd, uint32_t x, uint32_t y, uint32_t z)
-	{
-		cmd.dispatch(x, y, z);
-	}
 
-	UniqueComputePipeline CreateUniqueComputePipeline(const Device& device, const Image& image, DescriptorAllocatorGrowable& descriptorAllocator, const std::string& shaderName)
-	{
-		return std::unique_ptr<ComputePipeline>(new ComputePipeline(device, image, descriptorAllocator, shaderName));
-	}
+    const auto shaderStageInfo = vk::PipelineShaderStageCreateInfo{}
+        .setStage(vk::ShaderStageFlagBits::eCompute)
+        .setModule(computeShader)
+        .setPName("main");
 
-} // namespace Imp::Render
+    const auto pipelineInfo = vk::ComputePipelineCreateInfo{}
+        .setStage(shaderStageInfo)
+        .setLayout(m_pipelineLayout);
+    try {
+        m_pipeline = device.createComputePipeline(nullptr, pipelineInfo);
+    }
+    catch (vk::SystemError& err) {
+        Debug::Error("Failed to create compute pipeline: {}", err.what());
+    }
+}
+
+void imp::gfx::ComputePipeline::bind(vk::CommandBuffer cmd)
+{
+    cmd.bindPipeline(vk::PipelineBindPoint::eCompute, m_pipeline);
+    cmd.bindDescriptorSets(vk::PipelineBindPoint::eCompute, m_pipelineLayout, 0, *m_descriptorSet, nullptr);
+    cmd.pushConstants<PushConstants>(m_pipelineLayout, vk::ShaderStageFlagBits::eCompute, 0, pushes);
+}
+
+void imp::gfx::ComputePipeline::dispatch(vk::CommandBuffer cmd, uint32_t x, uint32_t y, uint32_t z)
+{
+    cmd.dispatch(x, y, z);
+}
+
+
+
+

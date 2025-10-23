@@ -1,5 +1,6 @@
 ﻿#pragma once
-namespace Imp {
+#include <string_view>
+namespace imp {
 	enum class CameraType
 	{
 		Orthographic,

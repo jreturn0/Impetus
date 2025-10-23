@@ -1,18 +1,16 @@
 #pragma once
 #include "System.h"
-namespace Imp {
-	class ResourceSystem : public System
-	{
-	private:
-		/*std::reference_wrapper<class ResourceManager>*/ class ResourceManager* resourceManager;
+namespace imp {
 
-		void onTestResourceConstruct(entt::registry& registry, entt::entity entity);
 
-	public:
-		void initialize(entt::registry& registry) override;
-
-		// Inherited via System
-		void update(entt::registry& registry, const float deltaTime) override;
-	};
+    // Unused/ not implemented 
+    class ResourceSystem final : public System
+    {
+    public:
+        void initialize(entt::registry& registry) override;        
+        void update(entt::registry& registry, const float deltaTime) override;
+    private:
+        class ResourceManager* m_resourceManager;
+    };
 
 }

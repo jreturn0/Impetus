@@ -1,73 +1,64 @@
 #include "Clock.h"
 #include "Debug.h"
 #include <thread>
+#include <GLFW/glfw3.h>
 
 namespace chrn = std::chrono;
-Imp::Clock::Clock(unsigned short variableFpsCap, unsigned short fixedFpsCap, unsigned short maxAccumulated) :
-	variableTarget(variableFpsCap),
-	variableTargetDuration(variableTarget > 0
-						   ? Duration(1'000'000'000ll * 1000 / (1000 * variableTarget + 50))  // Adjust to simulate a tiny increase in FPS
-						   : Duration(0)),
-	fixedTarget(fixedFpsCap),
-	fixedTargetDuration(fixedTarget > 0
-						? Duration(1'000'000'000ll / fixedTarget)
-						: Duration(0)),
-	lastFrameEnd(SystemClock::now()),
-	deltaTime(0),
-	realElapsed(0),
-	accumulatedTime(0),
-	maxAccumulatedTime(Duration((1'000'000'000ll / fixedFpsCap)* maxAccumulated)),
-	fixedFrame(false)
+imp::Clock::Clock(double currentTimeSeconds, unsigned short variableFpsCap, unsigned short fixedFpsCap, double maxAccumulatedFrames ) :
+    m_targetFps(static_cast<uint64_t>(variableFpsCap)),
+    m_targetFrameDuration(m_targetFps != 0 ? 1. / m_targetFps : 0),
+    m_fixedTargetFps(static_cast<uint64_t>(fixedFpsCap)),
+    m_fixedTargetFrameDuration(m_fixedTargetFps != 0 ? 1. / m_fixedTargetFps : 0),
+    m_maxAccumulatedFrames(maxAccumulatedFrames),
+    m_maxAccumulatedTime(m_fixedTargetFrameDuration* m_maxAccumulatedFrames),
+    m_accumulatedTime(0),
+    m_fixedFrame(false),
+    m_lastFrameTime(currentTimeSeconds),
+    m_nextFrameTime(m_lastFrameTime + m_targetFrameDuration),
+    m_elapsedTime(0),
+    m_deltaTime(0)
+
 {
-	// Constructor body
+
 }
 
 
-
-
-
-
-
-void Imp::Clock::update()
+void imp::Clock::update() noexcept
 {
-	// Measure start time
-	TimePoint frameEndTime = SystemClock::now();
+    auto now = glfwGetTime();
+    // If we're behind schedule, skip sleeping entirely
+    if ((now < m_nextFrameTime) && (m_targetFps > 0)) {
+        double remaining = m_nextFrameTime - now;
+        if (remaining > 0.01) { // >10ms
 
-	// Calculate elapsed time since last frame
-	deltaTime = frameEndTime - lastFrameEnd;
+            std::this_thread::sleep_for(std::chrono::duration<double>(remaining - 0.002));
+        }
+        while ((now = glfwGetTime()) < m_nextFrameTime) {
+            std::this_thread::yield();
+        }
+    }
+    m_deltaTime = now - m_lastFrameTime;
+    m_lastFrameTime = now;
 
 
-	// Enforce target FPS if specified
-	if (variableTarget > 0) {
-		const Duration frameTimeLeft = variableTargetDuration - deltaTime;
-		constexpr auto zero = Duration(0ll);
-		Duration sleepDuration = frameTimeLeft * 60 / 100;
-		if (sleepDuration > zero) {
-			std::this_thread::sleep_for(sleepDuration);
-		}
+    if (now > m_nextFrameTime + 2.0 * m_targetFrameDuration) {
+        m_nextFrameTime = now + m_targetFrameDuration;
+    }
+    else {
+        m_nextFrameTime += m_targetFrameDuration;
+    }
+    m_elapsedTime += m_deltaTime;
 
-		while ((deltaTime =((frameEndTime = SystemClock::now()) - lastFrameEnd)) < variableTargetDuration) {}
-	}
-
-	// Update last frame time
-	lastFrameEnd = frameEndTime;
-	realElapsed += deltaTime;
-	// Update accumulated time
-	accumulatedTime += deltaTime;
-	if (accumulatedTime > maxAccumulatedTime) {
-		accumulatedTime = maxAccumulatedTime; // Prevent excessive accumulation
-	}
+    m_accumulatedTime += m_deltaTime;
+    if (m_accumulatedTime > m_maxAccumulatedTime) {
+        m_accumulatedTime = m_maxAccumulatedTime; // Prevent death spiral
+    }
 }
-bool Imp::Clock::isFixed() const
+bool imp::Clock::fixedUpdate()  noexcept
 {
-	return accumulatedTime >= fixedTargetDuration;
-}
-
-bool Imp::Clock::fixedUpdate()
-{
-	if (accumulatedTime >= fixedTargetDuration) {
-		accumulatedTime -= fixedTargetDuration;
-		return true;
-	}
-	return false;
+    if (m_accumulatedTime >= m_fixedTargetFrameDuration) {
+        m_accumulatedTime -= m_fixedTargetFrameDuration;
+        return true;
+    }
+    return false;
 }

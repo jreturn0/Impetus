@@ -3,48 +3,37 @@
 #include <thread>
 #include <GLFW/glfw3.h>
 
-#include "BasicEvents.h"
+#include "events/BasicEvents.h"
 #include "System.h"
 
 
 
-namespace Imp {
-	class InputSystem final : public System
-	{
-	private:
-		bool initalized = false;
-		double test = 0.;
-		std::unordered_map<Input::Key,Input::State> keyStates;
-		std::unordered_map<Input::MouseButton, Input::State> mouseButtonStates;
-		double mouseX{ 0.}, mouseY{ 0.}, lastMouseX{ 0.}, lastMouseY{0.};
-		double scrollX{ 0.}, scrollY{ 0.};
-		bool mouseMoved = false;
-		bool keyPressed = false;
-		bool mouseButtonPressed = false;
-		bool inputCaptured = true;
-		bool mouseEntered = true;
-		bool mouseCaptured = false;
-		std::queue<uint32_t> keyReleaseCheck;
-		std::queue<uint32_t> buttonReleaseCheck;
+namespace imp {
+    class InputSystem final : public System
+    {
+    public:
+        void initialize(entt::registry& registry) override;
+        void update(entt::registry& registry, const float deltaTime) override;
+        void cleanup(entt::registry& registry) override;
+    private:
+        std::unordered_map<Input::Key, Input::State> m_keyStates{};
+        std::unordered_map<Input::MouseButton, Input::State> m_mouseButtonStates{};
+        double m_mouseX{ 0. }, m_mouseY{ 0. }, m_lastMouseX{ 0. }, m_lastMouseY{ 0. };
+        double m_scrollX{ 0. }, m_scrollY{ 0. };
+        bool m_mouseMoved{ false };
+        bool m_keyPressed{ false };
+        bool m_mouseButtonPressed{ false };
+        bool m_inputCaptured{ true };
+        bool m_mouseEntered{ true };
+        bool m_mouseCaptured{ false };
+        std::queue<uint32_t> m_keyReleaseCheck{};
+        std::queue<uint32_t> m_buttonReleaseCheck{};
 
-
-		inline static unsigned idCounter = 0;
-		unsigned id = idCounter++;
-
-		
-	public:
-		void initialize(entt::registry& registry) override;
-		void OnKeyEvent(KeyEvent keyEvent) ;
-		void OnMouseMoveEvent( MouseMoveEvent mouseMoveEvent);
-		void OnMouseButtonEvent(MouseButtonEvent mouseButtonEvent);
-		void OnMouseScrollEvent( MouseScrollEvent mouseScrollEvent);
-		void OnMouseEnterEvent(MouseEnterEvent mouseEnterEvent);
-		void OnWindowFocusEvent(WindowFocusEvent windowFocusEvent);
-
-
-
-		void update(entt::registry& registry, const float deltaTime) override;
-
-		void cleanup(entt::registry& registry) override;
-	};
+        void OnKeyEvent(KeyEvent keyEvent);
+        void OnMouseMoveEvent(MouseMoveEvent mouseMoveEvent);
+        void OnMouseButtonEvent(MouseButtonEvent mouseButtonEvent);
+        void OnMouseScrollEvent(MouseScrollEvent mouseScrollEvent);
+        void OnMouseEnterEvent(MouseEnterEvent mouseEnterEvent);
+        void OnWindowFocusEvent(WindowFocusEvent windowFocusEvent);
+    };
 }

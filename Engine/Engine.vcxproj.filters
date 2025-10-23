@@ -27,16 +27,10 @@
     <ClCompile Include="src\ContactListener.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\DebugGuiSystem.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\EndRenderSystem.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Impetus.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\InputHandler.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\InputSystem.cpp">
@@ -75,13 +69,13 @@
     <ClCompile Include="src\SystemRegistry.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\ThreadPool.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\TransformSystem.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="include\CoreSystems\PhysicsSystem.cpp">
+    <ClCompile Include="src\PhysicsSystem.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\LightSystem.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -90,9 +84,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\Components\CollisionInfoComponent.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\Components\generated_serialization.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\Components\InputStateComponent.h">
@@ -114,9 +105,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\CoreSystems\CameraSystem.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\CoreSystems\DebugGuiSystem.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\CoreSystems\EndRenderSystem.h">
@@ -144,12 +132,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\CoreSystems\TransformSystem.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\DebugUtils\DebugGuiComponentWidgets.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\DebugUtils\DebugGuiTypeWidgets.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\Events\InputEvents.h">
@@ -182,7 +164,7 @@
     <ClInclude Include="include\ResourceTypes\TestResource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\BasicEvents.h">
+    <ClInclude Include="include\Events\BasicEvents.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\CameraType.h">
@@ -209,9 +191,6 @@
     <ClInclude Include="include\InputCodes.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\InputHandler.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="include\RegisterMacro.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -230,7 +209,7 @@
     <ClInclude Include="include\SceneArchive.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\Serialize.h">
+    <ClInclude Include="include\CoreSerialize.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\System.h">
@@ -242,10 +221,19 @@
     <ClInclude Include="include\SystemRegistry.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\ThreadPool.h">
+    <ClInclude Include="include\UpdateType.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\UpdateType.h">
+    <ClInclude Include="include\Physics\RayHit.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Components\CameraLookAtComponent.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Components\LightComponent.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\SerializeTypes.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

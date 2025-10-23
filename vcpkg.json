@@ -6,23 +6,19 @@
     "cereal",
     "entt",
     "fastgltf",
+    "fmt",
+    "glfw3",
     "glm",
     {
       "name": "imgui",
       "features": [
         "docking-experimental",
-        "sdl2-binding",
+        "glfw-binding",
         "vulkan-binding"
       ]
     },
-    {
-      "name": "sdl2",
-      "features":[
-        "vulkan"
-      ]
-    },
-    "sdl2-image",
     "joltphysics",
-    "spirv-reflect"
+    "spirv-reflect",
+    "stb"
   ]
 }

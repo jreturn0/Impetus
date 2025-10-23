@@ -1,6 +1,6 @@
 ﻿#pragma once
 #include <cstdint>
-namespace Imp {
+namespace imp {
 	enum  UpdateType : uint8_t
 	{
 		Variable,

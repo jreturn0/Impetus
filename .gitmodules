@@ -1,0 +1,3 @@
+[submodule "MyUtils"]
+	path = MyUtils
+	url = https://github.com/EasedMango/MyUtils.git

@@ -1,43 +1,45 @@
 ﻿
 #pragma once
+#include "core/ComputeEffect.h"
+#include "utils/Forwards.h"
+#include "utils/QuickMacros.h"
+#include "utils/VKCommon.hpp"
+#include <array>
 #include <glm/vec4.hpp>
 #include <memory>
-#include <array>
 #include <string>
-#include "utils/VKCommon.hpp"
-#include "utils/QuickMacros.h"
-#include "core/ComputeEffect.h"
 
-#include "utils/Forwards.h"
-namespace Imp::Render {
+namespace imp::gfx {
 
     using UniqueComputePipeline = std::unique_ptr<class ComputePipeline>;
-    
-    class ComputePipeline : public ComputeEffect 
+
+    // Simple implementation of ComputeEffect in Vulkan using a compute pipeline
+    class ComputePipeline : public ComputeEffect
     {
-    private:
-        vk::UniqueDescriptorSet descriptorSet;
-        vk::UniqueDescriptorSetLayout descriptorSetLayout;
-        vk::UniquePipelineLayout pipelineLayout;
-        vk::UniquePipeline pipeline;
-
-        ComputePipeline(const Device& device, const Image& image, DescriptorAllocatorGrowable& descriptorAllocator,
-                        const std::string& shaderName);
-
-        friend UniqueComputePipeline CreateUniqueComputePipeline(const Device& device, const Image& image, DescriptorAllocatorGrowable& descriptorAllocator, const std::string& shaderName);
-
     public:
-        ComputePipeline()=default;
+        ComputePipeline(const vk::raii::Device& device, const Image& image, DescriptorAllocatorGrowable& descriptorAllocator, std::string_view shaderName);
+        ComputePipeline() = default;
         ~ComputePipeline() = default;
-        vk::DescriptorSet& getDescriptorSet() { return *descriptorSet; };
-        vk::DescriptorSetLayout& getDescriptorSetLayout() { return *descriptorSetLayout; };
-        vk::PipelineLayout& getPipelineLayout() { return *pipelineLayout; };
-        vk::Pipeline& getPipeline() { return *pipeline; };
-        void recreate(const Device& device, const Image& image, DescriptorAllocatorGrowable& descriptorAllocator);
 
-        void bind(const vk::CommandBuffer& cmd);
-        void dispatch(const vk::CommandBuffer& cmd, uint32_t x, uint32_t y, uint32_t z);
+        // Getters
+
+        inline vk::DescriptorSet getDescriptorSet() const noexcept { return m_descriptorSet; };
+        inline vk::DescriptorSetLayout getDescriptorSetLayout()const noexcept { return m_descriptorSetLayout; };
+        inline vk::PipelineLayout getPipelineLayout()const noexcept { return m_pipelineLayout; };
+        inline vk::Pipeline getPipeline() const noexcept { return m_pipeline; };
+
+
+        // Methods
+
+        void recreate(const vk::raii::Device& device, const Image& image, DescriptorAllocatorGrowable& descriptorAllocator);
+        void bind(vk::CommandBuffer cmd);
+        void dispatch(vk::CommandBuffer cmd, uint32_t x, uint32_t y, uint32_t z);
+    private:
+        vk::raii::DescriptorSet m_descriptorSet{ nullptr };
+        vk::raii::DescriptorSetLayout m_descriptorSetLayout{ nullptr };
+        vk::raii::PipelineLayout m_pipelineLayout{ nullptr };
+        vk::raii::Pipeline m_pipeline{ nullptr };
     };
 
-    UniqueComputePipeline CreateUniqueComputePipeline(const Device& device, const Image& image, DescriptorAllocatorGrowable& descriptorAllocator, const std::string& shaderName);
+
 }

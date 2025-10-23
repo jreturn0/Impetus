@@ -1,12 +1,12 @@
 ﻿#pragma once
 #include <glm/vec3.hpp>
 
-namespace Imp::Render
-{
-		struct Bounds
+namespace imp::gfx {
+	// 3D Object Bounds Structure (AABB and Bounding Sphere)
+	struct Bounds
 	{
-		glm::vec3 origin;
-		float sphereRadius;
-		glm::vec3 extents;
+		glm::vec3 origin{};
+		float sphereRadius{};
+		glm::vec3 extents{};
 	};
 }

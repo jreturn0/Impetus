@@ -1,0 +1,2399 @@
+{
+    "Entities": {
+        "value0": 47,
+        "value1": 31,
+        "value2": 3145755,
+        "value3": 1,
+        "value4": 2,
+        "value5": 1048579,
+        "value6": 4,
+        "value7": 1048581,
+        "value8": 6,
+        "value9": 7,
+        "value10": 8,
+        "value11": 9,
+        "value12": 10,
+        "value13": 11,
+        "value14": 12,
+        "value15": 13,
+        "value16": 14,
+        "value17": 15,
+        "value18": 16,
+        "value19": 17,
+        "value20": 18,
+        "value21": 1048595,
+        "value22": 1048599,
+        "value23": 33554432,
+        "value24": 58720276,
+        "value25": 55574549,
+        "value26": 105906220,
+        "value27": 110100513,
+        "value28": 158334998,
+        "value29": 110100517,
+        "value30": 134217767,
+        "value31": 206569510,
+        "value32": 189792296,
+        "value33": 22020128,
+        "value34": 26214441,
+        "value35": 102760474,
+        "value36": 147849244,
+        "value37": 47185945,
+        "value38": 2097198,
+        "value39": 2097197,
+        "value40": 1048619,
+        "value41": 3145763,
+        "value42": 6291486,
+        "value43": 3145770,
+        "value44": 6291485,
+        "value45": 3145764,
+        "value46": 3145762,
+        "value47": 4194335,
+        "value48": 12582936
+    },
+    "ActiveCamera": {
+        "value0": 1,
+        "value1": 1
+    },
+    "Enemy": {
+        "value0": 0
+    },
+    "Player": {
+        "value0": 1,
+        "value1": 18
+    },
+    "Projectile": {
+        "value0": 0
+    },
+    "struct AimTargetComponent": {
+        "value0": 1,
+        "value1": 1048595,
+        "value2": {
+            "offset": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": -0.05000000074505806
+            },
+            "normalMultiplier": 6.0,
+            "lockY": true,
+            "yHeight": 2.0,
+            "useCameraPlayerRelative": true
+        }
+    },
+    "struct AttackComponent": {
+        "value0": 1,
+        "value1": 18,
+        "value2": {
+            "canAttack": true,
+            "attackCooldown": 0.20000000298023225,
+            "attackCooldownTimer": 0.20000000298023225
+        }
+    },
+    "struct CameraControllerComponent": {
+        "value0": 1,
+        "value1": 1,
+        "value2": {
+            "pitch": -0.3840501308441162,
+            "yaw": 1.5809385776519776,
+            "smooth": true,
+            "smoothSpeed": 5.0,
+            "targetPitch": -0.38405153155326846,
+            "targetYaw": 1.5809414386749268,
+            "moveSpeed": 5.0,
+            "moveBoostSpeed": 50.0
+        }
+    },
+    "struct CameraFollowComponent": {
+        "value0": 1,
+        "value1": 18,
+        "value2": {
+            "offset": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "smoothSpeed": 41.56999969482422,
+            "lockY": false,
+            "yHeight": -0.2800000011920929,
+            "orbit": true,
+            "orbitSpeed": 106.16000366210938,
+            "orbitDistance": 10.0
+        }
+    },
+    "struct DamageComponent": {
+        "value0": 0
+    },
+    "struct EnemySpawnPointComponent": {
+        "value0": 4,
+        "value1": 1048599,
+        "value2": {
+            "spawnInterval": 1.0,
+            "spawnIntervalTimer": 4.266665935516357,
+            "maxSpawnPerInterval": 1,
+            "maxEnemies": 5,
+            "defaultHealth": 100,
+            "defaultDamage": 2,
+            "defaultAccel": 1000000.0,
+            "defaultMaxSpeed": 10.0,
+            "defaultSize": 1.0,
+            "enemyModelFile": "basic_shapes.glb",
+            "enemyMeshName": "Icosphere",
+            "enemyMaterialName": "flat_emitter_red"
+        },
+        "value3": 105906220,
+        "value4": {
+            "spawnInterval": 1.0,
+            "spawnIntervalTimer": 4.266665935516357,
+            "maxSpawnPerInterval": 1,
+            "maxEnemies": 5,
+            "defaultHealth": 100,
+            "defaultDamage": 2,
+            "defaultAccel": 1000000.0,
+            "defaultMaxSpeed": 10.0,
+            "defaultSize": 1.0,
+            "enemyModelFile": "basic_shapes.glb",
+            "enemyMeshName": "Icosphere",
+            "enemyMaterialName": "flat_emitter_red"
+        },
+        "value5": 110100513,
+        "value6": {
+            "spawnInterval": 1.0,
+            "spawnIntervalTimer": 4.266665935516357,
+            "maxSpawnPerInterval": 1,
+            "maxEnemies": 5,
+            "defaultHealth": 100,
+            "defaultDamage": 2,
+            "defaultAccel": 1000000.0,
+            "defaultMaxSpeed": 10.0,
+            "defaultSize": 1.0,
+            "enemyModelFile": "basic_shapes.glb",
+            "enemyMeshName": "Icosphere",
+            "enemyMaterialName": "flat_emitter_red"
+        },
+        "value7": 158334998,
+        "value8": {
+            "spawnInterval": 1.0,
+            "spawnIntervalTimer": 4.266665935516357,
+            "maxSpawnPerInterval": 1,
+            "maxEnemies": 5,
+            "defaultHealth": 100,
+            "defaultDamage": 2,
+            "defaultAccel": 1000000.0,
+            "defaultMaxSpeed": 10.0,
+            "defaultSize": 1.0,
+            "enemyModelFile": "basic_shapes.glb",
+            "enemyMeshName": "Icosphere",
+            "enemyMaterialName": "flat_emitter_red"
+        }
+    },
+    "struct HealthComponent": {
+        "value0": 0
+    },
+    "struct MoveDirectionComponent": {
+        "value0": 1,
+        "value1": 18,
+        "value2": {
+            "direction": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "faceDirection": true
+        }
+    },
+    "struct ProjectileWeaponComponent": {
+        "value0": 1,
+        "value1": 18,
+        "value2": {
+            "projectileSpeed": 50.0,
+            "projectileLifeTime": 5.0,
+            "projectileDamage": 25,
+            "damageFlags": {
+                "mask": 255
+            }
+        }
+    },
+    "struct RenderSceneDataComponent": {
+        "value0": 1,
+        "value1": 1,
+        "value2": {
+            "ambientColor": {
+                "x": 0.05000000074505806,
+                "y": 0.05000000074505806,
+                "z": 0.05000000074505806,
+                "w": 0.7799999713897705
+            },
+            "sunlightColor": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0,
+                "w": 0.23999999463558198
+            },
+            "sunlightDirection": {
+                "x": -1.2400000095367432,
+                "y": -12.069999694824219,
+                "z": -2.509999990463257,
+                "w": -1.4500000476837159
+            },
+            "computePush1": {
+                "x": 0.30000001192092898,
+                "y": -0.699999988079071,
+                "z": -1.190000057220459,
+                "w": 1.0
+            },
+            "computePush2": {
+                "x": 0.0,
+                "y": 0.23000000417232514,
+                "z": 0.0,
+                "w": 1.0
+            }
+        }
+    },
+    "struct SpeedComponent": {
+        "value0": 1,
+        "value1": 18,
+        "value2": {
+            "speed": 50000.0,
+            "maxSpeed": 50.0
+        }
+    },
+    "struct TargetComponent": {
+        "value0": 0
+    },
+    "struct imp::CameraComponent": {
+        "value0": 1,
+        "value1": 1,
+        "value2": {
+            "fov": 90.0,
+            "nearPlane": 0.009999999776482582,
+            "farPlane": 1000.0,
+            "type": 1
+        }
+    },
+    "struct imp::CameraLookAtComponent": {
+        "value0": 0
+    },
+    "struct imp::CollisionInfoComponent": {
+        "value0": 0
+    },
+    "struct imp::LightComponent": {
+        "value0": 6,
+        "value1": 1048595,
+        "value2": {
+            "isDirectional": false,
+            "colour": {
+                "x": 1.0,
+                "y": 0.0,
+                "z": 1.0
+            },
+            "intensity": 400.0,
+            "constantAttenuation": 3.3499999046325685,
+            "linearAttenuation": 11.34000015258789,
+            "quadraticAttenuation": 53.40999984741211,
+            "range": 4.809999942779541
+        },
+        "value3": 33554432,
+        "value4": {
+            "isDirectional": false,
+            "colour": {
+                "x": 1.0,
+                "y": 0.07999999821186066,
+                "z": 0.029999999329447748
+            },
+            "intensity": 550.0,
+            "constantAttenuation": 0.12999999523162843,
+            "linearAttenuation": 0.6200000047683716,
+            "quadraticAttenuation": 0.28999999165534975,
+            "range": 50.0
+        },
+        "value5": 58720276,
+        "value6": {
+            "isDirectional": false,
+            "colour": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 2.8299999237060549
+            },
+            "intensity": 40.0,
+            "constantAttenuation": 7.320000171661377,
+            "linearAttenuation": 0.07000000029802323,
+            "quadraticAttenuation": 0.4000000059604645,
+            "range": 100.0
+        },
+        "value7": 110100517,
+        "value8": {
+            "isDirectional": false,
+            "colour": {
+                "x": 1.0,
+                "y": 0.07999999821186066,
+                "z": 0.029999999329447748
+            },
+            "intensity": 550.0,
+            "constantAttenuation": 0.12999999523162843,
+            "linearAttenuation": 0.6200000047683716,
+            "quadraticAttenuation": 0.28999999165534975,
+            "range": 50.0
+        },
+        "value9": 134217767,
+        "value10": {
+            "isDirectional": false,
+            "colour": {
+                "x": 1.0,
+                "y": 0.07999999821186066,
+                "z": 0.029999999329447748
+            },
+            "intensity": 550.0,
+            "constantAttenuation": 0.12999999523162843,
+            "linearAttenuation": 0.6200000047683716,
+            "quadraticAttenuation": 0.28999999165534975,
+            "range": 50.0
+        },
+        "value11": 206569510,
+        "value12": {
+            "isDirectional": false,
+            "colour": {
+                "x": 1.0,
+                "y": 0.07999999821186066,
+                "z": 0.029999999329447748
+            },
+            "intensity": 550.0,
+            "constantAttenuation": 0.12999999523162843,
+            "linearAttenuation": 0.6200000047683716,
+            "quadraticAttenuation": 0.28999999165534975,
+            "range": 50.0
+        }
+    },
+    "struct imp::ModelComponent": {
+        "value0": 22,
+        "value1": 2,
+        "value2": {
+            "gltf": "basic_shapes.glb",
+            "name": "Cube",
+            "materialOverrideName": "",
+            "localTransform": {
+                "value0": {
+                    "x": 20.0,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "w": 0.0
+                },
+                "value1": {
+                    "x": 0.0,
+                    "y": 1.0,
+                    "z": 0.0,
+                    "w": 0.0
+                },
+                "value2": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 20.0,
+                    "w": 0.0
+                },
+                "value3": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "w": 1.0
+                }
+            },
+            "visible": true
+        },
+        "value3": 1048579,
+        "value4": {
+            "gltf": "basic_shapes.glb",
+            "name": "Cube",
+            "materialOverrideName": "",
+            "localTransform": {
+                "value0": {
+                    "x": 20.0,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "w": 0.0
+                },
+                "value1": {
+                    "x": 0.0,
+                    "y": 1.0,
+                    "z": 0.0,
+                    "w": 0.0
+                },
+                "value2": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 20.0,
+                    "w": 0.0
+                },
+                "value3": {
+                    "x": 40.0,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "w": 1.0
+                }
+            },
+            "visible": true
+        },
+        "value5": 4,
+        "value6": {
+            "gltf": "basic_shapes.glb",
+            "name": "Cube",
+            "materialOverrideName": "",
+            "localTransform": {
+                "value0": {
+                    "x": 20.0,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "w": 0.0
+                },
+                "value1": {
+                    "x": 0.0,
+                    "y": 1.0,
+                    "z": 0.0,
+                    "w": 0.0
+                },
+                "value2": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 20.0,
+                    "w": 0.0
+                },
+                "value3": {
+                    "x": -40.0,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "w": 1.0
+                }
+            },
+            "visible": true
+        },
+        "value7": 1048581,
+        "value8": {
+            "gltf": "basic_shapes.glb",
+            "name": "Cube",
+            "materialOverrideName": "",
+            "localTransform": {
+                "value0": {
+                    "x": 20.0,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "w": 0.0
+                },
+                "value1": {
+                    "x": 0.0,
+                    "y": 1.0,
+                    "z": 0.0,
+                    "w": 0.0
+                },
+                "value2": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 20.0,
+                    "w": 0.0
+                },
+                "value3": {
+                    "x": -40.0,
+                    "y": 0.0,
+                    "z": 40.0,
+                    "w": 1.0
+                }
+            },
+            "visible": true
+        },
+        "value9": 6,
+        "value10": {
+            "gltf": "basic_shapes.glb",
+            "name": "Cube",
+            "materialOverrideName": "",
+            "localTransform": {
+                "value0": {
+                    "x": 20.0,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "w": 0.0
+                },
+                "value1": {
+                    "x": 0.0,
+                    "y": 1.0,
+                    "z": 0.0,
+                    "w": 0.0
+                },
+                "value2": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 20.0,
+                    "w": 0.0
+                },
+                "value3": {
+                    "x": -40.0,
+                    "y": 0.0,
+                    "z": -40.0,
+                    "w": 1.0
+                }
+            },
+            "visible": true
+        },
+        "value11": 7,
+        "value12": {
+            "gltf": "basic_shapes.glb",
+            "name": "Cube",
+            "materialOverrideName": "",
+            "localTransform": {
+                "value0": {
+                    "x": 20.0,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "w": 0.0
+                },
+                "value1": {
+                    "x": 0.0,
+                    "y": 1.0,
+                    "z": 0.0,
+                    "w": 0.0
+                },
+                "value2": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 20.0,
+                    "w": 0.0
+                },
+                "value3": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": -40.0,
+                    "w": 1.0
+                }
+            },
+            "visible": true
+        },
+        "value13": 8,
+        "value14": {
+            "gltf": "basic_shapes.glb",
+            "name": "Cube",
+            "materialOverrideName": "",
+            "localTransform": {
+                "value0": {
+                    "x": 20.0,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "w": 0.0
+                },
+                "value1": {
+                    "x": 0.0,
+                    "y": 1.0,
+                    "z": 0.0,
+                    "w": 0.0
+                },
+                "value2": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 20.0,
+                    "w": 0.0
+                },
+                "value3": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 40.0,
+                    "w": 1.0
+                }
+            },
+            "visible": true
+        },
+        "value15": 9,
+        "value16": {
+            "gltf": "basic_shapes.glb",
+            "name": "Cube",
+            "materialOverrideName": "",
+            "localTransform": {
+                "value0": {
+                    "x": 20.0,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "w": 0.0
+                },
+                "value1": {
+                    "x": 0.0,
+                    "y": 1.0,
+                    "z": 0.0,
+                    "w": 0.0
+                },
+                "value2": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 20.0,
+                    "w": 0.0
+                },
+                "value3": {
+                    "x": 40.0,
+                    "y": 0.0,
+                    "z": 40.0,
+                    "w": 1.0
+                }
+            },
+            "visible": true
+        },
+        "value17": 10,
+        "value18": {
+            "gltf": "basic_shapes.glb",
+            "name": "Cube",
+            "materialOverrideName": "",
+            "localTransform": {
+                "value0": {
+                    "x": 20.0,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "w": 0.0
+                },
+                "value1": {
+                    "x": 0.0,
+                    "y": 1.0,
+                    "z": 0.0,
+                    "w": 0.0
+                },
+                "value2": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 20.0,
+                    "w": 0.0
+                },
+                "value3": {
+                    "x": 40.0,
+                    "y": 0.0,
+                    "z": -40.0,
+                    "w": 1.0
+                }
+            },
+            "visible": true
+        },
+        "value19": 11,
+        "value20": {
+            "gltf": "basic_shapes.glb",
+            "name": "Cube",
+            "materialOverrideName": "",
+            "localTransform": {
+                "value0": {
+                    "x": 20.0,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "w": 0.0
+                },
+                "value1": {
+                    "x": 0.0,
+                    "y": 1.0,
+                    "z": 0.0,
+                    "w": 0.0
+                },
+                "value2": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 20.0,
+                    "w": 0.0
+                },
+                "value3": {
+                    "x": 40.0,
+                    "y": 0.0,
+                    "z": 80.0,
+                    "w": 1.0
+                }
+            },
+            "visible": true
+        },
+        "value21": 12,
+        "value22": {
+            "gltf": "basic_shapes.glb",
+            "name": "Cube",
+            "materialOverrideName": "",
+            "localTransform": {
+                "value0": {
+                    "x": 20.0,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "w": 0.0
+                },
+                "value1": {
+                    "x": 0.0,
+                    "y": 1.0,
+                    "z": 0.0,
+                    "w": 0.0
+                },
+                "value2": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 20.0,
+                    "w": 0.0
+                },
+                "value3": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 80.0,
+                    "w": 1.0
+                }
+            },
+            "visible": true
+        },
+        "value23": 13,
+        "value24": {
+            "gltf": "basic_shapes.glb",
+            "name": "Cube",
+            "materialOverrideName": "",
+            "localTransform": {
+                "value0": {
+                    "x": 20.0,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "w": 0.0
+                },
+                "value1": {
+                    "x": 0.0,
+                    "y": 1.0,
+                    "z": 0.0,
+                    "w": 0.0
+                },
+                "value2": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 20.0,
+                    "w": 0.0
+                },
+                "value3": {
+                    "x": -40.0,
+                    "y": 0.0,
+                    "z": 80.0,
+                    "w": 1.0
+                }
+            },
+            "visible": true
+        },
+        "value25": 14,
+        "value26": {
+            "gltf": "basic_shapes.glb",
+            "name": "Cube",
+            "materialOverrideName": "light_shafts",
+            "localTransform": {
+                "value0": {
+                    "x": 0.0,
+                    "y": 0.027277886867523195,
+                    "z": -78.99999237060547,
+                    "w": 0.0
+                },
+                "value1": {
+                    "x": -0.9999999403953552,
+                    "y": -0.0002589225769042969,
+                    "z": -1.1920928955078126e-7,
+                    "w": 0.0
+                },
+                "value2": {
+                    "x": -0.005179643630981445,
+                    "y": 19.999998092651368,
+                    "z": 0.006905794143676758,
+                    "w": 0.0
+                },
+                "value3": {
+                    "x": -60.0,
+                    "y": 20.0,
+                    "z": 20.0,
+                    "w": 1.0
+                }
+            },
+            "visible": true
+        },
+        "value27": 15,
+        "value28": {
+            "gltf": "basic_shapes.glb",
+            "name": "Cube",
+            "materialOverrideName": "light_shafts",
+            "localTransform": {
+                "value0": {
+                    "x": 0.0,
+                    "y": 0.027277886867523195,
+                    "z": -78.99999237060547,
+                    "w": 0.0
+                },
+                "value1": {
+                    "x": -0.9999999403953552,
+                    "y": -0.0002589225769042969,
+                    "z": -1.1920928955078126e-7,
+                    "w": 0.0
+                },
+                "value2": {
+                    "x": -0.005179643630981445,
+                    "y": 19.999998092651368,
+                    "z": 0.006905794143676758,
+                    "w": 0.0
+                },
+                "value3": {
+                    "x": 60.0,
+                    "y": 20.0,
+                    "z": 20.0,
+                    "w": 1.0
+                }
+            },
+            "visible": true
+        },
+        "value29": 16,
+        "value30": {
+            "gltf": "basic_shapes.glb",
+            "name": "Cube",
+            "materialOverrideName": "light_shafts",
+            "localTransform": {
+                "value0": {
+                    "x": -59.00001525878906,
+                    "y": 0.000005157944542588666,
+                    "z": 0.0,
+                    "w": 0.0
+                },
+                "value1": {
+                    "x": 0.0,
+                    "y": -1.1920928955078126e-7,
+                    "z": 1.0000001192092896,
+                    "w": 0.0
+                },
+                "value2": {
+                    "x": 0.0000017484558156866115,
+                    "y": 20.000001907348634,
+                    "z": -0.000002384185791015625,
+                    "w": 0.0
+                },
+                "value3": {
+                    "x": 0.0,
+                    "y": 20.0,
+                    "z": 100.0,
+                    "w": 1.0
+                }
+            },
+            "visible": true
+        },
+        "value31": 17,
+        "value32": {
+            "gltf": "basic_shapes.glb",
+            "name": "Cube",
+            "materialOverrideName": "light_shafts",
+            "localTransform": {
+                "value0": {
+                    "x": -59.00001525878906,
+                    "y": 0.000005157944542588666,
+                    "z": 0.0,
+                    "w": 0.0
+                },
+                "value1": {
+                    "x": 0.0,
+                    "y": -1.1920928955078126e-7,
+                    "z": 1.0000001192092896,
+                    "w": 0.0
+                },
+                "value2": {
+                    "x": 0.0000017484558156866115,
+                    "y": 20.000001907348634,
+                    "z": -0.000002384185791015625,
+                    "w": 0.0
+                },
+                "value3": {
+                    "x": 0.0,
+                    "y": 20.0,
+                    "z": -60.0,
+                    "w": 1.0
+                }
+            },
+            "visible": true
+        },
+        "value33": 18,
+        "value34": {
+            "gltf": "basic_shapes.glb",
+            "name": "UVSphere",
+            "materialOverrideName": "default",
+            "localTransform": {
+                "value0": {
+                    "x": 0.41970038414001467,
+                    "y": 0.8668947219848633,
+                    "z": 0.26897093653678896,
+                    "w": 0.0
+                },
+                "value1": {
+                    "x": -0.21752682328224183,
+                    "y": 0.3837636113166809,
+                    "z": -0.8974451422691345,
+                    "w": 0.0
+                },
+                "value2": {
+                    "x": -0.881211519241333,
+                    "y": 0.31814974546432497,
+                    "z": 0.3496384620666504,
+                    "w": 0.0
+                },
+                "value3": {
+                    "x": 28.413841247558595,
+                    "y": 1.9997732639312745,
+                    "z": 36.332740783691409,
+                    "w": 1.0
+                }
+            },
+            "visible": true
+        },
+        "value35": 1048595,
+        "value36": {
+            "gltf": "basic_shapes.glb",
+            "name": "Icosphere",
+            "materialOverrideName": "light_shafts",
+            "localTransform": {
+                "value0": {
+                    "x": 0.10000000149011612,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "w": 0.0
+                },
+                "value1": {
+                    "x": 0.0,
+                    "y": 0.10000000149011612,
+                    "z": 0.0,
+                    "w": 0.0
+                },
+                "value2": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.10000000149011612,
+                    "w": 0.0
+                },
+                "value3": {
+                    "x": 22.413972854614259,
+                    "y": 2.0,
+                    "z": 36.34337615966797,
+                    "w": 1.0
+                }
+            },
+            "visible": true
+        },
+        "value37": 1048599,
+        "value38": {
+            "gltf": "basic_shapes.glb",
+            "name": "Cone",
+            "materialOverrideName": "flat_emitter_orange_dull",
+            "localTransform": {
+                "value0": {
+                    "x": 1.0,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "w": 0.0
+                },
+                "value1": {
+                    "x": 0.0,
+                    "y": 1.0,
+                    "z": 0.0,
+                    "w": 0.0
+                },
+                "value2": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 1.0,
+                    "w": 0.0
+                },
+                "value3": {
+                    "x": -55.0,
+                    "y": 2.930000066757202,
+                    "z": -55.0,
+                    "w": 1.0
+                }
+            },
+            "visible": true
+        },
+        "value39": 105906220,
+        "value40": {
+            "gltf": "basic_shapes.glb",
+            "name": "Cone",
+            "materialOverrideName": "flat_emitter_orange_dull",
+            "localTransform": {
+                "value0": {
+                    "x": 1.0,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "w": 0.0
+                },
+                "value1": {
+                    "x": 0.0,
+                    "y": 1.0,
+                    "z": 0.0,
+                    "w": 0.0
+                },
+                "value2": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 1.0,
+                    "w": 0.0
+                },
+                "value3": {
+                    "x": 55.0,
+                    "y": 2.930000066757202,
+                    "z": -55.0,
+                    "w": 1.0
+                }
+            },
+            "visible": true
+        },
+        "value41": 110100513,
+        "value42": {
+            "gltf": "basic_shapes.glb",
+            "name": "Cone",
+            "materialOverrideName": "flat_emitter_orange_dull",
+            "localTransform": {
+                "value0": {
+                    "x": 1.0,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "w": 0.0
+                },
+                "value1": {
+                    "x": 0.0,
+                    "y": 1.0,
+                    "z": 0.0,
+                    "w": 0.0
+                },
+                "value2": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 1.0,
+                    "w": 0.0
+                },
+                "value3": {
+                    "x": 55.0,
+                    "y": 2.930000066757202,
+                    "z": 95.0,
+                    "w": 1.0
+                }
+            },
+            "visible": true
+        },
+        "value43": 158334998,
+        "value44": {
+            "gltf": "basic_shapes.glb",
+            "name": "Cone",
+            "materialOverrideName": "flat_emitter_orange_dull",
+            "localTransform": {
+                "value0": {
+                    "x": 1.0,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "w": 0.0
+                },
+                "value1": {
+                    "x": 0.0,
+                    "y": 1.0,
+                    "z": 0.0,
+                    "w": 0.0
+                },
+                "value2": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 1.0,
+                    "w": 0.0
+                },
+                "value3": {
+                    "x": -55.0,
+                    "y": 2.930000066757202,
+                    "z": 95.0,
+                    "w": 1.0
+                }
+            },
+            "visible": true
+        }
+    },
+    "struct imp::PhysicsBodyComponent": {
+        "value0": 17,
+        "value1": 2,
+        "value2": {
+            "shape": {
+                "value0": 1,
+                "value1": {
+                    "x": 20.0,
+                    "y": 1.0,
+                    "z": 20.0
+                }
+            },
+            "movementType": 0,
+            "layer": 3,
+            "linearVelocity": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "angularVelocity": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "friction": 0.5,
+            "restitution": 0.5,
+            "id": {
+                "value0": 33554434
+            },
+            "forceUpdateShape": false
+        },
+        "value3": 1048579,
+        "value4": {
+            "shape": {
+                "value0": 1,
+                "value1": {
+                    "x": 20.0,
+                    "y": 1.0,
+                    "z": 20.0
+                }
+            },
+            "movementType": 0,
+            "layer": 3,
+            "linearVelocity": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "angularVelocity": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "friction": 0.5,
+            "restitution": 0.5,
+            "id": {
+                "value0": 33554435
+            },
+            "forceUpdateShape": false
+        },
+        "value5": 4,
+        "value6": {
+            "shape": {
+                "value0": 1,
+                "value1": {
+                    "x": 20.0,
+                    "y": 1.0,
+                    "z": 20.0
+                }
+            },
+            "movementType": 0,
+            "layer": 3,
+            "linearVelocity": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "angularVelocity": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "friction": 0.5,
+            "restitution": 0.5,
+            "id": {
+                "value0": 33554436
+            },
+            "forceUpdateShape": false
+        },
+        "value7": 1048581,
+        "value8": {
+            "shape": {
+                "value0": 1,
+                "value1": {
+                    "x": 20.0,
+                    "y": 1.0,
+                    "z": 20.0
+                }
+            },
+            "movementType": 0,
+            "layer": 3,
+            "linearVelocity": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "angularVelocity": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "friction": 0.5,
+            "restitution": 0.5,
+            "id": {
+                "value0": 33554437
+            },
+            "forceUpdateShape": false
+        },
+        "value9": 6,
+        "value10": {
+            "shape": {
+                "value0": 1,
+                "value1": {
+                    "x": 20.0,
+                    "y": 1.0,
+                    "z": 20.0
+                }
+            },
+            "movementType": 0,
+            "layer": 3,
+            "linearVelocity": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "angularVelocity": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "friction": 0.5,
+            "restitution": 0.5,
+            "id": {
+                "value0": 33554438
+            },
+            "forceUpdateShape": false
+        },
+        "value11": 7,
+        "value12": {
+            "shape": {
+                "value0": 1,
+                "value1": {
+                    "x": 20.0,
+                    "y": 1.0,
+                    "z": 20.0
+                }
+            },
+            "movementType": 0,
+            "layer": 3,
+            "linearVelocity": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "angularVelocity": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "friction": 0.5,
+            "restitution": 0.5,
+            "id": {
+                "value0": 33554439
+            },
+            "forceUpdateShape": false
+        },
+        "value13": 8,
+        "value14": {
+            "shape": {
+                "value0": 1,
+                "value1": {
+                    "x": 20.0,
+                    "y": 1.0,
+                    "z": 20.0
+                }
+            },
+            "movementType": 0,
+            "layer": 3,
+            "linearVelocity": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "angularVelocity": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "friction": 0.5,
+            "restitution": 0.5,
+            "id": {
+                "value0": 33554440
+            },
+            "forceUpdateShape": false
+        },
+        "value15": 9,
+        "value16": {
+            "shape": {
+                "value0": 1,
+                "value1": {
+                    "x": 20.0,
+                    "y": 1.0,
+                    "z": 20.0
+                }
+            },
+            "movementType": 0,
+            "layer": 3,
+            "linearVelocity": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "angularVelocity": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "friction": 0.5,
+            "restitution": 0.5,
+            "id": {
+                "value0": 33554441
+            },
+            "forceUpdateShape": false
+        },
+        "value17": 10,
+        "value18": {
+            "shape": {
+                "value0": 1,
+                "value1": {
+                    "x": 20.0,
+                    "y": 1.0,
+                    "z": 20.0
+                }
+            },
+            "movementType": 0,
+            "layer": 3,
+            "linearVelocity": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "angularVelocity": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "friction": 0.5,
+            "restitution": 0.5,
+            "id": {
+                "value0": 33554442
+            },
+            "forceUpdateShape": false
+        },
+        "value19": 11,
+        "value20": {
+            "shape": {
+                "value0": 1,
+                "value1": {
+                    "x": 20.0,
+                    "y": 1.0,
+                    "z": 20.0
+                }
+            },
+            "movementType": 0,
+            "layer": 3,
+            "linearVelocity": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "angularVelocity": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "friction": 0.5,
+            "restitution": 0.5,
+            "id": {
+                "value0": 33554443
+            },
+            "forceUpdateShape": false
+        },
+        "value21": 12,
+        "value22": {
+            "shape": {
+                "value0": 1,
+                "value1": {
+                    "x": 20.0,
+                    "y": 1.0,
+                    "z": 20.0
+                }
+            },
+            "movementType": 0,
+            "layer": 3,
+            "linearVelocity": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "angularVelocity": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "friction": 0.5,
+            "restitution": 0.5,
+            "id": {
+                "value0": 33554444
+            },
+            "forceUpdateShape": false
+        },
+        "value23": 13,
+        "value24": {
+            "shape": {
+                "value0": 1,
+                "value1": {
+                    "x": 20.0,
+                    "y": 1.0,
+                    "z": 20.0
+                }
+            },
+            "movementType": 0,
+            "layer": 3,
+            "linearVelocity": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "angularVelocity": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "friction": 0.5,
+            "restitution": 0.5,
+            "id": {
+                "value0": 33554445
+            },
+            "forceUpdateShape": false
+        },
+        "value25": 14,
+        "value26": {
+            "shape": {
+                "value0": 1,
+                "value1": {
+                    "x": 80.0,
+                    "y": 1.0,
+                    "z": 20.0
+                }
+            },
+            "movementType": 0,
+            "layer": 3,
+            "linearVelocity": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "angularVelocity": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "friction": 0.5,
+            "restitution": 0.5,
+            "id": {
+                "value0": 33554446
+            },
+            "forceUpdateShape": false
+        },
+        "value27": 15,
+        "value28": {
+            "shape": {
+                "value0": 1,
+                "value1": {
+                    "x": 80.0,
+                    "y": 1.0,
+                    "z": 20.0
+                }
+            },
+            "movementType": 0,
+            "layer": 3,
+            "linearVelocity": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "angularVelocity": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "friction": 0.5,
+            "restitution": 0.5,
+            "id": {
+                "value0": 33554447
+            },
+            "forceUpdateShape": false
+        },
+        "value29": 16,
+        "value30": {
+            "shape": {
+                "value0": 1,
+                "value1": {
+                    "x": 60.0,
+                    "y": 1.0,
+                    "z": 20.0
+                }
+            },
+            "movementType": 0,
+            "layer": 3,
+            "linearVelocity": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "angularVelocity": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "friction": 0.5,
+            "restitution": 0.5,
+            "id": {
+                "value0": 33554448
+            },
+            "forceUpdateShape": false
+        },
+        "value31": 17,
+        "value32": {
+            "shape": {
+                "value0": 1,
+                "value1": {
+                    "x": 60.0,
+                    "y": 1.0,
+                    "z": 20.0
+                }
+            },
+            "movementType": 0,
+            "layer": 3,
+            "linearVelocity": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "angularVelocity": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "friction": 0.5,
+            "restitution": 0.5,
+            "id": {
+                "value0": 33554449
+            },
+            "forceUpdateShape": false
+        },
+        "value33": 18,
+        "value34": {
+            "shape": {
+                "value0": 2,
+                "value1": {
+                    "x": 1.0,
+                    "y": 1.0,
+                    "z": 1.0
+                }
+            },
+            "movementType": 2,
+            "layer": 3,
+            "linearVelocity": {
+                "x": 0.01064042467623949,
+                "y": -0.000009409212907485199,
+                "z": 0.013040628284215927
+            },
+            "angularVelocity": {
+                "x": 0.013093785382807255,
+                "y": 0.1472538411617279,
+                "z": -0.010577582754194737
+            },
+            "friction": 0.9300000071525574,
+            "restitution": 0.5,
+            "id": {
+                "value0": 33554450
+            },
+            "forceUpdateShape": false
+        }
+    },
+    "struct imp::RelationshipComponent": {
+        "value0": 0
+    },
+    "struct imp::TransformComponent": {
+        "value0": 28,
+        "value1": 2,
+        "value2": {
+            "position": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0,
+                "w": 1.0
+            },
+            "scale": {
+                "x": 20.0,
+                "y": 1.0,
+                "z": 20.0
+            },
+            "dirty": false
+        },
+        "value3": 1048579,
+        "value4": {
+            "position": {
+                "x": 40.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0,
+                "w": 1.0
+            },
+            "scale": {
+                "x": 20.0,
+                "y": 1.0,
+                "z": 20.0
+            },
+            "dirty": false
+        },
+        "value5": 4,
+        "value6": {
+            "position": {
+                "x": -40.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0,
+                "w": 1.0
+            },
+            "scale": {
+                "x": 20.0,
+                "y": 1.0,
+                "z": 20.0
+            },
+            "dirty": false
+        },
+        "value7": 1048581,
+        "value8": {
+            "position": {
+                "x": -40.0,
+                "y": 0.0,
+                "z": 40.0
+            },
+            "rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0,
+                "w": 1.0
+            },
+            "scale": {
+                "x": 20.0,
+                "y": 1.0,
+                "z": 20.0
+            },
+            "dirty": false
+        },
+        "value9": 6,
+        "value10": {
+            "position": {
+                "x": -40.0,
+                "y": 0.0,
+                "z": -40.0
+            },
+            "rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0,
+                "w": 1.0
+            },
+            "scale": {
+                "x": 20.0,
+                "y": 1.0,
+                "z": 20.0
+            },
+            "dirty": false
+        },
+        "value11": 7,
+        "value12": {
+            "position": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": -40.0
+            },
+            "rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0,
+                "w": 1.0
+            },
+            "scale": {
+                "x": 20.0,
+                "y": 1.0,
+                "z": 20.0
+            },
+            "dirty": false
+        },
+        "value13": 8,
+        "value14": {
+            "position": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 40.0
+            },
+            "rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0,
+                "w": 1.0
+            },
+            "scale": {
+                "x": 20.0,
+                "y": 1.0,
+                "z": 20.0
+            },
+            "dirty": false
+        },
+        "value15": 9,
+        "value16": {
+            "position": {
+                "x": 40.0,
+                "y": 0.0,
+                "z": 40.0
+            },
+            "rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0,
+                "w": 1.0
+            },
+            "scale": {
+                "x": 20.0,
+                "y": 1.0,
+                "z": 20.0
+            },
+            "dirty": false
+        },
+        "value17": 10,
+        "value18": {
+            "position": {
+                "x": 40.0,
+                "y": 0.0,
+                "z": -40.0
+            },
+            "rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0,
+                "w": 1.0
+            },
+            "scale": {
+                "x": 20.0,
+                "y": 1.0,
+                "z": 20.0
+            },
+            "dirty": false
+        },
+        "value19": 11,
+        "value20": {
+            "position": {
+                "x": 40.0,
+                "y": 0.0,
+                "z": 80.0
+            },
+            "rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0,
+                "w": 1.0
+            },
+            "scale": {
+                "x": 20.0,
+                "y": 1.0,
+                "z": 20.0
+            },
+            "dirty": false
+        },
+        "value21": 12,
+        "value22": {
+            "position": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 80.0
+            },
+            "rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0,
+                "w": 1.0
+            },
+            "scale": {
+                "x": 20.0,
+                "y": 1.0,
+                "z": 20.0
+            },
+            "dirty": false
+        },
+        "value23": 13,
+        "value24": {
+            "position": {
+                "x": -40.0,
+                "y": 0.0,
+                "z": 80.0
+            },
+            "rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0,
+                "w": 1.0
+            },
+            "scale": {
+                "x": 20.0,
+                "y": 1.0,
+                "z": 20.0
+            },
+            "dirty": false
+        },
+        "value25": 14,
+        "value26": {
+            "position": {
+                "x": -60.0,
+                "y": 20.0,
+                "z": 20.0
+            },
+            "rotation": {
+                "x": -0.4999784231185913,
+                "y": 0.4998489022254944,
+                "z": 0.5001510381698608,
+                "w": 0.5000215768814087
+            },
+            "scale": {
+                "x": 79.0,
+                "y": 1.0,
+                "z": 20.0
+            },
+            "dirty": false
+        },
+        "value27": 15,
+        "value28": {
+            "position": {
+                "x": 60.0,
+                "y": 20.0,
+                "z": 20.0
+            },
+            "rotation": {
+                "x": -0.4999784231185913,
+                "y": 0.4998489022254944,
+                "z": 0.5001510381698608,
+                "w": 0.5000215768814087
+            },
+            "scale": {
+                "x": 79.0,
+                "y": 1.0,
+                "z": 20.0
+            },
+            "dirty": false
+        },
+        "value29": 16,
+        "value30": {
+            "position": {
+                "x": 0.0,
+                "y": 20.0,
+                "z": 100.0
+            },
+            "rotation": {
+                "x": -3.090862321641907e-8,
+                "y": -0.7071068286895752,
+                "z": -0.7071068286895752,
+                "w": -3.090862321641907e-8
+            },
+            "scale": {
+                "x": 59.0,
+                "y": 1.0,
+                "z": 20.0
+            },
+            "dirty": false
+        },
+        "value31": 17,
+        "value32": {
+            "position": {
+                "x": 0.0,
+                "y": 20.0,
+                "z": -60.0
+            },
+            "rotation": {
+                "x": -3.090862321641907e-8,
+                "y": -0.7071068286895752,
+                "z": -0.7071068286895752,
+                "w": -3.090862321641907e-8
+            },
+            "scale": {
+                "x": 59.0,
+                "y": 1.0,
+                "z": 20.0
+            },
+            "dirty": false
+        },
+        "value33": 18,
+        "value34": {
+            "position": {
+                "x": 28.413841247558595,
+                "y": 1.9997732639312745,
+                "z": 36.332740783691409
+            },
+            "rotation": {
+                "x": -0.4142155945301056,
+                "y": -0.39192625880241396,
+                "z": 0.36951810121536257,
+                "w": 0.7336727976799011
+            },
+            "scale": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
+            },
+            "dirty": false
+        },
+        "value35": 1048595,
+        "value36": {
+            "position": {
+                "x": 22.41415023803711,
+                "y": 2.0,
+                "z": 36.34359359741211
+            },
+            "rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0,
+                "w": 1.0
+            },
+            "scale": {
+                "x": 0.10000000149011612,
+                "y": 0.10000000149011612,
+                "z": 0.10000000149011612
+            },
+            "dirty": false
+        },
+        "value37": 1048599,
+        "value38": {
+            "position": {
+                "x": -55.0,
+                "y": 2.930000066757202,
+                "z": -55.0
+            },
+            "rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0,
+                "w": 1.0
+            },
+            "scale": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
+            },
+            "dirty": false
+        },
+        "value39": 105906220,
+        "value40": {
+            "position": {
+                "x": 55.0,
+                "y": 2.930000066757202,
+                "z": -55.0
+            },
+            "rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0,
+                "w": 1.0
+            },
+            "scale": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
+            },
+            "dirty": false
+        },
+        "value41": 110100513,
+        "value42": {
+            "position": {
+                "x": 55.0,
+                "y": 2.930000066757202,
+                "z": 95.0
+            },
+            "rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0,
+                "w": 1.0
+            },
+            "scale": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
+            },
+            "dirty": false
+        },
+        "value43": 158334998,
+        "value44": {
+            "position": {
+                "x": -55.0,
+                "y": 2.930000066757202,
+                "z": 95.0
+            },
+            "rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0,
+                "w": 1.0
+            },
+            "scale": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
+            },
+            "dirty": false
+        },
+        "value45": 1,
+        "value46": {
+            "position": {
+                "x": 37.68483352661133,
+                "y": 5.746560096740723,
+                "z": 36.23861312866211
+            },
+            "rotation": {
+                "x": -0.13426323235034944,
+                "y": 0.6976209878921509,
+                "z": 0.13563191890716554,
+                "w": 0.690581202507019
+            },
+            "scale": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
+            },
+            "dirty": false
+        },
+        "value47": 58720276,
+        "value48": {
+            "position": {
+                "x": 0.0,
+                "y": 10.0,
+                "z": 0.0
+            },
+            "rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0,
+                "w": 1.0
+            },
+            "scale": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
+            },
+            "dirty": false
+        },
+        "value49": 33554432,
+        "value50": {
+            "position": {
+                "x": -54.0,
+                "y": 5.929999828338623,
+                "z": -54.0
+            },
+            "rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0,
+                "w": 1.0
+            },
+            "scale": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
+            },
+            "dirty": false
+        },
+        "value51": 110100517,
+        "value52": {
+            "position": {
+                "x": 54.0,
+                "y": 5.929999828338623,
+                "z": -54.0
+            },
+            "rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0,
+                "w": 1.0
+            },
+            "scale": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
+            },
+            "dirty": false
+        },
+        "value53": 134217767,
+        "value54": {
+            "position": {
+                "x": -54.0,
+                "y": 5.929999828338623,
+                "z": 94.0
+            },
+            "rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0,
+                "w": 1.0
+            },
+            "scale": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
+            },
+            "dirty": false
+        },
+        "value55": 206569510,
+        "value56": {
+            "position": {
+                "x": 54.0,
+                "y": 5.929999828338623,
+                "z": 94.0
+            },
+            "rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0,
+                "w": 1.0
+            },
+            "scale": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
+            },
+            "dirty": false
+        }
+    },
+    "SystemManager": {
+        "systems": [
+            {
+                "value0": true,
+                "value1": "imp::InputSystem"
+            },
+            {
+                "value0": true,
+                "value1": "imp::ResourceSystem"
+            },
+            {
+                "value0": true,
+                "value1": "imp::TransformSystem"
+            },
+            {
+                "value0": true,
+                "value1": "imp::CameraSystem"
+            },
+            {
+                "value0": true,
+                "value1": "CameraControllerSystem"
+            },
+            {
+                "value0": true,
+                "value1": "PlayerControllerSystem"
+            },
+            {
+                "value0": true,
+                "value1": "AimingSystem"
+            },
+            {
+                "value0": true,
+                "value1": "AttackSystem"
+            },
+            {
+                "value0": false,
+                "value1": "EnemySpawnSystem"
+            },
+            {
+                "value0": true,
+                "value1": "AISystem"
+            },
+            {
+                "value0": false,
+                "value1": "ShootingSystem"
+            },
+            {
+                "value0": true,
+                "value1": "DamageSystem"
+            },
+            {
+                "value0": true,
+                "value1": "ProjectileSystem"
+            },
+            {
+                "value0": true,
+                "value1": "MovementSystem"
+            },
+            {
+                "value0": true,
+                "value1": "ComputeShaderSystem"
+            },
+            {
+                "value0": true,
+                "value1": "imp::RenderSystem"
+            },
+            {
+                "value0": true,
+                "value1": "EditorGuiSystem"
+            },
+            {
+                "value0": true,
+                "value1": "imp::EndRenderSystem"
+            }
+        ],
+        "preFixedSystems": [
+            {
+                "value0": true,
+                "value1": "imp::PrePhysicsSystem"
+            }
+        ],
+        "fixedSystems": [
+            {
+                "value0": true,
+                "value1": "imp::PhysicsSystem"
+            }
+        ],
+        "postFixedSystems": [
+            {
+                "value0": true,
+                "value1": "imp::PostPhysicsSystem"
+            }
+        ],
+        "systemMetaMap": [
+            {
+                "key": "imp::TransformSystem",
+                "value": {
+                    "value0": 2,
+                    "value1": 0
+                }
+            },
+            {
+                "key": "imp::InputSystem",
+                "value": {
+                    "value0": 0,
+                    "value1": 0
+                }
+            },
+            {
+                "key": "imp::RenderSystem",
+                "value": {
+                    "value0": 15,
+                    "value1": 0
+                }
+            },
+            {
+                "key": "imp::ResourceSystem",
+                "value": {
+                    "value0": 1,
+                    "value1": 0
+                }
+            },
+            {
+                "key": "imp::EndRenderSystem",
+                "value": {
+                    "value0": 17,
+                    "value1": 0
+                }
+            },
+            {
+                "key": "imp::CameraSystem",
+                "value": {
+                    "value0": 3,
+                    "value1": 0
+                }
+            },
+            {
+                "key": "EnemySpawnSystem",
+                "value": {
+                    "value0": 8,
+                    "value1": 0
+                }
+            },
+            {
+                "key": "CameraControllerSystem",
+                "value": {
+                    "value0": 4,
+                    "value1": 0
+                }
+            },
+            {
+                "key": "EditorGuiSystem",
+                "value": {
+                    "value0": 16,
+                    "value1": 0
+                }
+            },
+            {
+                "key": "imp::PrePhysicsSystem",
+                "value": {
+                    "value0": 0,
+                    "value1": 2
+                }
+            },
+            {
+                "key": "ComputeShaderSystem",
+                "value": {
+                    "value0": 14,
+                    "value1": 0
+                }
+            },
+            {
+                "key": "imp::PhysicsSystem",
+                "value": {
+                    "value0": 0,
+                    "value1": 1
+                }
+            },
+            {
+                "key": "imp::PostPhysicsSystem",
+                "value": {
+                    "value0": 0,
+                    "value1": 3
+                }
+            },
+            {
+                "key": "PlayerControllerSystem",
+                "value": {
+                    "value0": 5,
+                    "value1": 0
+                }
+            },
+            {
+                "key": "ShootingSystem",
+                "value": {
+                    "value0": 10,
+                    "value1": 0
+                }
+            },
+            {
+                "key": "MovementSystem",
+                "value": {
+                    "value0": 13,
+                    "value1": 0
+                }
+            },
+            {
+                "key": "AimingSystem",
+                "value": {
+                    "value0": 6,
+                    "value1": 0
+                }
+            },
+            {
+                "key": "ProjectileSystem",
+                "value": {
+                    "value0": 12,
+                    "value1": 0
+                }
+            },
+            {
+                "key": "AttackSystem",
+                "value": {
+                    "value0": 7,
+                    "value1": 0
+                }
+            },
+            {
+                "key": "DamageSystem",
+                "value": {
+                    "value0": 11,
+                    "value1": 0
+                }
+            },
+            {
+                "key": "AISystem",
+                "value": {
+                    "value0": 9,
+                    "value1": 0
+                }
+            }
+        ]
+    }
+}

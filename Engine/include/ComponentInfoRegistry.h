@@ -1,177 +1,77 @@
 ﻿#pragma once
-#include <boost/pfr.hpp>
-#include <entt/core/type_info.hpp>
-#include <entt/entity/snapshot.hpp>
 #include <entt/entt.hpp>
+#include <cereal/cereal.hpp>
+#include <cereal/types/unordered_map.hpp>
 #include <functional>
+#include <unordered_map>
 #include <string>
-#include "RegisterMacro.h"
-#ifdef _DEBUG
-#include "DebugUtils/DebugGuiTypeWidgets.h"
-#endif
+#include <type_traits>
+#include <iostream>
 
 namespace cereal {
-	class JSONOutputArchive;
-	class JSONInputArchive;
+    class JSONOutputArchive;
+    class JSONInputArchive;
 }
 
-namespace cereal {
-	class JSONOutputArchive;
-	class JSONInputArchive;
-}
+namespace imp {
 
-template<typename T>
-struct IsComparable
-{
-private:
-	template<typename U>
-	static auto test(int) -> decltype(std::declval<U>() != std::declval<U>(), std::true_type());
+    namespace componentInfoExt {
+        template<typename T>
+        struct HookTag {};
+    }
 
-	template<typename>
-	static std::false_type test(...);
+    struct ComponentInfo {
+        std::string name;
+        std::function<void(entt::snapshot&, cereal::JSONOutputArchive&)> serialize;
+        std::function<void(entt::snapshot_loader&, cereal::JSONInputArchive&)> deserialize;
+    };
 
-public:
-	static constexpr bool value = decltype(test<T>(0))::value;
-};
+    class ComponentInfoRegistry {
+    public:
+        using ComponentInfoMap = std::unordered_map<entt::id_type, ComponentInfo>;
+        template <typename Component>
+        static void Register(const char* customName = "") {
+            const entt::type_info typeId = entt::type_id<Component>();
 
-// Helper trait to check if a type is introspectable with boost::pfr
-template <typename T, typename = void>
-struct IsPfrIntrospectable : std::false_type {};
+            m_infoMap[typeId.hash()] = ComponentInfo{
+                (customName && customName[0]) ? customName : std::string(typeId.name()),
+                [](entt::snapshot& snap, cereal::JSONOutputArchive& ar) { snap.get<Component>(ar); },
+                [](entt::snapshot_loader& loader, cereal::JSONInputArchive& ar) { loader.get<Component>(ar); }
+            };
+            using componentInfoExt::HookTag;
+            if constexpr (requires { OnRegisterComponent(HookTag<Component>{}); }) {
+                OnRegisterComponent(HookTag<Component>{});
+            }
+        }
 
-template <typename T>
-struct IsPfrIntrospectable < T, std::void_t<decltype(boost::pfr::for_each_field(std::declval<T&>(), [](auto&) {})) >> : std::true_type {};
+        template <typename Component>
+        static bool IsRegistered() {
+            return m_infoMap.contains(entt::type_id<Component>().hash());
+        }
 
-template <typename T>
-struct IsEnttTag : std::false_type {};
+        static const ComponentInfoMap& GetComponentInfoMap() {
+            return m_infoMap;
+        }
 
-template <entt::id_type Value>
-struct IsEnttTag<entt::tag<Value>> : std::true_type {};
+        static const ComponentInfoMap& GetInfoMap() {
+            return m_infoMap;
+        }
 
-namespace Imp {
-	template <class Component, std::enable_if_t<std::is_aggregate_v<Component> && !IsEnttTag<Component>::value, int> = 0>
-	void ComponentWidget(entt::registry& registry, entt::entity entity)
-	{
-#ifdef _DEBUG
-		if (registry.all_of<Component>(entity)) {
-			auto& comp = registry.get<Component>(entity);
-			auto typenameStr = typeid(comp).name();
-			ImGui::Text("%s", typenameStr);
+    private:
+        inline static ComponentInfoMap m_infoMap{};
+    };
 
-			// Use PFR to get field names and iterate over fields
-			constexpr auto field_names = boost::pfr::names_as_array<Component>();
-			size_t idx = 0;
-			boost::pfr::for_each_field(comp, [&](auto& field) {
-				std::string fieldName = std::string(field_names[idx]);
-				using FieldType = std::decay_t<decltype(field)>;
+    template<typename Component>
+    struct Registration {
+        Registration(const char* customName = "") noexcept {
+            imp::ComponentInfoRegistry::Register<Component>(customName);
+        }
+    };
 
-				auto originalField = field;
-				TypeWidget(field, fieldName);
+} // namespace imp
 
-				if constexpr (IsComparable<FieldType>::value) {
-					if (field != originalField) {
-						registry.patch<Component>(entity, [&](Component& c) {
-							c = comp;
-												  });
-					}
-				}
-
-				++idx;
-									   });
-		} else {
-			ImGui::Text("No component of this type.");
-		}
-#endif 
-	}
-
-	// Fallback function for non-aggregate or tag types
-	template <class Component, std::enable_if_t<!std::is_aggregate_v<Component> || IsEnttTag<Component>::value, int> = 0>
-	void ComponentWidget(entt::registry & registry, entt::entity entity)
-	{
-		// No-op
-	}
-
-
-	template <typename Component>
-	void ComponentAddAction(entt::registry& registry, entt::entity entity) { registry.template emplace<Component>(entity); }
-	template <typename Component>
-	void ComponentRemoveAction(entt::registry& registry, entt::entity entity) { registry.template remove<Component>(entity); }
-	template <typename Component>
-	void ComponentSerialize(entt::snapshot& snapshot, cereal::JSONOutputArchive& archive) { snapshot.template get<Component>(archive); };
-	template <typename Component>
-	void ComponentDeserialize(entt::snapshot_loader& snapshot, cereal::JSONInputArchive& archive) { snapshot.template get<Component>(archive); };
-	struct ComponentInfo
-	{
-		using SerializeCallback = std::function<void(entt::snapshot&, cereal::JSONOutputArchive&)>;
-		using DeserializeCallback = std::function<void(entt::snapshot_loader&, cereal::JSONInputArchive&)>;
-		using WidgetCallback = std::function<void(entt::registry&, entt::entity)>;
-		std::string name;
-		WidgetCallback widget, create, destroy;
-		SerializeCallback serialize;
-		DeserializeCallback deserialize;
-	};
-	template<typename T>
-	constexpr entt::id_type TypeHash()
-	{
-		return entt::type_id<T>().hash();
-	}
-	class ComponentInfoRegistry
-	{
-		inline static std::unordered_map<entt::id_type, ComponentInfo> infoMap{};
-	public:
-
-		inline static std::unordered_map<entt::id_type, ComponentInfo>& GetInfoMap() { return infoMap; };
-		template <typename Component>
-		inline static void RegisterComponent(const char* customName = "")
-		{
-			infoMap[TypeHash<Component>()] = ComponentInfo{
-				customName == "" ? typeid(Component).name() : customName,
-				ComponentWidget<Component>,
-				ComponentAddAction<Component>,
-				ComponentRemoveAction<Component>,
-				ComponentSerialize<Component>,
-				ComponentDeserialize<Component>
-			};
-		}
-		template <typename Component>
-		inline static void RegisterComponent(ComponentInfo::WidgetCallback customWidget, const char* customName = "")
-		{
-			infoMap[TypeHash<Component>()] = ComponentInfo{
-				customName == "" ? typeid(Component).name() : customName,
-				customWidget,
-				ComponentAddAction<Component>,
-				ComponentRemoveAction<Component>,
-				ComponentSerialize<Component>,
-				ComponentDeserialize<Component>
-			};
-		}
-	};
-
-	namespace Register {
-		template<typename T>
-		struct ComponentRegistrar
-		{
-			ComponentRegistrar(const char* customName = "")
-			{
-				Imp::ComponentInfoRegistry::RegisterComponent<T>(customName);
-			}
-
-			explicit ComponentRegistrar(const ComponentInfo::WidgetCallback& customWidget, const char* customName = "")
-			{
-				Imp::ComponentInfoRegistry::RegisterComponent<T>(customWidget, customName);
-			}
-		};
-	}
-}
 #define REGISTER_COMPONENT(Type) \
-    inline static Imp::Register::ComponentRegistrar<Type> UNIQUE_NAME(autoRegisterInstance_){};
+  inline static imp::Registration<Type> UNIQUE_NAME(autoRegisterInstance_){}; 
 
-#define REGISTER_COMPONENT_CUSTOM_WIDGET(Type, CustomWidget) \
-    inline static Imp::Register::ComponentRegistrar<Type> UNIQUE_NAME(autoRegisterInstance_){CustomWidget};
-#define REGISTER_COMPONENT_CUSTOM_NAME(Type,Name) \
-    inline static Imp::Register::ComponentRegistrar<Type> UNIQUE_NAME(autoRegisterInstance_){Name};
-#define REGISTER_COMPONENT_CUSTOM_WIDGET_AND_NAME(Type, CustomWidget,Name) \
-    inline static Imp::Register::ComponentRegistrar<Type> UNIQUE_NAME(autoRegisterInstance_){CustomWidget,Name};
-
-
-
-
+#define REGISTER_COMPONENT_CUSTOM_NAME(Type, Name) \
+  inline static imp::Registration<Type> UNIQUE_NAME(autoRegisterInstance_){Name}; 

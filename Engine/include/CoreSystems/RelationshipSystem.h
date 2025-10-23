@@ -1,17 +1,12 @@
 ﻿#pragma once
 #include "System.h"
 
-namespace Imp
+namespace imp
 {
-	class RelationshipSystem : public System
+	// Unused/not implemented
+	class RelationshipSystem final : public System
 	{
-	private:
-
 	public:
-		virtual void initialize(entt::registry& registry) override;
 		virtual void update(entt::registry& registry, const float deltaTime) override;
-		virtual void cleanup(entt::registry& registry) override;
-
-		
 	};
 }

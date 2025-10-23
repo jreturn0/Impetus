@@ -1,31 +1,28 @@
 ﻿#pragma once
+#include "utils/QuickMacros.h"
+#include "utils/VKCommon.hpp"
 #include <filesystem>
 #include <optional>
 
-
-#include "core/Vma.h"
-#include "utils/VKCommon.hpp"
-#include "utils/QuickMacros.h"
-
-namespace Imp::Render
+namespace imp::gfx
 {
-	struct LoadedGLTF;
-	class VKRenderer;
-	class ImmediateCommands;
-	class Device;
+    struct LoadedGLTF;
+    class VulkanContext;
+    class ResourceCache;
+    class MetallicRoughness;
+    class ImmediateCommands;
+    class Device;
+    
+    // Utility class for loading 3D mesh data from GLTF files
+    class MeshLoader
+    {
+    public:
 
-	class MeshLoader
-	{
-	private:
+        // Methods
 
+        // Load a GLTF file and return a LoadedGLTF object if successful
+        static std::optional<std::shared_ptr<LoadedGLTF>> LoadGltf(std::string_view filePath, const VulkanContext& context, ResourceCache& cache, MetallicRoughness& metallicRoughness);
+    };
 
-	public:
-		//DISABLE_COPY_AND_MOVE(MeshLoader);
-
-		static std::optional<std::shared_ptr<LoadedGLTF>> LoadGltf(std::string_view filePath, VKRenderer& renderer);
-		//std::optional<std::vector<std::shared_ptr<struct Mesh>>> LoadGltfMeshes( std::filesystem::path filePath);
-		
-	};
-
-	
+    
 }

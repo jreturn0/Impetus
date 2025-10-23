@@ -1,33 +1,40 @@
 ﻿#pragma once
-
 #include "core/Buffer.h"
 #include "geometry/Vertex.h"
 #include "utils/VKCommon.hpp"
 #include "utils/QuickMacros.h"
 
-namespace Imp::Render
+namespace imp::gfx
 {
-	class ImmediateCommands;
-	class CommandPool;
+    class VulkanContext;
 
+
+
+    // Manages GPU buffers for mesh data (vertices and indices)
     class GPUMeshBuffers
     {
-    private:
-        UniqueBuffer indexBuffer;
-        UniqueBuffer vertexBuffer;
-        vk::DeviceAddress vertexAddress;
-
+       // friend std::pair<GPUMeshBuffers, std::future<void>> CreateGPUMeshBuffersAsync(const VulkanContext& context, std::span<uint32_t> indices, std::span<Vertex> vertices);
     public:
-        DISABLE_COPY_AND_MOVE(GPUMeshBuffers);
-
-        UniqueBuffer& getIndexBuffer() { return indexBuffer; }
-        UniqueBuffer& getVertexBuffer() { return vertexBuffer; }
-        vk::DeviceAddress getVertexAddress() const { return vertexAddress; }
-
-        GPUMeshBuffers(const Device& device, const vk::Queue& queue,const ImmediateCommands& transferCommands, VmaAllocator& allocator, std::span<uint32_t> indices, std::span<Vertex> vertices);
+        GPUMeshBuffers( const VulkanContext& context, std::span<uint32_t> indices, std::span<Vertex> vertices);
         GPUMeshBuffers() = default;
+        GPUMeshBuffers(const GPUMeshBuffers&) = delete;
+        GPUMeshBuffers& operator=(const GPUMeshBuffers&) = delete;
+        GPUMeshBuffers(GPUMeshBuffers&&) = delete;
+        GPUMeshBuffers& operator=(GPUMeshBuffers&&) = delete;
+
+        // Getters
+
+        inline Buffer& getIndexBuffer() noexcept  { return m_indexBuffer; }
+        inline Buffer& getVertexBuffer() noexcept  { return m_vertexBuffer; }
+        inline vk::DeviceAddress getVertexAddress() const noexcept { return m_vertexAddress; }
+    private:
+        Buffer m_indexBuffer{};
+        Buffer m_vertexBuffer{};
+        vk::DeviceAddress m_vertexAddress{};
+
     };
 
+   // std::pair<GPUMeshBuffers, std::future<void>> CreateGPUMeshBuffersAsync(const VulkanContext& context, std::span<uint32_t> indices, std::span<Vertex> vertices);
 
-  
+
 }

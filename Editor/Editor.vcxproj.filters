@@ -15,115 +15,25 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Scenes\TestGame" />
-    <None Include="Scenes\BallMap" />
-    <None Include="Scenes\Floor" />
-    <None Include="Scenes\Floor2" />
-    <None Include="Scenes\Floor3" />
-    <None Include="Scenes\Floor4" />
-    <None Include="imgui.ini" />
-    <None Include="Scenes\Test" />
-    <None Include="Scenes\Test1" />
-    <None Include="Scenes\Test2" />
-    <None Include="Scenes\Test3" />
-    <None Include="Scenes\TestBase" />
-    <None Include="Scenes\Example" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="Components\AttackComponent.h">
+    <ClInclude Include="include\EditorGuiSystem.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Components\CameraFollowComponent.h">
+    <ClInclude Include="include\EditorSerial.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Components\DamageComponent.h">
+    <ClInclude Include="include\ComponentEditorRegistry.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Components\GameTagComponents.h">
+    <ClInclude Include="include\TypeWidgets.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Components\HealthComponent.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Components\MoveDirectionComponent.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Components\SpeedComponent.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Components\TargetComponent.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Systems\AimingSystem.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Systems\AISystem.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Systems\EnemySystem.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Systems\MapSystem.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Systems\MovementSystem.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Systems\PlayerControllerSystem.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Systems\ProjectileSystem.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Systems\ShootingSystem.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="CameraControllerSystem.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="EditorGuiSystem.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="EditorSerial.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Serialize_.h">
+    <ClInclude Include="include\CustomComponentWidgets.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Systems\AimingSystem.cpp">
+    <ClCompile Include="src\EditorGuiSystem.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Systems\AISystem.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Systems\EnemySystem.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Systems\MapSystem.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Systems\MovementSystem.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Systems\PlayerControllerSystem.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Systems\ProjectileSystem.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Systems\ShootingSystem.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="EditorGuiSystem.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="main.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <Text Include="log.txt" />
   </ItemGroup>
 </Project>

@@ -1,43 +1,50 @@
-﻿#include "CoreSystems/PrePhysicsSystem.h"
-
-#include <execution>
-
-#include "CtxRef.h"
-#include "Physics/Physics.h"
-#include "Components/PhysicsBodyComponent.h"
+﻿#include "Components/PhysicsBodyComponent.h"
 #include "Components/TransformComponent.h"
-#include "BasicEvents.h"
-void Imp::PrePhysicsSystem::initialize(entt::registry& registry)
-{
-	physicsSystem = &registry.ctx().get<CtxRef<Phys::Physics>>().get();
-	physicsSystem->getSystem().OptimizeBroadPhase();
+#include "ConfigSystem.h"
+#include "CoreSystems/PrePhysicsSystem.h"
+#include "CtxRef.h"
+#include "events/BasicEvents.h"
+#include "Impetus.h"
+#include "Physics/Physics.h"
+#include <execution>
+namespace {
+    auto cfg_physicsOptimizeInterval = utl::ConfigValueRef("physics.optimize_interval", 5); //seconds
 }
 
-void Imp::PrePhysicsSystem::update(entt::registry& registry, const float deltaTime)
+void imp::PrePhysicsSystem::initialize(entt::registry& registry)
 {
-	auto group = registry.group<>(entt::get<TransformComponent, PhysicsBodyComponent>);
-	auto& bodyInterface = physicsSystem->getBodyInterface();
-	std::mutex mutex{};
-
-	std::for_each(std::execution::par_unseq, group.begin(), group.end(), [&group, &bodyInterface, &mutex](auto entity) {
-		auto&& [transform, physicsBody] = group.get<TransformComponent, PhysicsBodyComponent>(entity);
-	
-
-
-		bodyInterface.SetPositionAndRotation(physicsBody.id, Phys::ToJPH(transform.position), Phys::ToJPH(transform.rotation), JPH::EActivation::DontActivate);
-		if (physicsBody.movementType != Phys::MovementType::Static)
-			bodyInterface.SetLinearAndAngularVelocity(physicsBody.id, Phys::ToJPH(physicsBody.linearVelocity), Phys::ToJPH(physicsBody.angularVelocity));
-
-				  });
+    m_physicsEngine = &registry.ctx().get<CtxRef<phys::Physics>>().get();
+    m_physicsEngine->getSystem().OptimizeBroadPhase();
 
 }
 
-void Imp::PrePhysicsSystem::cleanup(entt::registry& registry)
+void imp::PrePhysicsSystem::update(entt::registry& registry, const float deltaTime)
 {
-	/* Debug::Out("PrePhysicsSystem::update: entity: {}, position: {} {} {}, rotation: {} {} {} {}\n",
-			entt::to_integral(entity),
-			transform.position.x, transform.position.y, transform.position.z,
-			transform.rotation.x, transform.rotation.y, transform.rotation.z, transform.rotation.w);
-		});*/
-		//}
+    auto group = registry.group<>(entt::get<TransformComponent, PhysicsBodyComponent>);
+    auto& bodyInterface = m_physicsEngine->getBodyInterface();
+
+    m_optimizeTimer += static_cast<size_t>(deltaTime * 1000);
+    if (m_optimizeTimer >= cfg_physicsOptimizeInterval.getCopy() * 1000) {
+        m_physicsEngine->getSystem().OptimizeBroadPhase();
+        m_optimizeTimer = 0;
+    }
+
+    for (auto&& [entity, transform, physicsBody] : group.each()) {
+        if (physicsBody.movementType != phys::MovementType::Dynamic) {
+            bodyInterface.SetPositionAndRotation(
+                physicsBody.id,
+                phys::ToJPH(transform.position),
+                phys::ToJPH(transform.rotation),
+                JPH::EActivation::DontActivate
+            );
+        }
+        if (physicsBody.movementType != phys::MovementType::Static) {
+            bodyInterface.SetLinearAndAngularVelocity(
+                physicsBody.id,
+                phys::ToJPH(physicsBody.linearVelocity),
+                phys::ToJPH(physicsBody.angularVelocity)
+            );
+        }
+    }
 }
+

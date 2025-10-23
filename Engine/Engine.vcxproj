@@ -44,6 +44,7 @@
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
+    <EnableASAN>false</EnableASAN>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
@@ -119,11 +120,11 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_CONSOLE;GLM_FORCE_SSE2;GLM_FORCE_DEPTH_ZERO_TO_ONE;JPH_FLOATING_POINT_EXCEPTIONS_ENABLED;GLM_ENABLE_EXPERIMENTAL;JPH_DEBUG_RENDERER;JPH_PROFILE_ENABLED;JPH_USE_AVX2;JPH_USE_AVX;JPH_USE_SSE4_1;JPH_USE_SSE4_2;JPH_USE_LZCNT;JPH_USE_TZCNT;JPH_USE_F16C;JPH_USE_FMADD;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;GLM_FORCE_DEPTH_ZERO_TO_ONE;JPH_FLOATING_POINT_EXCEPTIONS_ENABLED;GLM_ENABLE_EXPERIMENTAL;JPH_DEBUG_RENDERER;JPH_PROFILE_ENABLED;JPH_USE_AVX2;JPH_USE_AVX;JPH_USE_SSE4_1;JPH_USE_SSE4_2;JPH_USE_LZCNT;JPH_USE_TZCNT;JPH_USE_F16C;JPH_USE_FMADD;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>$(ProjectDir)include/;$(SolutionDir)Renderer/include/;$(SolutionDir)SharedUtils/include/;$(SolutionDir)libs\x64-windows\include\</AdditionalIncludeDirectories>
-      <MultiProcessorCompilation>false</MultiProcessorCompilation>
+      <AdditionalIncludeDirectories>$(ProjectDir)include/;$(SolutionDir)Renderer/include/;$(SolutionDir)MyUtils/include/</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -139,7 +140,7 @@
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;GLM_FORCE_SSE2;GLM_FORCE_DEPTH_ZERO_TO_ONE;JPH_FLOATING_POINT_EXCEPTIONS_ENABLED;GLM_ENABLE_EXPERIMENTAL;JPH_DEBUG_RENDERER;JPH_PROFILE_ENABLED;JPH_USE_AVX2;JPH_USE_AVX;JPH_USE_SSE4_1;JPH_USE_SSE4_2;JPH_USE_LZCNT;JPH_USE_TZCNT;JPH_USE_F16C;JPH_USE_FMADD;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>$(ProjectDir)include/;$(SolutionDir)Renderer/include/;$(SolutionDir)SharedUtils/include/;$(SolutionDir)libs\x64-windows\include\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)include/;$(SolutionDir)Renderer/include/;$(SolutionDir)MyUtils/include/;$(SolutionDir)libs\x64-windows\include\</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>false</MultiProcessorCompilation>
     </ClCompile>
     <Link>
@@ -150,15 +151,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="include\CoreSystems\PhysicsSystem.cpp" />
+    <ClCompile Include="src\LightSystem.cpp" />
+    <ClCompile Include="src\PhysicsSystem.cpp" />
     <ClCompile Include="src\BodyActivationListener.cpp" />
     <ClCompile Include="src\CameraSystem.cpp" />
     <ClCompile Include="src\Clock.cpp" />
     <ClCompile Include="src\ContactListener.cpp" />
-    <ClCompile Include="src\DebugGuiSystem.cpp" />
     <ClCompile Include="src\EndRenderSystem.cpp" />
     <ClCompile Include="src\Impetus.cpp" />
-    <ClCompile Include="src\InputHandler.cpp" />
     <ClCompile Include="src\InputSystem.cpp" />
     <ClCompile Include="src\Physics.cpp" />
     <ClCompile Include="src\PhysicsCommon.cpp" />
@@ -171,17 +171,17 @@
     <ClCompile Include="src\SceneArchive.cpp" />
     <ClCompile Include="src\SystemManager.cpp" />
     <ClCompile Include="src\SystemRegistry.cpp" />
-    <ClCompile Include="src\ThreadPool.cpp" />
     <ClCompile Include="src\TransformSystem.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="include\BasicEvents.h" />
+    <ClInclude Include="include\Components\CameraLookAtComponent.h" />
+    <ClInclude Include="include\Components\LightComponent.h" />
+    <ClInclude Include="include\Events\BasicEvents.h" />
     <ClInclude Include="include\CameraType.h" />
     <ClInclude Include="include\Clock.h" />
     <ClInclude Include="include\ComponentInfoRegistry.h" />
     <ClInclude Include="include\Components\CameraComponent.h" />
     <ClInclude Include="include\Components\CollisionInfoComponent.h" />
-    <ClInclude Include="include\Components\generated_serialization.h" />
     <ClInclude Include="include\Components\InputStateComponent.h" />
     <ClInclude Include="include\Components\ModelComponent.h" />
     <ClInclude Include="include\Components\PhysicsBodyComponent.h" />
@@ -189,7 +189,6 @@
     <ClInclude Include="include\Components\Tags.h" />
     <ClInclude Include="include\Components\TransformComponent.h" />
     <ClInclude Include="include\CoreSystems\CameraSystem.h" />
-    <ClInclude Include="include\CoreSystems\DebugGuiSystem.h" />
     <ClInclude Include="include\CoreSystems\EndRenderSystem.h" />
     <ClInclude Include="include\CoreSystems\InputSystem.h" />
     <ClInclude Include="include\CoreSystems\PhysicsSystem.h" />
@@ -200,15 +199,12 @@
     <ClInclude Include="include\CoreSystems\ResourceSystem.h" />
     <ClInclude Include="include\CoreSystems\TransformSystem.h" />
     <ClInclude Include="include\CtxRef.h" />
-    <ClInclude Include="include\DebugUtils\DebugGuiComponentWidgets.h" />
-    <ClInclude Include="include\DebugUtils\DebugGuiTypeWidgets.h" />
     <ClInclude Include="include\EngineStats.h" />
     <ClInclude Include="include\Events\InputEvents.h" />
     <ClInclude Include="include\Events\SystemEvents.h" />
     <ClInclude Include="include\Impetus.h" />
     <ClInclude Include="include\ImpTypes.h" />
     <ClInclude Include="include\InputCodes.h" />
-    <ClInclude Include="include\InputHandler.h" />
     <ClInclude Include="include\Physics\BodyActivationListener.h" />
     <ClInclude Include="include\Physics\BodyIDHash.h" />
     <ClInclude Include="include\Physics\ContactEvent.h" />
@@ -216,6 +212,7 @@
     <ClInclude Include="include\Physics\Physics.h" />
     <ClInclude Include="include\Physics\PhysicsCommon.h" />
     <ClInclude Include="include\Physics\PhysicsImpls.h" />
+    <ClInclude Include="include\Physics\RayHit.h" />
     <ClInclude Include="include\RegisterMacro.h" />
     <ClInclude Include="include\ResourceCache.h" />
     <ClInclude Include="include\ResourceManager.h" />
@@ -223,11 +220,11 @@
     <ClInclude Include="include\ResourceRegistry.h" />
     <ClInclude Include="include\ResourceTypes\TestResource.h" />
     <ClInclude Include="include\SceneArchive.h" />
-    <ClInclude Include="include\Serialize.h" />
+    <ClInclude Include="include\CoreSerialize.h" />
+    <ClInclude Include="include\SerializeTypes.h" />
     <ClInclude Include="include\System.h" />
     <ClInclude Include="include\SystemManager.h" />
     <ClInclude Include="include\SystemRegistry.h" />
-    <ClInclude Include="include\ThreadPool.h" />
     <ClInclude Include="include\UpdateType.h" />
   </ItemGroup>
   <ItemGroup>

@@ -1,116 +1,114 @@
-﻿#include "materials/MetallicRoughness.h"
-
-#include "VKRenderer.h"
-#include "utils/descriptor//DescriptorLayoutBuilder.h"
-#include "core/Device.h"
-#include "gpudata/GPUDrawPushConstants.h"
-#include "core/GraphicsPipeline.h"
-#include "utils/PipelineBuilder.h"
-#include "utils/descriptor/DescriptorAllocatorGrowable.h"
+﻿#include "ConfigSystem.h"
 #include "core/Buffer.h"
 #include "core/Image.h"
+#include "gpudata/GPUDrawPushConstants.h"
 #include "materials/Material.h"
-Imp::Render::MetallicRoughness::MetallicRoughness(VKRenderer& renderer)
-{
-	buildPipelines(renderer);
+#include "materials/MetallicRoughness.h"
+#include "utils/descriptor//DescriptorLayoutBuilder.h"
+#include "utils/descriptor/DescriptorAllocatorGrowable.h"
+#include "utils/PipelineBuilder.h"
+#include "utils/shader/ShaderLoader.h"
+#include "VKRenderer.h"
+namespace {
+    auto cfg_metallicRoughnessVertShader = utl::ConfigValueRef("renderer.metallicRoughness_vert", "mesh_material");
+    auto cfg_metallicRoughnessFragShader = utl::ConfigValueRef("renderer.metallicRoughness_frag", "mesh_material");
 }
 
-void Imp::Render::MetallicRoughness::recreate(VKRenderer& renderer)
+imp::gfx::MetallicRoughness::MetallicRoughness(const vk::raii::Device& device, vk::DescriptorSetLayout sceneDataLayout, vk::Format drawFormat, vk::Format depthFormat)
 {
-	
+
+    DescriptorLayoutBuilder layoutBuilder;
+    layoutBuilder.addBinding(0, vk::DescriptorType::eUniformBuffer);
+    layoutBuilder.addBinding(1, vk::DescriptorType::eCombinedImageSampler);
+    layoutBuilder.addBinding(2, vk::DescriptorType::eCombinedImageSampler);
+
+    materialLayout = layoutBuilder.build(device, vk::ShaderStageFlagBits::eVertex | vk::ShaderStageFlagBits::eFragment);
+
+    buildPipelines(device, sceneDataLayout, drawFormat, depthFormat);
 }
 
-void Imp::Render::MetallicRoughness::buildPipelines(VKRenderer& renderer)
+void imp::gfx::MetallicRoughness::recreate(const vk::raii::Device& device, vk::DescriptorSetLayout sceneDataLayout, vk::Format drawFormat, vk::Format depthFormat)
 {
-	vk::PushConstantRange matrixRange{ vk::ShaderStageFlagBits::eVertex,0 ,sizeof(GPUDrawPushConstants) };
-
-	DescriptorLayoutBuilder layoutBuilder;
-	layoutBuilder.addBinding(0, vk::DescriptorType::eUniformBuffer);
-	layoutBuilder.addBinding(1, vk::DescriptorType::eCombinedImageSampler);
-	layoutBuilder.addBinding(2, vk::DescriptorType::eCombinedImageSampler);
-
-	materialLayout = layoutBuilder.build(renderer.getDevice().getLogical(),vk::ShaderStageFlagBits::eVertex| vk::ShaderStageFlagBits::eFragment);
-
-	auto layouts = std::vector{
-		renderer.getGPUSceneDataDescriptorLayout(),*materialLayout
-	};
-	
-
-
-
-
-
-
-
-	opaque = std::make_unique<GraphicsPipeline>(renderer.getDevice(), layouts, matrixRange, "mesh_material",
-	                                            vk::PrimitiveTopology::eTriangleList, vk::PolygonMode::eFill,
-	                                            vk::CullModeFlagBits::eNone, vk::FrontFace::eClockwise,
-	                                            renderer.getDrawImage().getFormat(),
-	                                            renderer.getDepthImage().getFormat(),
-	                                            true, false, true);
-	transparent = std::make_unique<GraphicsPipeline>(renderer.getDevice(), layouts, matrixRange, "mesh_material",
-	                                                 vk::PrimitiveTopology::eTriangleList, vk::PolygonMode::eFill,
-	                                                 vk::CullModeFlagBits::eNone, vk::FrontFace::eClockwise,
-	                                                 renderer.getDrawImage().getFormat(),
-	                                                 renderer.getDepthImage().getFormat(),
-	                                                 true, true, true);
-
+    buildPipelines(device, sceneDataLayout, drawFormat, depthFormat);
 }
 
-void Imp::Render::MetallicRoughness::clear_resources(const vk::Device& device)
+void imp::gfx::MetallicRoughness::buildPipelines(const vk::raii::Device& device, vk::DescriptorSetLayout sceneDataLayout, vk::Format drawFormat, vk::Format depthFormat)
 {
+    constexpr vk::PushConstantRange matrixRange{ vk::ShaderStageFlagBits::eVertex,0 ,sizeof(GPUDrawPushConstants) };
+    auto vertModule = ShaderLoader::CreateShaderModule(device, cfg_metallicRoughnessVertShader.get(), vkutil::ShaderStage::Vertex);
+    auto fragModule = ShaderLoader::CreateShaderModule(device, cfg_metallicRoughnessFragShader.get(), vkutil::ShaderStage::Fragment);
+    std::vector layouts = {
+        sceneDataLayout,*materialLayout
+    };
+    for (auto& layout : layouts) {
+        if (!layout) {
+            Debug::Throw("Invalid descriptor set layout");
+        }
+    }
+    auto pipelineCreateInfo = vk::PipelineLayoutCreateInfo{}
+        .setSetLayouts(layouts)
+        .setPushConstantRanges(matrixRange);
+
+    pipelineLayout = device.createPipelineLayout(pipelineCreateInfo);
+    pipelineBuilder.clear();
+    opaquePipeline = pipelineBuilder.setInputTopology(vk::PrimitiveTopology::eTriangleList)
+        .setPolygonMode(vk::PolygonMode::eFill)
+        .setMultisampling(vk::SampleCountFlagBits::e1)
+        .setShaderStages(*vertModule, *fragModule)
+        .setCullMode(vk::CullModeFlagBits::eBack, vk::FrontFace::eCounterClockwise)
+        .setDepthTest(true, true, vk::CompareOp::eLessOrEqual)
+        .setBlendingMode(PipelineBuilder::BlendingMode::None)
+        .setColorAttachmentFormat(drawFormat)
+        .setDepthFormat(depthFormat)
+        .buildPipeline(device, *pipelineLayout);
+
+    transparentPipeline = pipelineBuilder.setDepthTest(true, false, vk::CompareOp::eLess)
+        .setCullMode(vk::CullModeFlagBits::eNone, vk::FrontFace::eClockwise)
+        .setBlendingMode(PipelineBuilder::BlendingMode::Additive)
+        .buildPipeline(device, *pipelineLayout);
 }
 
-std::shared_ptr<Imp::Render::Material> Imp::Render::MetallicRoughness::write_material(const vk::Device& device,
-	MaterialPass pass,  MaterialResources& resources, DescriptorAllocatorGrowable& descriptorAllocator)
+
+
+std::shared_ptr<imp::gfx::Material> imp::gfx::MetallicRoughness::writeMaterial(const vk::raii::Device& device,
+    MaterialPass pass, MaterialResources& resources, DescriptorAllocatorGrowable& descriptorAllocator)
 {
-	auto material = std::make_shared<Material>();
-	material->passType = pass;
-	if (pass == MaterialPass::Transparent)
-	{
-		material->pipeline = transparent.get();
-	}
-	else
-	{
-		material->pipeline = opaque.get();
-	}
-	
-	material->set = descriptorAllocator.allocate(device, *materialLayout);
-	
-	writer.clear();
-	writer.write_buffer(0, resources.dataBuffer->getBuffer(), sizeof(MaterialConstants), resources.dataOffset, vk::DescriptorType::eUniformBuffer);
-	writer.write_image(1, resources.colorImage.lock()->getView(), *resources.colorSampler, vk::ImageLayout::eShaderReadOnlyOptimal, vk::DescriptorType::eCombinedImageSampler);
-	writer.write_image(2, resources.metalRoughImage.lock()->getView(), *resources.metalRoughSampler, vk::ImageLayout::eShaderReadOnlyOptimal, vk::DescriptorType::eCombinedImageSampler);
-	writer.update_set(device, *material->set);
-	material->buffer = resources.dataBuffer;
-	return material;
+    auto material = std::make_shared<Material>();
+    material->passType = pass;
+    material->pipeline = pass == MaterialPass::Transparent ? transparentPipeline : opaquePipeline;
+    material->pipelineLayout = pipelineLayout;
+    material->set = descriptorAllocator.allocate(device, *materialLayout);
+
+    writer.clear();
+    writer.writeBuffer(0, resources.dataBuffer->getBuffer(), sizeof(MaterialConstants), resources.dataOffset, vk::DescriptorType::eUniformBuffer);
+    writer.writeImage(1, resources.colorImage.lock()->getView(), resources.colorSampler, vk::ImageLayout::eShaderReadOnlyOptimal, vk::DescriptorType::eCombinedImageSampler);
+    writer.writeImage(2, resources.metalRoughImage.lock()->getView(), resources.metalRoughSampler, vk::ImageLayout::eShaderReadOnlyOptimal, vk::DescriptorType::eCombinedImageSampler);
+    writer.updateSet(device, *material->set);
+
+
+    material->buffer = resources.dataBuffer;
+    return material;
 }
 
-//
-//void Imp::Render::MetallicRoughness::write_material(const vk::Device& device, MaterialPass pass,
-//	const MaterialResources& resources, DescriptorAllocatorGrowable& descriptorAllocator)
-//{
-//	std::shared_ptr< Material> material;
-//	material->passType = pass;
-//	if (pass == MaterialPass::Transparent)
-//	{
-//		material->pipeline = transparent.get();
-//	}
-//	else
-//	{
-//		material->pipeline = opaque.get();
-//	}
-//	
-//	material->set = descriptorAllocator.allocate(device,*materialLayout);
-//	writer.clear();
-//	writer.write_buffer(0, resources.dataBuffer->getBuffer(), sizeof(MaterialConstants), resources.dataOffset, vk::DescriptorType::eUniformBuffer);
-//	writer.write_image(1, resources.colorImage->getView(), resources.getMetalRoughSampler(), vk::ImageLayout::eShaderReadOnlyOptimal, vk::DescriptorType::eCombinedImageSampler);
-//	writer.write_image(2, resources.metalRoughImage->getView(), *resources.metalRoughSampler, vk::ImageLayout::eShaderReadOnlyOptimal, vk::DescriptorType::eCombinedImageSampler);
-//	writer.update_set(device, *material->set);
-//
-//	//return material;
-//
-//
-//}
+void imp::gfx::MetallicRoughness::updateMaterialPipelines(Material& material) const
+{
+    switch (material.passType)
+    {
+
+    case MaterialPass::Opaque:
+        material.pipeline = opaquePipeline;
+        material.pipelineLayout = pipelineLayout;
+        break;
+    case MaterialPass::Transparent:
+        material.pipeline = transparentPipeline;
+        material.pipelineLayout = pipelineLayout;
+        break;
+    default:
+        Debug::Throw("Unsupported material pass type");
+        break;
+
+    }
+}
+
 
 

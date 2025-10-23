@@ -1,97 +1,91 @@
 #pragma once
-#include <fstream>
-#include <entt/entity/registry.hpp>
-
-
+#include "Clock.h"
+#include "FSNavigator.h"
+#include "ResourceManager.h"
 #include "SystemManager.h"
 #include "SystemRegistry.h"
-#include "ResourceManager.h"
-#include"Clock.h"
 #include "ThreadPool.h"
-#include "FileDirectoryHelper.h"
+#include <entt/entity/registry.hpp>
+#include <fstream>
 
 
-inline static std::ofstream logFile ("log.txt");
+
 
 
 
 struct GLFWwindow;
-namespace Imp {
-	namespace Render
-	{
-		class Renderer;
-	}
-	namespace Phys
-	{
-		class Physics;
-	}
-	class Window;
-	class Impetus
-	{
-	private:
-		bool glfwInitFlag;
-		std::unique_ptr < entt::registry >registry;
-		std::unique_ptr < SystemManager >systems;
-		std::unique_ptr < Clock >time;
-		std::unique_ptr < ResourceManager >resources;
-		std::atomic<bool> running;
-		std::unique_ptr<Render::Renderer> renderer;
-		std::shared_ptr<Window> window;
-		std::unique_ptr < EngineStats >stats;
-		std::string scenePath;
-		std::unique_ptr < entt::dispatcher >dispatcher;
-		std::queue<std::function<void()>> deferredEvents;
-		std::unique_ptr<Phys::Physics> physics;
-		ThreadPool threadPool;
-		void shutdown();
+namespace imp {
+    namespace gfx
+    {
+        class Renderer;
+    }
+    namespace phys
+    {
+        class Physics;
+    }
+    class Window;
+    class Impetus
+    {
+    public:
+        Impetus(const char* title, int fpsCap = 0);
+        ~Impetus();
+        Impetus(const Impetus&) = delete;
+        Impetus& operator=(const Impetus&) = delete;
+        Impetus(Impetus&&) = delete;
+        Impetus&& operator=(Impetus&&) = delete;
+        
+        // Getters
+        inline entt::registry& getRegistry() const { return *m_registry; }
+        inline phys::Physics& getPhysics() const { return *m_physicsEngine; }
+        inline gfx::Renderer& getRenderer() { return *m_renderer; }
 
-		void registerCallbacks() const;
-		void registerEvents();
-		void registerContextVariables();
+        // Methods
 
-		void cleanContextVariables();
-		void loadScene(const FileDirectoryHelper& fileHelp);
-		void saveScene(const std::string& filename);
-		void onLoadSceneEvent(LoadSceneEvent event);
-		void onSaveSceneEvent(SaveSceneAsEvent event);
+        template<typename T,typename TLoader>
+        void registerResourceAndLoader()
+        {
+            ResourceRegistry::Register<T, TLoader>();
+        }
+        template<typename T>
+        void emplaceAndRegisterSystem(const UpdateType type = UpdateType::Variable) const
+        {
+            m_systemManager->addSystem(SystemRegistry::RegisterSystem<T>(),true, type);
+        }
 
-		void onQuickSaveSceneEvent(QuickSaveSceneEvent event);
+        void init();
+        void init(const std::string& sceneFilename, const std::string& dir = "");
+        void run();
 
-		void prepareLoadScene();
-		void postLoadScene();
-
-
-	public:
-
-		auto& getRegistry() const { return *registry; }
-	
-		auto& getPhysics() const { return *physics; }
-		Render::Renderer& getRenderer() { return *renderer; }
-
-		Impetus(uint32_t width, uint32_t height, const char* title,int fpsCap=0);
-		~Impetus();
-		template<typename T,typename TLoader>
-		void registerResourceAndLoader()
-		{
-			ResourceRegistry::Register<T, TLoader>();
-		}
-
-		template<typename T>
-		void emplaceAndRegisterSystem(const UpdateType type = UpdateType::Variable) const
-		{
-			SystemRegistry::RegisterSystem<T>();
-			std::string name = typeid(T).name();
-			name = name.substr(6);
-			systems->addSystem(name.c_str(),true, type);
-			
-		}
-
-		void init();
-
-		void init(const std::string& sceneFilename, const std::string& dir = "");
-
-		void run();
+    private:
+        bool m_glfwInitFlag{ false };
+        std::unique_ptr<entt::registry> m_registry{nullptr};
+        std::unique_ptr<SystemManager> m_systemManager{ nullptr };
+        std::unique_ptr<Clock> time{ nullptr };
+        std::unique_ptr<ResourceManager> m_resourceManager{ nullptr };
+        std::atomic<bool> m_running{ false };
+        std::unique_ptr<gfx::Renderer> m_renderer{ nullptr };
+        std::shared_ptr<Window> m_window{ nullptr };
+        std::unique_ptr<EngineStats> m_engineStats{ nullptr };
+        std::string m_currentScenePath{};
+        std::unique_ptr < entt::dispatcher >m_dispatcher{ nullptr };
+        std::queue<std::function<void()>> m_pendingEvents{};
+        std::unique_ptr<phys::Physics> m_physicsEngine{ nullptr };
+        std::unique_ptr<utl::ThreadPool> m_threadPool{ nullptr };
 
 
-	};
+        void shutdown();
+        void registerCallbacks() const;
+        void registerEvents();
+        void registerContextVariables();
+        void cleanContextVariables();
+        void loadScene(const FSNavigator& fileHelp);
+        void saveScene(const std::string& filename);
+        void onLoadSceneEvent(LoadSceneEvent event);
+        void onSaveSceneEvent(SaveSceneAsEvent event);
+        void onQuickSaveSceneEvent(QuickSaveSceneEvent event);
+        void prepareLoadScene();
+        void postLoadScene();
+
+
+    };
 }

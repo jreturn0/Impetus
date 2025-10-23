@@ -1,81 +1,69 @@
 ﻿#include "core/Buffer.h"
-#include "core/Device.h"
-
-namespace Imp {
-    namespace Render {
-
-        Buffer::Buffer( VmaAllocator& allocator, vk::DeviceSize size,
-                       vk::BufferUsageFlags usage, VmaMemoryUsage memoryUsage, bool defer)
-            :  allocator(&allocator), size(size), defer(defer), id(++idCounter)
-        {
-            VmaAllocationCreateInfo allocCreateInfo = {};
-            allocCreateInfo.usage = memoryUsage;
-            allocCreateInfo.flags = VMA_ALLOCATION_CREATE_MAPPED_BIT;
-
-            VkBufferCreateInfo bufferInfo = { .sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO };
-            bufferInfo.pNext=nullptr;
-            bufferInfo.size = size;
-            bufferInfo.usage = static_cast<VkBufferUsageFlags>(usage);
-            VkBuffer _buffer;
-
-            if ( vmaCreateBuffer(allocator, &bufferInfo, &allocCreateInfo, &_buffer, &allocation, &allocationInfo) != VK_SUCCESS) {
-                throw std::runtime_error("failed to allocate buffer memory!");
-            }
-            buffer = vk::Buffer{ _buffer };
-            ++allocated;
-        }
 
 
 
+imp::gfx::Buffer::Buffer(VmaAllocator allocator, vk::DeviceSize size,
+    vk::BufferUsageFlags usage, VmaMemoryUsage memoryUsage)
+    : m_allocator(allocator), m_size(size)
+{
+    VmaAllocationCreateInfo allocCreateInfo = {};
+    allocCreateInfo.usage = memoryUsage;
+    allocCreateInfo.flags = VMA_ALLOCATION_CREATE_MAPPED_BIT;
+    const auto bufferInfo = vk::BufferCreateInfo{}
+        .setSize(size)
+        .setUsage(usage);
+    VkBuffer _buffer;
+    if (vmaCreateBuffer(allocator, &*bufferInfo, &allocCreateInfo, &_buffer, &m_allocation, &m_allocationInfo) != VK_SUCCESS) {
+        throw std::runtime_error("failed to allocate buffer memory!");
+    }
+    m_buffer = vk::Buffer{ _buffer };
+}
 
 
-        Buffer::~Buffer()
-        {
-            if(!allocator)
-            {
-                std::cout << "NO ALLOCATOR IN BUFFER\n";
-            }
-            if (!defer) {
-                destroy();
-            }
-            else
-            {
-              //  std::cout << std::format("Buffer: {}, deferred destruction\n", id);
-            }
-        }
+imp::gfx::Buffer::Buffer(Buffer&& other) noexcept
+    : m_allocator(other.m_allocator), m_size(other.m_size), m_buffer(other.m_buffer),
+    m_allocation(other.m_allocation), m_allocationInfo(other.m_allocationInfo),
+    m_memoryProperties(other.m_memoryProperties)
+{
+    other.m_buffer = nullptr;
+    other.m_allocation = nullptr;
+    other.m_size = 0;
+}
 
-        void Buffer::destroy()
-        {
-            if (buffer && allocation ) {
-                vmaDestroyBuffer(*allocator, buffer, allocation);
-              //  std::cout << "Buffer destroyed, buffers left: " << --allocated << "\n";
-            }
-        }
+imp::gfx::Buffer& imp::gfx::Buffer::operator=(Buffer&& other) noexcept
+{
+    if (this != &other) {
+        destroy();
+        m_allocator = other.m_allocator;
+        m_size = other.m_size;
+        m_buffer = other.m_buffer;
+        m_allocation = other.m_allocation;
+        m_allocationInfo = other.m_allocationInfo;
+        m_memoryProperties = other.m_memoryProperties;
+        other.m_buffer = nullptr;
+        other.m_allocation = nullptr;
+        other.m_size = 0;
+    }
+    return *this;
+}
 
+imp::gfx::Buffer::~Buffer()
+{
+    if (!m_allocator)
+    {
+        Debug::FatalError("No allocator in buffer destructor");
+    }
 
-        SharedBuffer CreateSharedBuffer(VmaAllocator& allocator, vk::DeviceSize size, vk::BufferUsageFlags usage, VmaMemoryUsage memoryUsage)
-        {
-            return std::shared_ptr<Buffer>(new Buffer(allocator, size, usage, memoryUsage));
-        }
+    destroy();
 
-        std::unique_ptr<Buffer> CreateUniqueBuffer(
-                                                   VmaAllocator& allocator,
-                                                   vk::DeviceSize size,
-                                                   vk::BufferUsageFlags usage,
-                                                   VmaMemoryUsage memoryUsage)
-        {
+}
 
-            return std::unique_ptr<Buffer>(new Buffer( allocator, size, usage, memoryUsage));
-        }
-        Buffer CreateBuffer(
-            VmaAllocator& allocator,
-            vk::DeviceSize size,
-            vk::BufferUsageFlags usage,
-            VmaMemoryUsage memoryUsage, bool defer)
-        {
+void imp::gfx::Buffer::destroy()
+{
+    if (m_buffer && m_allocation) {
+        vmaDestroyBuffer(m_allocator, m_buffer, m_allocation);
+        m_buffer = nullptr;
+        m_allocation = nullptr;
+    }
+}
 
-            return { allocator, size, usage, memoryUsage,defer };
-        }
-
-    } // namespace Render
-} // namespace Imp

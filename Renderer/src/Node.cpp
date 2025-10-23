@@ -1,6 +1,6 @@
 ﻿#include "nodes/Node.h"
 
-void Imp::Render::Node::refreshTransform(const glm::mat4& parentMatrix)
+void imp::gfx::Node::refreshTransform(const glm::mat4& parentMatrix)
 {
 	worldTransform = parentMatrix * localTransform;
 	for (auto c : children) {
@@ -8,7 +8,7 @@ void Imp::Render::Node::refreshTransform(const glm::mat4& parentMatrix)
 	}
 }
 
-void Imp::Render::Node::draw(const glm::mat4& topMatrix, DrawContext& ctx)
+void imp::gfx::Node::draw(const glm::mat4& topMatrix, DrawContext& ctx)
 {
 	// draw children
 	for (const auto& c : children) {
@@ -16,7 +16,7 @@ void Imp::Render::Node::draw(const glm::mat4& topMatrix, DrawContext& ctx)
 	}
 }
 
-void Imp::Render::Node::draw(const glm::mat4& topMatrix, DrawContext& ctx, std::shared_ptr<struct Material>& materialOverride)
+void imp::gfx::Node::draw(const glm::mat4& topMatrix, DrawContext& ctx, std::shared_ptr<Material>& materialOverride)
 {
 	// draw children
 	for (const auto& c : children) {

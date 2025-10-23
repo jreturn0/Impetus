@@ -1,49 +1,53 @@
 #pragma once
-#include <unordered_map>
+#include "Debug.h"
+#include "RegisterMacro.h"
+#include "System.h"
+#include "TypeName.h"
 #include <functional>
 #include <memory>
+#include <unordered_map>
 
-#include "Debug.h"
-#include "System.h"
-#include "RegisterMacro.h"
+namespace imp {
 
-namespace Imp {
+    class SystemRegistry
+    {
+        using SystemFactoryMap = std::unordered_map<utl::StringHash, std::function<std::unique_ptr<System>()>,utl::StringHashOp,std::equal_to<>>;
+    public:
+        inline static SystemFactoryMap& GetSystemFactory() { return m_systemFactory; };
+        template<typename T>
+        inline static std::string_view RegisterSystem()
+        {
+            constexpr std::string_view name = utl::TypeName<T>::name;
+            
+            if (m_systemFactory.insert_or_assign(name, []() {return std::make_unique<T>(); }).second) {
+                Debug::Info("Registered System: {}", name);
+            }
+            return name;
+        }
+    private:
+        inline static SystemFactoryMap m_systemFactory{};
 
-	class SystemRegistry
-	{
-	private:
-		inline static std::unordered_map<std::string, std::function<std::unique_ptr<System>()>> systemFactory{};
-
-	public:
-		inline static std::unordered_map<std::string, std::function<std::unique_ptr<System>()>>& GetSystemFactory() { return systemFactory; };
-		template<typename T>
-		inline static void RegisterSystem()
-		{
-			std::string name = typeid(T).name();
-			name = name.substr(6);
-			systemFactory.insert_or_assign(name, []() {return std::make_unique<T>(); });
-		}
-	};
-	// Register system function
-	namespace Register {
-		template <typename Type>
-		struct SystemRegistrar
-		{
-			SystemRegistrar()
-			{
-				try {
-					Imp::SystemRegistry::RegisterSystem<Type>();
-				}
-				catch (const std::exception& e) {
-					Debug::Exception("Error registering System: {}: {}", typeid(Type).name(), e.what());
-				
-				}
-			}
-		};
-	}
+    };
+    namespace Register {
+    // Register system function
+        template <typename Type>
+        struct SystemRegistrar
+        {
+            SystemRegistrar()
+            {
+                try {
+                    imp::SystemRegistry::RegisterSystem<Type>();
+                }
+                catch (const std::exception& e) {
+                    Debug::Exception("Error registering System: {}: {}", typeid(Type).name(), e.what());
+                
+                }
+            }
+        };
+    }
 
 #define REGISTER_SYSTEM(Type) \
-	inline static Imp::Register::SystemRegistrar<Type> UNIQUE_NAME(autoRegisterInstance_){};
+    inline static imp::Register::SystemRegistrar<Type> UNIQUE_NAME(autoRegisterInstance_){};
 }
 
 

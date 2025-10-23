@@ -1,32 +1,45 @@
 ﻿#pragma once
+#include "StringHash.h"
+#include "StringUtils.h"
+#include "TimerStats.h"
 #include <unordered_map>
-namespace Imp::Render {
+
+#ifndef IMP_ENABLE_PROFILING
+#ifdef _DEBUG
+#define IMP_ENABLE_PROFILING 1
+#endif // DEBUG
+#endif
 
 
-
-
-
+namespace imp::gfx {
+    // Structure to hold rendering statistics
     struct RenderStats
     {
-		struct TimeStats
-		{
-			long long frameTime;
-			long long minFrameTime;
-			long long maxFrameTime;
-			long long avgFrameTime;
-			void update(const long long time)
-			{
-				frameTime = time;
-				minFrameTime = std::min(minFrameTime, time);
-				maxFrameTime = std::max(maxFrameTime, time);
-				avgFrameTime = (avgFrameTime + time) / 2;
-			}
-		};
-        unsigned long long triangleCount;   
-        unsigned long long drawCallCount;
+        uint64_t triangleCount{};
+        uint64_t drawCallCount{};
+        std::unordered_map<utl::StringHash, utl::TimerStats, utl::StringHashOp> timeStatsMap{};
 
-		std::unordered_map<std::string, TimeStats> timeStatsMap;
+        // Methods
 
-
+        inline void reset() noexcept {
+            triangleCount = 0;
+            drawCallCount = 0;
+            for (auto& [_, stats] : timeStatsMap) {
+                stats.reset();
+            }
+        }
+        inline utl::ScopeTimer time(const utl::StringHash nameHash) noexcept {
+            return { timeStatsMap[nameHash] };
+        }
     };
 }
+
+#if defined(IMP_ENABLE_PROFILING)
+#define RENDERSTATS_SCOPED_TIMER(statsRef, name)                                   \
+        constexpr auto UTL_CONCAT(scopedTimer, __LINE__) = name##_hash;                  \
+        utl::ScopeTimer UTL_CONCAT(scopedTimerObj, __LINE__){                          \
+            (statsRef).time(UTL_CONCAT(scopedTimer, __LINE__))                         \
+        };
+#else
+#define RENDERSTATS_SCOPED_TIMER(statsRef, name) ;
+#endif
