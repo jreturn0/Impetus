@@ -54,8 +54,8 @@ imp::Window::Window(std::string_view title) : m_glfw(CreateWindow()), m_width(cf
 
 void imp::Window::setCursorMode(CursorMode mode)
 {
-    cursorMode = mode;
-    switch (cursorMode) {
+    m_cursorMode = mode;
+    switch (m_cursorMode) {
     case CursorMode::Normal:
         glfwSetInputMode(m_glfw, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
         break;

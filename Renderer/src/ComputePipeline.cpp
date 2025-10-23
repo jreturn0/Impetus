@@ -1,9 +1,8 @@
 ﻿#include "core/ComputePipeline.h"
-#include "utils/descriptor/DescriptorLayoutBuilder.h"
-#include "core/VulkanContext.h"
-#include "utils/descriptor/DescriptorAllocator.h"
 #include "core/Image.h"
+#include "core/VulkanContext.h"
 #include "utils/descriptor/DescriptorAllocatorGrowable.h"
+#include "utils/descriptor/DescriptorLayoutBuilder.h"
 #include "utils/shader/ShaderLoader.h"
 
 
@@ -27,18 +26,16 @@ void imp::gfx::ComputePipeline::recreate(const vk::raii::Device& device, const I
 
     m_descriptorSet = descriptorAllocator.allocate(device, m_descriptorSetLayout);
     vk::DescriptorImageInfo imageInfo({}, image.getView(), vk::ImageLayout::eGeneral);
-
-
-    vk::WriteDescriptorSet descriptorWrite{};
-    descriptorWrite.setDstSet(m_descriptorSet)
+    const auto descriptorWrite = vk::WriteDescriptorSet{}
+        .setDstSet(m_descriptorSet)
         .setDescriptorType(vk::DescriptorType::eStorageImage)
         .setImageInfo(imageInfo);
 
     device.updateDescriptorSets({ descriptorWrite }, nullptr);
     vk::PushConstantRange pushRange{ vk::ShaderStageFlagBits::eCompute, 0, sizeof(PushConstants) };
 
-    vk::PipelineLayoutCreateInfo pipelineLayoutInfo{};
-    pipelineLayoutInfo.setSetLayouts(*m_descriptorSetLayout)
+    const auto pipelineLayoutInfo = vk::PipelineLayoutCreateInfo{}
+        .setSetLayouts(*m_descriptorSetLayout)
         .setPushConstantRanges(pushRange);
 
     m_pipelineLayout = device.createPipelineLayout({ {}, *m_descriptorSetLayout, pushRange }, nullptr);
@@ -47,19 +44,19 @@ void imp::gfx::ComputePipeline::recreate(const vk::raii::Device& device, const I
     auto computeShader = ShaderLoader::CreateShaderModule(device, getName(), vkutil::ShaderStage::Compute);
 
 
-    vk::PipelineShaderStageCreateInfo shaderStageInfo{};
-    shaderStageInfo.setStage(vk::ShaderStageFlagBits::eCompute)
+    const auto shaderStageInfo = vk::PipelineShaderStageCreateInfo{}
+        .setStage(vk::ShaderStageFlagBits::eCompute)
         .setModule(computeShader)
         .setPName("main");
 
-    vk::ComputePipelineCreateInfo pipelineInfo{};
-    pipelineInfo.setStage(shaderStageInfo)
+    const auto pipelineInfo = vk::ComputePipelineCreateInfo{}
+        .setStage(shaderStageInfo)
         .setLayout(m_pipelineLayout);
     try {
         m_pipeline = device.createComputePipeline(nullptr, pipelineInfo);
     }
     catch (vk::SystemError& err) {
-        Debug::FatalError("Failed to create compute pipeline: {}", err.what());
+        Debug::Error("Failed to create compute pipeline: {}", err.what());
     }
 }
 

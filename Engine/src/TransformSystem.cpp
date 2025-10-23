@@ -1,124 +1,61 @@
-﻿#include "CoreSystems/TransformSystem.h"
-
-#include <execution>
-
-#include "Components/TransformComponent.h"
+﻿#include "Clock.h"
 #include "Components/ModelComponent.h"
 #include "Components/PhysicsBodyComponent.h"
 #include "Components/RelationshipComponent.h"
-#include <glm/geometric.hpp>
-#include <glm/trigonometric.hpp>
-#include "Clock.h"
-
-
-#include "BasicEvents.h"
+#include "Components/TransformComponent.h"
+#include "CoreSystems/TransformSystem.h"
 #include "CtxRef.h"
 #include "Debug.h"
+#include "events/BasicEvents.h"
 #include "Physics/Physics.h"
-
-namespace {
-	void UpdateModelMatrix(entt::registry& registry, entt::entity entity)
-	{
-		auto* transform = registry.try_get<imp::TransformComponent>(entity);
-		auto* model = registry.try_get<imp::ModelComponent>(entity);
+#include "ThreadPool.h"
+#include <execution>
+#include <glm/geometric.hpp>
+#include <glm/trigonometric.hpp>
 
 
-		if (transform && model) {
-			// Compute the local transform
-			glm::mat4 translation = glm::translate(glm::mat4(1.0f), transform->position);
-			glm::mat4 rotation = glm::toMat4(transform->rotation);
-			glm::mat4 scale = glm::scale(glm::mat4(1.0f), transform->scale);
-			model->localTransform = translation * rotation * scale;
-
-			auto* relationship = registry.try_get<imp::RelationshipComponent>(entity);
-			// Compute the global transform
-			if (relationship && relationship->parent != entt::null) {
-				if (const auto* parentModel = registry.try_get<imp::ModelComponent>(relationship->parent)) {
-					model->localTransform = parentModel->localTransform * model->localTransform;
-				}
-			} else {
-				model->localTransform = model->localTransform;
-			}
-
-			// Update children
-
-		}
-	}
-
-	//void SynchronizeTransform(entt::registry& registry, entt::entity entity, Imp::TransformComponent& transform, Imp::ModelComponent& model)
-	//{
-
-	//	// Compute the local transform
-	//	glm::mat4 translation = glm::translate(glm::mat4(1.0f), transform.position);
-	//	glm::mat4 rotation = glm::toMat4(transform.rotation);
-	//	glm::mat4 scale = glm::scale(glm::mat4(1.0f), transform.scale);
-	//	model.localTransform = translation * rotation * scale;
-
-	//	//const auto* relationship = registry.try_get<Imp::RelationshipComponent>(entity);
-	//	//// Compute the global transform
-	//	//if (relationship && relationship->parent != entt::null) {
-	//	//	if (const auto* parentModel = registry.try_get<Imp::ModelComponent>(relationship->parent)) {
-	//	//		model.localTransform = parentModel->localTransform * model.localTransform;
-	//	//	}
-	//	//} else {
-	//	//	model.localTransform = model.localTransform;
-	//	//}
-
-	//	// Update children
-	//	//if (relationship) {
-	//	//	for (auto child : relationship->children) {
-	//	//		UpdateModelMatrix(registry, child);
-	//	//	}
-	//	//}
-
-
-	//}
-}
 
 void imp::TransformSystem::initialize(entt::registry& registry)
 {
-	//	observer.connect(registry, entt::collector.update<TransformComponent>());
-
-	time = &registry.ctx().get<CtxRef<imp::Clock>>().get();
-
+    time = &registry.ctx().get<CtxRef<imp::Clock>>().get();
 }
 void imp::TransformSystem::update(entt::registry& registry, const float deltaTime)
 {
+    if (time == nullptr) {
+        Debug::Error("Time is nullptr");
+        return;
+    }
 
+    const double ratio = time->getAccumulatedTime() / time->getFixedStep();
+    const float alpha = static_cast<float>(std::clamp(ratio, 0.0, 1.0));
 
+    auto transformGroup = registry.group<imp::TransformComponent>(entt::get<imp::ModelComponent>);
+    auto& physicsPrev = registry.storage<imp::TransformComponent>("physics_prev"_hs);
+    auto& physicsCurr = registry.storage<imp::TransformComponent>("physics"_hs);
 
-	if (time == nullptr) {
-		Debug::Error("Time is nullptr");
-		return;
-	}
+    for (auto&& [entity, transform, model] : transformGroup.each()) {
+        const glm::vec3 scale = transform.scale;
 
+        if (physicsPrev.contains(entity) && physicsCurr.contains(entity)) {
+            const auto& prevT = physicsPrev.get(entity);
+            const auto& currT = physicsCurr.get(entity);
+            glm::vec3 interpPos = glm::mix(prevT.position, currT.position, alpha);
+            glm::quat interpRot = glm::normalize(glm::slerp(prevT.rotation, currT.rotation, alpha));
+            transform.position = interpPos;
+            transform.rotation = interpRot;
+        }
+        else if (physicsCurr.contains(entity)) {
+            const auto& currT = physicsCurr.get(entity);
+            transform.position = currT.position;
+            transform.rotation = currT.rotation;
+        }
+        const glm::mat4 translation = glm::translate(glm::mat4(1.0f), transform.position);
+        const glm::mat4 rotation = glm::toMat4(transform.rotation);
+        const glm::mat4 scaling = glm::scale(glm::mat4(1.0f), scale);
 
-	auto&& transformModelGroup = registry.group<>(entt::get< TransformComponent, ModelComponent>);
-	auto&& physicsGroup = registry.group<>(entt::get<PhysicsBodyComponent, TransformComponent>);
-
-
-	//physics interpolation factor
-	constexpr double compare = 1.0 - DBL_EPSILON;
-	double interpolationFactor = std::min(compare, time->getAccumulatedTime() / time->getFixedStep());
-	auto&& physics = registry.ctx().get<CtxRef<imp::Phys::Physics>>().get().getSystem().GetBodyInterfaceNoLock();
-
-	imp::ForEachParallel(physicsGroup, [&physics, &physicsGroup, &interpolationFactor](auto entity) {
-		auto&& [physicsBody, transform] = physicsGroup.get<PhysicsBodyComponent, TransformComponent>(entity);
-		JPH::Vec3 out1{}, out2{};
-		JPH::Quat out3{};
-		physics.GetPositionAndRotation(physicsBody.id, out1, out3);
-		transform.position = glm::mix(transform.position, Phys::ToGLM(out1), interpolationFactor);
-		transform.rotation = glm::slerp(transform.rotation, Phys::ToGLM(out3), static_cast<float>(interpolationFactor));
-						 });
-
-	imp::ForEachParallel(transformModelGroup, [&transformModelGroup](auto entity) {
-		auto&& [transform, model]   = transformModelGroup.get<TransformComponent, ModelComponent>(entity);
-		const glm::mat4 translation = glm::translate(glm::mat4(1.0f), transform.position);
-		const glm::mat4 rotation    = glm::toMat4(transform.rotation);
-		const glm::mat4 scale       = glm::scale(glm::mat4(1.0f), transform.scale);
-		model.localTransform       = translation * rotation * scale;
-						 });
-
+        model.localTransform = translation * rotation * scaling;
+    }
 }
 
-void imp::TransformSystem::cleanup(entt::registry& registry) { System::cleanup(registry); }
+
+

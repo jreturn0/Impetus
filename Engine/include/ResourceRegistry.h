@@ -1,7 +1,7 @@
 #pragma once
+#include <iostream>
 #include <ResourceCache.h>
 #include <typeindex>
-#include <iostream>
 template <typename T>
 static constexpr std::type_index GetTypeIndex()
 {

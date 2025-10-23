@@ -3,9 +3,10 @@
 #include "utils/VKCommon.hpp"
 namespace imp::gfx
 {
-	struct GPUDrawPushConstants
-	{
-		glm::mat4 worldMatrix;
-		vk::DeviceAddress vertexBuffer;
-	};
+    // Structure to represent push constants for GPU draw calls
+    struct GPUDrawPushConstants
+    {
+        glm::mat4 worldMatrix{};
+        vk::DeviceAddress vertexBuffer{};
+    };
 }

@@ -1,12 +1,11 @@
-#include "SystemManager.h"
-#include "SystemRegistry.h"
-#include <iostream>
 #include "Clock.h"
-#include <Debug.h>
-#include <ranges>
-
 #include "CtxRef.h"
 #include "EngineStats.h"
+#include "SystemManager.h"
+#include "SystemRegistry.h"
+#include <Debug.h>
+#include <iostream>
+#include <ranges>
 
 
 namespace {
@@ -31,28 +30,28 @@ std::vector<imp::SystemManager::Entry>& imp::SystemManager::getContainer(const U
 {
     switch (type) {
     case Variable:
-        return systems;
+        return m_systems;
     case Fixed:
-        return fixedSystems;
+        return m_fixedSystems;
     case PreFixed:
-        return preFixedSystems;
+        return m_preFixedSystems;
     case PostFixed:
-        return postFixedSystems;
+        return m_postFixedSystems;
     default:
         Debug::Throw("Invalid System UpdateType: {}", static_cast<size_t>(type));
-        return systems;
+        return m_systems;
     }
 }
 
 void imp::SystemManager::OnSystemReorderEvent(SystemReorderEvent& event)
 {
-    if (!systemMetaMap.contains(event.name)) {
+    if (!m_systemMetaMap.contains(event.name)) {
         Debug::Error("System not found: {}", event.name);
         return;
     }
-    systemEvents.emplace([this, event](entt::registry&) {
-        auto&& it = systemMetaMap.find(event.name);
-        if (it == systemMetaMap.end()) {
+    m_pendingEvents.emplace([this, event](entt::registry&) {
+        auto&& it = m_systemMetaMap.find(event.name);
+        if (it == m_systemMetaMap.end()) {
             Debug::Error("System not found: {}", event.name);
             return;
         }
@@ -78,10 +77,10 @@ void imp::SystemManager::OnSystemReorderEvent(SystemReorderEvent& event)
                 newContainer.insert(newContainer.begin() + static_cast<long long>(newIndex), std::move(system));
             }
             for (auto i = 0; i < container.size(); i++) {
-                systemMetaMap[container[i].name].index = i;
+                m_systemMetaMap[container[i].name].index = i;
             }
             for (auto i = 0; i < newContainer.size(); i++) {
-                systemMetaMap[newContainer[i].name].index = i;
+                m_systemMetaMap[newContainer[i].name].index = i;
             }
             return;
         }
@@ -96,7 +95,7 @@ void imp::SystemManager::OnSystemReorderEvent(SystemReorderEvent& event)
         container.insert(container.begin() + static_cast<long long>(newIndex), std::move(system));
 
         for (size_t i = 0; i < container.size(); i++) {
-            systemMetaMap[container[i].name].index = i;
+            m_systemMetaMap[container[i].name].index = i;
         }
         });
 
@@ -106,26 +105,26 @@ void imp::SystemManager::OnSystemReorderEvent(SystemReorderEvent& event)
 
 void imp::SystemManager::OnSystemAddEvent(AddSystemEvent& event)
 {
-    systemEvents.emplace([this, event](entt::registry& registry) {
+    m_pendingEvents.emplace([this, event](entt::registry& registry) {
         addSystem(event.name, false, event.type);
-        getContainer(event.type)[systemMetaMap[event.name].index].system->initialize(registry);
+        getContainer(event.type)[m_systemMetaMap[event.name].index].system->initialize(registry);
         Debug::Info("System added: {}", event.name);
         });
-    reorderDispatchPending = true;
+    m_reorderDispatchPending = true;
 }
 
 void imp::SystemManager::OnSystemRemoveEvent(RemoveSystemEvent& event)
 {
-    auto it = systemMetaMap.find(event.name);
-    if (it != systemMetaMap.end()) {
+    auto it = m_systemMetaMap.find(event.name);
+    if (it != m_systemMetaMap.end()) {
         auto&& [name, meta] = *it;
         auto&& container = getContainer(meta.type);
         container.erase(container.begin() + meta.index);
-        systemMetaMap.erase(it);
+        m_systemMetaMap.erase(it);
         for (auto i = 0; i < container.size(); i++) {
-            systemMetaMap[container[i].name].index = i;
+            m_systemMetaMap[container[i].name].index = i;
         }
-        reorderDispatchPending = true;
+        m_reorderDispatchPending = true;
     }
     else {
         Debug::Error("System not found: {}", event.name);
@@ -133,16 +132,17 @@ void imp::SystemManager::OnSystemRemoveEvent(RemoveSystemEvent& event)
 }
 
 
-void imp::SystemManager::addSystem(const std::string& name, bool enabled, UpdateType type)
+void imp::SystemManager::addSystem(const std::string_view name, bool enabled, UpdateType type)
 {
     auto&& systemFactory = SystemRegistry::GetSystemFactory();
     if (const auto it = systemFactory.find(name); it != systemFactory.end()) {
-        Entry entry = { it->second(), enabled ,it->first };
+        auto nameStr = std::string(name);
+        Entry entry = { it->second(), enabled , nameStr };
         auto&& container = getContainer(type);
         container.push_back(std::move(entry));
-        systemMetaMap[it->first] = { container.size() - 1, type };
+        m_systemMetaMap[nameStr] = { container.size() - 1, type };
 
-        reorderDispatchPending = true;
+        m_reorderDispatchPending = true;
     }
     else {
         Debug::Error("System not registered: {}", name);
@@ -151,64 +151,68 @@ void imp::SystemManager::addSystem(const std::string& name, bool enabled, Update
 
 void imp::SystemManager::initializeSystems(entt::registry& registry)
 {
-    try {
-        for (auto&& entry : preFixedSystems) {
+    
+        for (auto&& entry : m_systems) {
             entry.system->initialize(registry);
         }
-        for (auto&& entry : fixedSystems) {
+        for (auto&& entry : m_preFixedSystems) {
             entry.system->initialize(registry);
         }
-        for (auto&& entry : postFixedSystems) {
+        for (auto&& entry : m_fixedSystems) {
             entry.system->initialize(registry);
         }
-        for (auto&& entry : systems) {
+        for (auto&& entry : m_postFixedSystems) {
             entry.system->initialize(registry);
         }
-    }
-    catch (const std::exception& e) {
-        Debug::Exception("initializing systems: {}", e.what());
-    }
+    
+
     registry.ctx().get<CtxRef<entt::dispatcher>>().get().sink<SystemReorderEvent>().connect<&SystemManager::OnSystemReorderEvent>(*this);
     registry.ctx().get<CtxRef<entt::dispatcher>>().get().sink<AddSystemEvent>().connect<&SystemManager::OnSystemAddEvent>(*this);
     registry.ctx().get<CtxRef<entt::dispatcher>>().get().sink<RemoveSystemEvent>().connect<&SystemManager::OnSystemRemoveEvent>(*this);
-    reorderDispatchPending = true;
+    m_reorderDispatchPending = true;
 }
 
 void imp::SystemManager::updateSystems(entt::registry& registry, Clock& time, EngineStats& stats)
 {
 
     const double deltaTime = time.getDelta();
-    while (!systemEvents.empty()) {
-        systemEvents.front()(registry);
-        systemEvents.pop();
+    while (!m_pendingEvents.empty()) {
+        m_pendingEvents.front()(registry);
+        m_pendingEvents.pop();
     }
-    if (reorderDispatchPending) {
+    if (m_reorderDispatchPending) {
         SystemsReorderedEvent reorderedEvent;
-
-        reorderedEvent.variable.reserve(systems.size());
-        for (auto&& [system, status, name] : systems) {
+        reorderedEvent.variable.reserve(m_systems.size());
+        for (auto&& [system, status, name] : m_systems) {
             reorderedEvent.variable.emplace_back(name, status);
+            Debug::Info("Reorder Variable System ( name: {}, status: {} )", name, status);
+
         }
-        reorderedEvent.preFixed.reserve(systems.size());
-        for (auto&& [system, status, name] : preFixedSystems) {
+        reorderedEvent.preFixed.reserve(m_systems.size());
+        for (auto&& [system, status, name] : m_preFixedSystems) {
             reorderedEvent.preFixed.emplace_back(name, status);
+            Debug::Info("Reorder PreFixed System ( name: {}, status: {} )", name, status);
         }
-        reorderedEvent.fixed.reserve(systems.size());
-        for (auto&& [system, status, name] : fixedSystems) {
+        reorderedEvent.fixed.reserve(m_systems.size());
+        for (auto&& [system, status, name] : m_fixedSystems) {
             reorderedEvent.fixed.emplace_back(name, status);
+            Debug::Info("Reorder Fixed System ( name: {}, status: {} )", name, status);
         }
-        reorderedEvent.postFixed.reserve(systems.size());
-        for (auto&& [system, status, name] : postFixedSystems) {
+        reorderedEvent.postFixed.reserve(m_systems.size());
+        for (auto&& [system, status, name] : m_postFixedSystems) {
             reorderedEvent.postFixed.emplace_back(name, status);
+            Debug::Info("Reorder PostFixed System ( name: {}, status: {} )", name, status);
         }
 
         registry.ctx().get<CtxRef<entt::dispatcher>>().get().enqueue<SystemsReorderedEvent>(std::move(reorderedEvent));
-        reorderDispatchPending = false;
+        m_reorderDispatchPending = false;
     }
 
-    for (auto& [system, status, name] : systems) {
+    static auto& factory = SystemRegistry::GetSystemFactory();
+    for (auto& [system, status, name] : m_systems) {
         if (status) {
-            ENGINESTATS_SCOPED_TIMER_STR(stats, name);
+            auto&& it = factory.find(utl::StringHash(name));
+            ENGINESTATS_SCOPED_TIMER_STR(stats, it->first);
             system->update(registry, static_cast<float>(deltaTime));
         }
     }
@@ -216,23 +220,26 @@ void imp::SystemManager::updateSystems(entt::registry& registry, Clock& time, En
         const float fixedStep = static_cast<float>(time.getFixedStep());
         //Debug::Info("FixedStep {}", fixedStep);
 
-        for (auto& [system, status, name] : preFixedSystems) {
+        for (auto& [system, status, name] : m_preFixedSystems) {
             if (status) {
-                ENGINESTATS_SCOPED_TIMER_STR(stats, name);
+                auto&& it = factory.find(utl::StringHash(name));
+                ENGINESTATS_SCOPED_TIMER_STR(stats, it->first);
                 system->update(registry, fixedStep);
             }
         }
         while (time.fixedUpdate()) {
-            for (auto& [system, status, name] : fixedSystems) {
+            for (auto& [system, status, name] : m_fixedSystems) {
                 if (status) {
-                    ENGINESTATS_SCOPED_TIMER_STR(stats, name);
+                    auto&& it = factory.find(utl::StringHash(name));
+                    ENGINESTATS_SCOPED_TIMER_STR(stats, it->first);
                     system->update(registry, fixedStep);
                 }
             }
         }
-        for (auto& [system, status, name] : postFixedSystems) {
+        for (auto& [system, status, name] : m_postFixedSystems) {
             if (status) {
-                ENGINESTATS_SCOPED_TIMER_STR(stats, name);
+                auto&& it = factory.find(utl::StringHash(name));
+                ENGINESTATS_SCOPED_TIMER_STR(stats, it->first);
                 system->update(registry, fixedStep);
             }
         }
@@ -243,25 +250,26 @@ void imp::SystemManager::updateSystems(entt::registry& registry, Clock& time, En
 
 void imp::SystemManager::cleanupSystems(entt::registry& registry) const
 {
-    for (auto&& entry : preFixedSystems) {
+    for (auto&& entry : m_preFixedSystems) {
         entry.system->cleanup(registry);
     }
-    for (auto&& entry : fixedSystems) {
+    for (auto&& entry : m_fixedSystems) {
         entry.system->cleanup(registry);
     }
-    for (auto&& entry : postFixedSystems) {
+    for (auto&& entry : m_postFixedSystems) {
         entry.system->cleanup(registry);
     }
-    for (auto&& entry : systems) {
+    for (auto&& entry : m_systems) {
         entry.system->cleanup(registry);
     }
 
 }
 
-void imp::SystemManager::setSystemStatus(const std::string& name, bool status)
+void imp::SystemManager::setSystemStatus(const std::string_view name, bool status)
 {
-    auto it = systemMetaMap.find(name);
-    if (it != systemMetaMap.end()) {
+
+    auto&& it = m_systemMetaMap.find(std::string(name));
+    if (it != m_systemMetaMap.end()) {
         Debug::Info("Setting status of {} to {}", name, status);
         getContainer(it->second.type)[it->second.index].status = status;
     }
@@ -272,30 +280,30 @@ void imp::SystemManager::setSystemStatus(const std::string& name, bool status)
 
 void imp::SystemManager::onSystemStatusEvent(const SystemStatusEvent& statusEvent)
 {
-    systemEvents.emplace([this, statusEvent](entt::registry&) {
+    m_pendingEvents.emplace([this, statusEvent](entt::registry&) {
         setSystemStatus(statusEvent.name, statusEvent.status);
         });
-    reorderDispatchPending = true;
+    m_reorderDispatchPending = true;
 }
 
 void imp::SystemManager::clear()
 {
-    systems.clear();
-    fixedSystems.clear();
-    systemMetaMap.clear();
+    m_systems.clear();
+    m_fixedSystems.clear();
+    m_systemMetaMap.clear();
 }
 void imp::SystemManager::clearAndCleanup(entt::registry& registry)
 {
-    for (auto&& entry : preFixedSystems) {
+    for (auto&& entry : m_preFixedSystems) {
         entry.system->cleanup(registry);
     }
-    for (auto&& entry : fixedSystems) {
+    for (auto&& entry : m_fixedSystems) {
         entry.system->cleanup(registry);
     }
-    for (auto&& entry : postFixedSystems) {
+    for (auto&& entry : m_postFixedSystems) {
         entry.system->cleanup(registry);
     }
-    for (auto&& entry : systems) {
+    for (auto&& entry : m_systems) {
         entry.system->cleanup(registry);
     }
     clear();
@@ -307,7 +315,7 @@ void imp::SystemManager::reload()
     size_t fixedCount = 0;
     size_t preFixedCount = 0;
     size_t postFixedCount = 0;
-    for (const auto& [index, type] : systemMetaMap | std::views::values) {
+    for (const auto& [index, type] : m_systemMetaMap | std::views::values) {
         switch (type) {
 
         case UpdateType::Variable:
@@ -319,11 +327,11 @@ void imp::SystemManager::reload()
                 fixedCount = index + 1;
             break;
         case UpdateType::PreFixed:
-            if (index >= preFixedSystems.size())
+            if (index >= m_preFixedSystems.size())
                 preFixedCount = index + 1;
             break;
         case UpdateType::PostFixed:
-            if (index >= postFixedSystems.size())
+            if (index >= m_postFixedSystems.size())
                 postFixedCount = index + 1;
             break;
         default:
@@ -331,18 +339,15 @@ void imp::SystemManager::reload()
         }
 
     }
-    systems.reserve(variableCount);
-    fixedSystems.reserve(fixedCount);
-    preFixedSystems.reserve(preFixedCount);
-    postFixedSystems.reserve(postFixedCount);
+    m_systems.reserve(variableCount);
+    m_fixedSystems.reserve(fixedCount);
+    m_preFixedSystems.reserve(preFixedCount);
+    m_postFixedSystems.reserve(postFixedCount);
     auto&& systemFactory = SystemRegistry::GetSystemFactory();
-    for (auto&& [name, info] : systemMetaMap) {
+    for (auto&& [name, info] : m_systemMetaMap) {
 
-        if (auto&& it = systemFactory.find(name); it != systemFactory.end()) {
+        if (auto&& it = systemFactory.find(utl::StringHash(name)); it != systemFactory.end()) {
             Debug::Info("Reloading system: {} at index {}", name, info.index);
-            if (name == "Imp::CameraSystem") {
-                //Debug::Info("CameraSystem");
-            }
             auto&& container = getContainer(info.type);
             if (info.index >= container.size())
                 container.resize(info.index + 1);
@@ -355,5 +360,5 @@ void imp::SystemManager::reload()
 
     }
     std::this_thread::sleep_for(std::chrono::milliseconds(100));
-    reorderDispatchPending = true;
+    m_reorderDispatchPending = true;
 }

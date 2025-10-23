@@ -1,58 +1,49 @@
-﻿#include "CoreSystems/PostPhysicsSystem.h"
-
-#include <execution>
-
-#include "CtxRef.h"
-#include "Physics/Physics.h"
-#include "BasicEvents.h"
-#include "Components/CollisionInfoComponent.h"
+﻿#include "Components/CollisionInfoComponent.h"
 #include "Components/PhysicsBodyComponent.h"
 #include "Components/RelationshipComponent.h"
 #include "Components/TransformComponent.h"
-
+#include "CoreSystems/PostPhysicsSystem.h"
+#include "CtxRef.h"
+#include "events/BasicEvents.h"
+#include "Physics/Physics.h"
+#include <execution>
+#include "ThreadPool.h"
 void imp::PostPhysicsSystem::initialize(entt::registry& registry)
 {
-	physicsSystem = &registry.ctx().get<CtxRef<Phys::Physics>>().get();
+    m_physicsEngine = &registry.ctx().get<CtxRef<phys::Physics>>().get();
 
 }
 
 void imp::PostPhysicsSystem::update(entt::registry& registry, const float deltaTime)
 {
-	auto&& group = registry.group<PhysicsBodyComponent>();
+    const auto& group = registry.group<PhysicsBodyComponent>();
+    auto& physicsPrev = registry.storage<TransformComponent>("physics_prev"_hs);
+    auto& physicsCurr = registry.storage<TransformComponent>("physics"_hs);
+    physicsPrev.clear();
+    physicsPrev.reserve(physicsCurr.size());
+    for (auto [entity, curr] : physicsCurr.each()) {
+        physicsPrev.emplace(entity, curr); // copy
+    }
 
-	std::mutex mutex{};
-	//auto&& physicsTransforms = registry.storage<TransformComponent>("postPhysics"_hs);
-	//physicsTransforms.clear();
-	//physicsTransforms.reserve(group.size());
-	auto& bodyInterface = physicsSystem->getBodyInterface();
-	auto& prePhysicsStorage = registry.storage<TransformComponent>("physics"_hs);
-	prePhysicsStorage.clear();
-	prePhysicsStorage.reserve(group.size());
-	//Debug::Info("Post Physics System Update");
+    physicsCurr.clear();
+    physicsCurr.reserve(group.size());
 
-	std::for_each(std::execution::par_unseq, group.begin(), group.end(), [&group, &bodyInterface, &mutex, &prePhysicsStorage](auto entity) {
-		auto&& physicsBody = group.get<PhysicsBodyComponent>(entity);
-		JPH::Vec3 out1{}, out2;
-		JPH::Quat out3{};
-		bodyInterface.GetPositionAndRotation(physicsBody.id, out1, out3);
-		TransformComponent temp{ Phys::ToGLM(out1),Phys::ToGLM(out3) };
-		{
-			std::lock_guard<std::mutex> lock(mutex);
-			prePhysicsStorage.push(entity, &temp);
-		}
-		bodyInterface.GetLinearAndAngularVelocity(physicsBody.id, out1, out2);
-		physicsBody.linearVelocity = Phys::ToGLM(out1);
-		physicsBody.angularVelocity = Phys::ToGLM(out2);
+    auto& bodyInterface = m_physicsEngine->getBodyInterface();
 
+    for (auto [entity, body] : registry.group<imp::PhysicsBodyComponent>().each()) {
+        JPH::Vec3 pos; JPH::Quat rot;
+        bodyInterface.GetPositionAndRotation(body.id, pos, rot);
 
+        imp::TransformComponent t;
+        t.position = phys::ToGLM(pos);
+        t.rotation = phys::ToGLM(rot);
+        physicsCurr.emplace(entity, std::move(t));
 
-				  });
+        JPH::Vec3 lin, ang;
+        bodyInterface.GetLinearAndAngularVelocity(body.id, lin, ang);
+        body.linearVelocity = phys::ToGLM(lin);
+        body.angularVelocity = phys::ToGLM(ang);
+    }
 
 }
 
-
-
-
-
-void imp::PostPhysicsSystem::cleanup(entt::registry& registry)
-{}

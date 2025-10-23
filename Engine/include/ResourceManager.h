@@ -1,10 +1,10 @@
 #pragma once
-#include <string>
-#include <ResourceRegistry.h>
-#include <ImpTypes.h>
-#include <stdexcept>
 #include <Debug.h>
+#include <ImpTypes.h>
 #include <ResourceMember.h>
+#include <ResourceRegistry.h>
+#include <stdexcept>
+#include <string>
 namespace imp {
 
 
@@ -47,8 +47,6 @@ namespace imp {
 	};
 
 
-
-
 	template<typename Type>
 	inline bool ResourceManager::load(const std::string& path)
 	{
@@ -89,25 +87,7 @@ namespace imp {
 		return std::make_pair(handle, inserted);
 	}
 }
-		//auto typeIndex = GetTypeIndex<Type>();
-		//auto&& it = cacheMap.find(typeIndex);
-		//if (it == cacheMap.end()) {
-		//	auto& cacheFactory = ResourceRegistry::GetCacheFactory();
-		//	if (cacheFactory.find(typeIndex) == cacheFactory.end()) {
-		//		throw std::runtime_error("Type not registered.");
-		//	}
-		//	cacheMap[typeIndex] = cacheFactory[typeIndex]();
-		//}
-		//auto&&  typedCache = dynamic_cast<ITypedResourceCache<Type>*>(cacheMap[typeIndex].get());
-		//if (!typedCache) {
-		//	throw std::runtime_error("Failed to cast to the correct cache type.");
-		//}
-		//auto id = GetPathID(path);
-		//bool inserted = typedCache->load(id, path.c_str());
 
-
-
-		//return std::make_pair(typedCache->get(id), inserted);
 	
 
 

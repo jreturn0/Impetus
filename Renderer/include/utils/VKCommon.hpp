@@ -1,20 +1,17 @@
 ﻿#pragma once
 #define VULKAN_HPP_DISPATCH_LOADER_DYNAMIC 1
-#include <vulkan/vulkan.hpp>
-#include <vulkan/vulkan_raii.hpp>
-#include <fmt/core.h>
-#include <source_location>
-#include <set>
-#include <span>
-#include <array>
-#include "QuickMacros.h"
-#include "VkConstants.h"
-#include <map>
-#include <stdexcept>  
 #include "Debug.h"
 #include "StringHash.h"
+#include <array>
+#include <map>
+#include <set>
+#include <source_location>
+#include <span>
+#include <stdexcept>  
+#include <vulkan/vulkan.hpp>
+#include <vulkan/vulkan_raii.hpp>
 
-
+// Common Vulkan utilities and definitions
 namespace imp::gfx::vkutil {
     constexpr uint64_t ERROR_IMAGE_HASH = utl::StringHash("error_image");
     constexpr uint64_t WHITE_IMAGE_HASH = utl::StringHash("white_image");
@@ -60,7 +57,7 @@ namespace imp::gfx::vkutil {
         vk::DebugUtilsMessageSeverityFlagBitsEXT::eWarning |
         vk::DebugUtilsMessageSeverityFlagBitsEXT::eError;
 
-    constexpr vk::DebugUtilsMessageTypeFlagsEXT DEBUG_MESSAGE_TYPE =
+    constexpr vk::DebugUtilsMessageTypeFlagsEXT DEBUG_MESSAGE_TYPE =        
         vk::DebugUtilsMessageTypeFlagBitsEXT::eGeneral |
         vk::DebugUtilsMessageTypeFlagBitsEXT::eValidation |
         vk::DebugUtilsMessageTypeFlagBitsEXT::ePerformance;

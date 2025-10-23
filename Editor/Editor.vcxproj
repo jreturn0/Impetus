@@ -40,7 +40,7 @@
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
@@ -122,7 +122,8 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;GLM_FORCE_SSE2;GLM_FORCE_DEPTH_ZERO_TO_ONE;JPH_FLOATING_POINT_EXCEPTIONS_ENABLED;GLM_ENABLE_EXPERIMENTAL;JPH_DEBUG_RENDERER;JPH_PROFILE_ENABLED;JPH_USE_AVX2;JPH_USE_AVX;JPH_USE_SSE4_1;JPH_USE_SSE4_2;JPH_USE_LZCNT;JPH_USE_TZCNT;JPH_USE_F16C;JPH_USE_FMADD;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>$(SolutionDir)Engine\include\;$(SolutionDir)Renderer\include\;$(SolutionDir)MyUtils/include/;$(SolutionDir)libs\x64-windows\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Engine\include\;$(SolutionDir)Renderer\include\;$(SolutionDir)MyUtils\include\;$(SolutionDir)Editor\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -148,56 +149,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <None Include="Scenes\BallMap" />
-    <None Include="Scenes\Example" />
-    <None Include="Scenes\Floor" />
-    <None Include="Scenes\Floor2" />
-    <None Include="Scenes\Floor3" />
-    <None Include="Scenes\Floor4" />
-    <None Include="imgui.ini" />
-    <None Include="Scenes\Test" />
-    <None Include="Scenes\Test1" />
-    <None Include="Scenes\Test2" />
-    <None Include="Scenes\Test3" />
-    <None Include="Scenes\TestBase" />
-    <None Include="Scenes\TestGame" />
+    <ClInclude Include="include\ComponentEditorRegistry.h" />
+    <ClInclude Include="include\CustomComponentWidgets.h" />
+    <ClInclude Include="include\TypeWidgets.h" />
+    <ClInclude Include="include\EditorGuiSystem.h" />
+    <ClInclude Include="include\EditorSerial.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="CameraControllerSystem.h" />
-    <ClInclude Include="Components\AttackComponent.h" />
-    <ClInclude Include="Components\CameraFollowComponent.h" />
-    <ClInclude Include="Components\DamageComponent.h" />
-    <ClInclude Include="Components\GameTagComponents.h" />
-    <ClInclude Include="Components\HealthComponent.h" />
-    <ClInclude Include="Components\MoveDirectionComponent.h" />
-    <ClInclude Include="Components\SpeedComponent.h" />
-    <ClInclude Include="Components\TargetComponent.h" />
-    <ClInclude Include="EditorGuiSystem.h" />
-    <ClInclude Include="EditorSerial.h" />
-    <ClInclude Include="Serialize_.h" />
-    <ClInclude Include="Systems\AimingSystem.h" />
-    <ClInclude Include="Systems\AISystem.h" />
-    <ClInclude Include="Systems\EnemySystem.h" />
-    <ClInclude Include="Systems\MapSystem.h" />
-    <ClInclude Include="Systems\MovementSystem.h" />
-    <ClInclude Include="Systems\PlayerControllerSystem.h" />
-    <ClInclude Include="Systems\ProjectileSystem.h" />
-    <ClInclude Include="Systems\ShootingSystem.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="EditorGuiSystem.cpp" />
-    <ClCompile Include="main.cpp" />
-    <ClCompile Include="Systems\AimingSystem.cpp" />
-    <ClCompile Include="Systems\AISystem.cpp" />
-    <ClCompile Include="Systems\EnemySystem.cpp" />
-    <ClCompile Include="Systems\MapSystem.cpp" />
-    <ClCompile Include="Systems\MovementSystem.cpp" />
-    <ClCompile Include="Systems\PlayerControllerSystem.cpp" />
-    <ClCompile Include="Systems\ProjectileSystem.cpp" />
-    <ClCompile Include="Systems\ShootingSystem.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <Text Include="log.txt" />
+    <ClCompile Include="src\EditorGuiSystem.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Engine\Engine.vcxproj">

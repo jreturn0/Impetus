@@ -15,9 +15,9 @@
 #include <vector>
 #include <vulkan/vulkan_handles.hpp>
 #include <shared_mutex>
-
+#include <ranges>
 namespace imp::gfx {
-
+    // Base class for resource caches
     template<typename T>
     class ResourceCacheBase {
     public:
@@ -88,6 +88,14 @@ namespace imp::gfx {
             return true;
         }
         [[nodiscard]] const std::vector< std::string>& getNames() const noexcept { std::shared_lock lock(m_cacheMutex); return m_resourceNames; };
+
+        // Must be called with a function that takes a T as argument
+        template<typename Func>
+        void forEach(Func func) {
+            for (auto& resource : m_resources | std::views::values) {
+                func(*resource);
+            } 
+        }
     private:
         friend class ResourceCache;
         std::unordered_map <uint64_t, SharedType> m_resources{};
@@ -96,18 +104,24 @@ namespace imp::gfx {
     };
 
 
-
+    // Manages and caches various graphics resources
     class ResourceCache {
     public:
         ResourceCache(const vk::raii::Device& device);
+        ~ResourceCache() = default;
         ResourceCache(const ResourceCache&) = delete;
         ResourceCache& operator=(const ResourceCache&) = delete;
         ResourceCache(ResourceCache&&) = delete;
         ResourceCache& operator=(ResourceCache&&) = delete;;
 
-        auto&& getMaterialDescriptorAllocator() { return m_materialDescriptorAllocator; }
+        // Getters
+    
+        [[nodiscard]] auto&& getMaterialDescriptorAllocator() { return m_materialDescriptorAllocator; }
+        [[nodiscard]] vk::Sampler getDefaultSamplerLinear() const { return *m_defaultSamplerLinear; }
+        [[nodiscard]] vk::Sampler getDefaultSamplerNearest() const { return *m_defaultSamplerNearest; }
 
         // Mesh
+
         [[nodiscard]] bool addMesh(std::string_view name, SharedMesh mesh) { return m_meshCache.add(name, mesh); }
         [[nodiscard]] bool hasMesh(utl::StringHash nameHash) const { return m_meshCache.has(nameHash); }
         [[nodiscard]] SharedMesh getMesh(utl::StringHash nameHash) const { return m_meshCache.get(nameHash); }
@@ -119,6 +133,7 @@ namespace imp::gfx {
         [[nodiscard]] const std::vector<std::string>& getMeshNames() const { return m_meshCache.getNames(); }
 
         // Image
+
         [[nodiscard]] bool addImage(std::string_view name, SharedImage image) { return m_imageCache.add(name, image); }
         [[nodiscard]] bool hasImage(utl::StringHash nameHash) const { return m_imageCache.has(nameHash); }
         [[nodiscard]] SharedImage getImage(utl::StringHash nameHash) const { return m_imageCache.get(nameHash); }
@@ -130,6 +145,7 @@ namespace imp::gfx {
         [[nodiscard]] const std::vector<std::string>& getImageNames() const { return m_imageCache.getNames(); }
 
         // Material
+
         [[nodiscard]] bool addMaterial(std::string_view name, SharedMaterial material) { return m_materialCache.add(name, material); }
         [[nodiscard]] bool hasMaterial(utl::StringHash nameHash) const { return m_materialCache.has(nameHash); }
         [[nodiscard]] SharedMaterial getMaterial(utl::StringHash nameHash) const { return m_materialCache.get(nameHash); }
@@ -139,8 +155,13 @@ namespace imp::gfx {
         [[nodiscard]] Material* getMaterialRaw(utl::StringHash nameHash) { return m_materialCache.getRaw(nameHash); }
         [[nodiscard]] bool removeMaterial(utl::StringHash nameHash) { return m_materialCache.remove(nameHash); }
         [[nodiscard]] const std::vector<std::string>& getMaterialNames() const { return m_materialCache.getNames(); }
+        template<typename Func>
+        void forEachMaterial(Func func) {
+            m_materialCache.forEach(func);
+        }
 
         // GLTF
+
         [[nodiscard]] bool addGLTF(std::string_view name, const SharedGLTF& gltf) { return m_gltfCache.add(name, gltf); }
         [[nodiscard]] bool hasGLTF(utl::StringHash nameHash) const { return m_gltfCache.has(nameHash); }
         [[nodiscard]] SharedGLTF getGLTF(utl::StringHash nameHash) const { return m_gltfCache.get(nameHash); }
@@ -152,22 +173,15 @@ namespace imp::gfx {
         [[nodiscard]] const std::vector<std::string>& getGLTFNames() const { return m_gltfCache.getNames(); }
 
 
-        [[nodiscard]] vk::Sampler getDefaultSamplerLinear() const { return *m_defaultSamplerLinear; }
-        [[nodiscard]] vk::Sampler getDefaultSamplerNearest() const { return *m_defaultSamplerNearest; }
+
 
     private:
         DescriptorAllocatorGrowable m_materialDescriptorAllocator;
-
         ResourceCacheBase<Mesh> m_meshCache;
         ResourceCacheBase<Image> m_imageCache;
         ResourceCacheBase<Material> m_materialCache;
         ResourceCacheBase<LoadedGLTF> m_gltfCache;
-
-        //std::vector<vk::raii::Sampler> m_samplerList;
         vk::raii::Sampler m_defaultSamplerLinear;
         vk::raii::Sampler m_defaultSamplerNearest;
-
-
-
     };
 }

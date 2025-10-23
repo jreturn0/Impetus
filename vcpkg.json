@@ -6,6 +6,7 @@
     "cereal",
     "entt",
     "fastgltf",
+    "fmt",
     "glfw3",
     "glm",
     {
@@ -18,7 +19,6 @@
     },
     "joltphysics",
     "spirv-reflect",
-    "stb",
-    "fmt"
+    "stb"
   ]
 }

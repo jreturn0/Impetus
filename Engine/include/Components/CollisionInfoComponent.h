@@ -1,18 +1,9 @@
 ﻿#pragma once
-#include <vector>
-#include <entt/container/dense_set.hpp>
-#include <entt/entity/entity.hpp>
+#include <entt/entt.hpp>
 
 namespace imp {
-
-
-
 	struct CollisionInfoComponent
 	{
-
-		entt::dense_set<entt::entity> collidingEntities; //@skip
-
-
+		entt::dense_set<entt::entity> collidingEntities{};
 	};
-
 }

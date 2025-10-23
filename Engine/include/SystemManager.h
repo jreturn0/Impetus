@@ -1,114 +1,80 @@
 #pragma once
-#include "System.h"
-#include <BasicEvents.h>
-#include <map>
-#include <cereal/cereal.hpp>
-#include <cereal/types/unordered_map.hpp>
-
 #include "Debug.h"
 #include "EngineStats.h"
+#include "events/BasicEvents.h"
+#include "StringUtils.h"
+#include "System.h"
+#include "SystemRegistry.h"
 #include "UpdateType.h"
+#include <cereal/cereal.hpp>
+#include <cereal/types/unordered_map.hpp>
+#include <map>
+#include <string_view>
 
 namespace imp {
+    class Clock;
+    class SystemManager
+    {
 
+        struct Entry
+        {
+            std::unique_ptr<System> system;
+            bool status{ false };
+            std::string name;
 
+            template <class Archive>
+            void serialize(Archive& ar)
+            {
+                ar(status, name);
+            }
+        };
+        struct Meta
+        {
+            size_t index;
+            UpdateType type;
+            template <class Archive>
+            void serialize(Archive& ar)
+            {
+                ar(index, type);
+            }
+        };
+    public:
 
+        void OnSystemReorderEvent(SystemReorderEvent& event);
+        void OnSystemAddEvent(AddSystemEvent& event);
+        void OnSystemRemoveEvent(RemoveSystemEvent& event);
 
+        template <class Archive>
+        void serialize(Archive& ar)
+        {
+            ar(cereal::make_nvp("systems", m_systems),
+                cereal::make_nvp("preFixedSystems", m_preFixedSystems),
+                cereal::make_nvp("fixedSystems", m_fixedSystems),
+                cereal::make_nvp("postFixedSystems", m_postFixedSystems),
+                cereal::make_nvp("systemMetaMap", m_systemMetaMap));
+        }
 
+        void addSystem(const std::string_view name, bool enabled = true, UpdateType type = UpdateType::Variable);
+        void initializeSystems(entt::registry& registry);
+        void updateSystems(entt::registry& registry, Clock& time, EngineStats& stats);
+        void cleanupSystems(entt::registry& registry) const;
+        void setSystemStatus(const std::string_view name, bool status);
+        void onSystemStatusEvent(const SystemStatusEvent& statusEvent);
+        void clear();
+        void clearAndCleanup(entt::registry& registry);
+        void reload();
+    private:
+        std::vector<Entry> m_systems{};
+        std::vector<Entry> m_preFixedSystems{};
+        std::vector<Entry> m_fixedSystems{};
+        std::vector<Entry> m_postFixedSystems{};
+        std::unordered_map<std::string, Meta> m_systemMetaMap{};
+        std::queue<std::function<void(entt::registry&)>> m_pendingEvents{};
+        bool m_reorderDispatchPending{ true };
 
+        std::vector<Entry>& getContainer(const UpdateType type);
 
-
-
-
-	class Clock;
-
-
-	class SystemManager
-	{
-	public:
-
-	private:
-		struct Entry
-		{
-			std::unique_ptr<System> system;
-			bool status{ false };
-			std::string name;
-
-			template <class Archive>
-			void serialize(Archive& ar)
-			{
-				ar(status, name);
-			}
-		};
-		struct Meta
-		{
-			size_t index;
-			UpdateType type;
-			template <class Archive>
-			void serialize(Archive& ar)
-			{
-				ar(index, type);
-			}
-		};
-
-		std::vector<Entry> systems;
-		std::vector<Entry> preFixedSystems;
-		std::vector<Entry> fixedSystems;
-		std::vector<Entry> postFixedSystems;
-		std::unordered_map<std::string, Meta> systemMetaMap;
-		std::queue<std::function<void(entt::registry&)>> systemEvents;
-		bool reorderDispatchPending = true;
-		//std::map<size_t, std::string> systemsOrder;
-
-		std::vector<Entry>& getContainer(const UpdateType type);
-
-	public:
-
-		void OnSystemReorderEvent(SystemReorderEvent& event);
-		void OnSystemAddEvent(AddSystemEvent& event);
-		void OnSystemRemoveEvent(RemoveSystemEvent& event);
-
-		template <class Archive>
-		void serialize(Archive& ar)
-		{
-			ar(cereal::make_nvp("systems", systems),
-			   cereal::make_nvp("preFixedSystems", preFixedSystems),
-			   cereal::make_nvp("fixedSystems", fixedSystems),
-			   cereal::make_nvp("postFixedSystems", postFixedSystems),
-			   cereal::make_nvp("systemMetaMap", systemMetaMap));
-
-			//	reload();
-		}
-		//template <class Archive>
-		//static void load_and_construct(Archive& ar, cereal::construct<SystemManager>& construct)
-		//{
-		//	Debug::Info("Loading SystemManager-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------");
-		//	//Debug::Out("Loading SystemManager");
-		//	construct(); // Default constructor
-		//	ar(cereal::make_nvp("systems", construct->systems),
-		//	   cereal::make_nvp("preFixedSystems", construct->preFixedSystems),
-		//	   cereal::make_nvp("fixedSystems", construct->fixedSystems),
-		//	   cereal::make_nvp("postFixedSystems", construct->postFixedSystems),
-		//	   cereal::make_nvp("systemMetaMap", construct->systemMetaMap));
-		//	construct->reload();
-		//}
-		void addSystem(const std::string& name, bool enabled = true, UpdateType type = UpdateType::Variable);
-
-		void initializeSystems(entt::registry& registry);
-
-		void updateSystems(entt::registry& registry, Clock& time, EngineStats& stats);
-
-		void cleanupSystems(entt::registry& registry) const;
-
-		void setSystemStatus(const std::string& name, bool status);
-
-		void onSystemStatusEvent(const SystemStatusEvent& statusEvent);
-
-		void clear();
-		void clearAndCleanup(entt::registry& registry);
-
-		void reload();
-	};
+    };
 
 
 

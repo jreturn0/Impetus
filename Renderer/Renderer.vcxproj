@@ -44,6 +44,7 @@
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
+    <EnableASAN>false</EnableASAN>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
@@ -122,7 +123,7 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;GLM_FORCE_SSE2;GLM_ENABLE_EXPERIMENTAL;GLM_FORCE_DEPTH_ZERO_TO_ONE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>$(VULKAN_SDK)/Include/;include/;$(SolutionDir)MyUtils/include/;$(SolutionDir)libs\x64-windows\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(VULKAN_SDK)/Include/;include/;$(SolutionDir)MyUtils/include/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
@@ -164,43 +165,30 @@
   <ItemGroup>
     <ClCompile Include="src\Image.cpp" />
     <ClCompile Include="src\Buffer.cpp" />
-    <ClCompile Include="src\legacy\CommandBuffer.cpp" />
-    <ClCompile Include="src\legacy\CommandPool.cpp" />
     <ClCompile Include="src\ComputePipeline.cpp" />
     <ClCompile Include="src\CreateRenderer.cpp" />
-    <ClCompile Include="src\DebugMessenger.cpp" />
-    <ClCompile Include="src\DescriptorAllocator.cpp" />
     <ClCompile Include="src\DescriptorAllocatorGrowable.cpp" />
     <ClCompile Include="src\DescriptorLayoutBuilder.cpp" />
     <ClCompile Include="src\DescriptorWriter.cpp" />
-    <ClCompile Include="src\Device.cpp" />
     <ClCompile Include="src\FrameData.cpp" />
     <ClCompile Include="src\GPUMeshBuffers.cpp" />
     <ClCompile Include="src\GraphicsPipeline.cpp" />
     <ClCompile Include="src\GUI.cpp" />
-    <ClCompile Include="src\legacy\OldImage.cpp" />
     <ClCompile Include="src\ImmediateCommands.cpp" />
-    <ClCompile Include="src\legacy\Instance.cpp" />
     <ClCompile Include="src\LoadedGLTF.cpp" />
     <ClCompile Include="src\Mesh.cpp" />
     <ClCompile Include="src\MeshLoader.cpp" />
     <ClCompile Include="src\MeshNode.cpp" />
     <ClCompile Include="src\MetallicRoughness.cpp" />
     <ClCompile Include="src\Node.cpp" />
-    <ClCompile Include="src\legacy\OldRenderer.cpp" />
     <ClCompile Include="src\PipelineBuilder.cpp" />
-    <ClCompile Include="src\legacy\Queue.cpp" />
     <ClCompile Include="src\QueueFamilyIndices.cpp" />
     <ClCompile Include="src\Renderer.cpp" />
     <ClCompile Include="src\ResourceCache.cpp" />
     <ClCompile Include="src\ShaderCompiler.cpp" />
     <ClCompile Include="src\ShaderLoader.cpp" />
-    <ClCompile Include="src\ShaderReflect.cpp" />
-    <ClCompile Include="src\legacy\OldSwapChain.cpp" />
     <ClCompile Include="src\VKRenderer.cpp" />
     <ClCompile Include="src\VKUtils.cpp" />
-    <ClCompile Include="src\legacy\VKWindow.cpp" />
-    <ClCompile Include="src\legacy\OldVma.cpp" />
     <ClCompile Include="src\Window.cpp" />
     <ClCompile Include="src\VulkanContext.cpp" />
     <ClCompile Include="src\VmaUsage.cpp" />
@@ -209,42 +197,30 @@
   <ItemGroup>
     <ClInclude Include="include\core\Image.h" />
     <ClInclude Include="include\core\Buffer.h" />
-    <ClInclude Include="include\legacy\OldCommandBuffer.h" />
-    <ClInclude Include="include\legacy\OldCommandPool.h" />
     <ClInclude Include="include\core\ComputeEffect.h" />
     <ClInclude Include="include\core\ComputePipeline.h" />
-    <ClInclude Include="include\legacy\OldDebugMessenger.h" />
-    <ClInclude Include="include\legacy\OldDevice.h" />
     <ClInclude Include="include\core\FrameData.h" />
-    <ClInclude Include="include\legacy\OldGraphicsPipeline.h" />
-    <ClInclude Include="include\legacy\OldImage.h" />
     <ClInclude Include="include\core\ImmediateCommands.h" />
-    <ClInclude Include="include\legacy\OldInstance.h" />
-    <ClInclude Include="include\legacy\OldQueue.h" />
     <ClInclude Include="include\core\QueueFamilyIndices.h" />
-    <ClInclude Include="include\legacy\OldSwapChain.h" />
     <ClInclude Include="include\core\SwapChainSupportDetails.h" />
-    <ClInclude Include="include\legacy\OldVma.h" />
     <ClInclude Include="include\CreateRenderer.h" />
     <ClInclude Include="include\geometry\Bounds.h" />
     <ClInclude Include="include\geometry\GeoSurface.h" />
     <ClInclude Include="include\geometry\Mesh.h" />
     <ClInclude Include="include\geometry\Vertex.h" />
     <ClInclude Include="include\gpudata\GPUDrawPushConstants.h" />
+    <ClInclude Include="include\gpudata\GPULight.h" />
     <ClInclude Include="include\gpudata\GPUMeshBuffers.h" />
     <ClInclude Include="include\gpudata\GPUSceneData.h" />
     <ClInclude Include="include\materials\Material.h" />
-    <ClInclude Include="include\materials\MaterialInstance.h" />
     <ClInclude Include="include\materials\MaterialPass.h" />
     <ClInclude Include="include\materials\MetallicRoughness.h" />
-    <ClInclude Include="include\MVPUbo.h" />
     <ClInclude Include="include\nodes\IRenderable.h" />
     <ClInclude Include="include\nodes\MeshNode.h" />
     <ClInclude Include="include\nodes\Node.h" />
     <ClInclude Include="include\rendercontext\DrawContext.h" />
     <ClInclude Include="include\rendercontext\RenderObject.h" />
     <ClInclude Include="include\Renderer.h" />
-    <ClInclude Include="include\utils\descriptor\DescriptorAllocator.h" />
     <ClInclude Include="include\utils\descriptor\DescriptorAllocatorGrowable.h" />
     <ClInclude Include="include\utils\descriptor\DescriptorLayoutBuilder.h" />
     <ClInclude Include="include\utils\descriptor\DescriptorWriter.h" />
@@ -252,20 +228,15 @@
     <ClInclude Include="include\utils\GUI.h" />
     <ClInclude Include="include\utils\LoadedGLTF.h" />
     <ClInclude Include="include\utils\MeshLoader.h" />
-    <ClInclude Include="include\utils\OldNode.h" />
     <ClInclude Include="include\utils\PipelineBuilder.h" />
     <ClInclude Include="include\utils\QuickMacros.h" />
     <ClInclude Include="include\utils\RenderStats.h" />
     <ClInclude Include="include\utils\ResourceCache.h" />
     <ClInclude Include="include\utils\shader\ShaderCompiler.h" />
     <ClInclude Include="include\utils\shader\ShaderLoader.h" />
-    <ClInclude Include="include\utils\shader\ShaderReflect.h" />
     <ClInclude Include="include\utils\VKCommon.hpp" />
-    <ClInclude Include="include\utils\VkConstants.h" />
-    <ClInclude Include="include\utils\VKInclude.h" />
     <ClInclude Include="include\utils\VKUtils.h" />
     <ClInclude Include="include\VKRenderer.h" />
-    <ClInclude Include="include\window\VKWindow.h" />
     <ClInclude Include="include\window\Window.h" />
     <ClInclude Include="include\core\VulkanContext.h" />
     <ClInclude Include="include\core\VmaUsage.h" />

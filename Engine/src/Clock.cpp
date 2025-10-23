@@ -1,49 +1,52 @@
 #include "Clock.h"
 #include "Debug.h"
 #include <thread>
+#include <GLFW/glfw3.h>
 
 namespace chrn = std::chrono;
-imp::Clock::Clock(unsigned short variableFpsCap, unsigned short fixedFpsCap, unsigned short maxAccumulated) :
+imp::Clock::Clock(double currentTimeSeconds, unsigned short variableFpsCap, unsigned short fixedFpsCap, double maxAccumulatedFrames ) :
     m_targetFps(static_cast<uint64_t>(variableFpsCap)),
-    m_targetFrameDuration(Duration(m_targetFps != 0 ? 1'000'000'000ll * 1000 / (1000 * variableFpsCap + 50) : 0)), //TODO: division rounding?
+    m_targetFrameDuration(m_targetFps != 0 ? 1. / m_targetFps : 0),
     m_fixedTargetFps(static_cast<uint64_t>(fixedFpsCap)),
-    m_fixedTargetFrameDuration(Duration(m_fixedTargetFps != 0 ? 1'000'000'000 / m_fixedTargetFps : 0)),
-    m_maxAccumulatedTime(Duration(m_fixedTargetFrameDuration* maxAccumulated)),
-    m_accumulatedTime(Duration::zero()),
+    m_fixedTargetFrameDuration(m_fixedTargetFps != 0 ? 1. / m_fixedTargetFps : 0),
+    m_maxAccumulatedFrames(maxAccumulatedFrames),
+    m_maxAccumulatedTime(m_fixedTargetFrameDuration* m_maxAccumulatedFrames),
+    m_accumulatedTime(0),
     m_fixedFrame(false),
-    m_lastFrameTime(),
-    m_nextFrameTime(),
-    m_elapsedTime(Duration::zero()),
-    m_deltaTime(Duration::zero())
+    m_lastFrameTime(currentTimeSeconds),
+    m_nextFrameTime(m_lastFrameTime + m_targetFrameDuration),
+    m_elapsedTime(0),
+    m_deltaTime(0)
+
 {
-    // Constructor body
+
 }
 
 
 void imp::Clock::update() noexcept
 {
-    TimePoint now = SystemClock::now();
-    // Skip sleeping if behind 
+    auto now = glfwGetTime();
+    // If we're behind schedule, skip sleeping entirely
     if ((now < m_nextFrameTime) && (m_targetFps > 0)) {
-        auto remaining = m_nextFrameTime - now;
-        if (remaining > std::chrono::microseconds(200)) {
-            auto coarseSleep = remaining - remaining / 5;
-            std::this_thread::sleep_for(coarseSleep);
+        double remaining = m_nextFrameTime - now;
+        if (remaining > 0.01) { // >10ms
+
+            std::this_thread::sleep_for(std::chrono::duration<double>(remaining - 0.002));
         }
-        while ((now = SystemClock::now()) < m_nextFrameTime) {}
+        while ((now = glfwGetTime()) < m_nextFrameTime) {
+            std::this_thread::yield();
+        }
     }
-    //TODO: Cap delta?
     m_deltaTime = now - m_lastFrameTime;
     m_lastFrameTime = now;
-    if (now > m_nextFrameTime + m_targetFrameDuration) {
-        // We've missed multiple frames. Resync to now.
+
+
+    if (now > m_nextFrameTime + 2.0 * m_targetFrameDuration) {
         m_nextFrameTime = now + m_targetFrameDuration;
     }
     else {
-        // Stay on schedule
         m_nextFrameTime += m_targetFrameDuration;
     }
-
     m_elapsedTime += m_deltaTime;
 
     m_accumulatedTime += m_deltaTime;

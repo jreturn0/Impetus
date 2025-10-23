@@ -14,21 +14,22 @@
 #include <glm/ext/matrix_float4x4.hpp>
 #include <string_view>
 #include <vector>
+#include <gpudata/GPULight.h>
 
 namespace imp {
     class Window;
     class ComputeEffect;
     namespace gfx {
+        class IRenderable;
 
-        ;	class IRenderable;
 
+        // Abstract base class for a rendering engine
+        // Provides an interface for rendering operations, managing scene data, and handling compute effects.
+        // Hides implementation details for different rendering backends.
         class Renderer
         {
         public:
             using Color = std::array<float, 4>;
-
-
-
             virtual ~Renderer();
             Renderer();
             Renderer(const Renderer&) = delete;
@@ -97,8 +98,15 @@ namespace imp {
             // Draw a loaded GLTF model from its root node with a specified transformation matrix.
             virtual void draw(std::string_view gltf, const glm::mat4& transform) = 0;
 
+            // Draw a light source
+            virtual void drawLight(GPULight light) = 0;
+
             // Reload and recompile a shader by its name, recreating any pipelines
-            virtual void reloadShader(std::string_view name) = 0;
+            virtual void reloadComputeShader(std::string_view name) = 0;
+
+            // Reload and recompile all shaders, recreating any pipelines
+
+            virtual void reloadAllShaders() = 0;
 
             // Begins a new frame in the rendering sequence.
             virtual void beginFrame() = 0;
@@ -129,6 +137,7 @@ namespace imp {
             Color m_clearColor{ 0.0f, 0.0f, 0.0f, 1.0f };
             RenderStats m_stats;
             GPUSceneData m_sceneData;
+            GPULightData m_lightData{};
             bool m_isWindowResized{ false };
             bool m_culling{ true };
         };

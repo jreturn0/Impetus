@@ -1,16 +1,12 @@
-﻿#include "utils/shader/ShaderLoader.h"
-
+﻿#include "ConfigSystem.h"
+#include "Debug.h"
+#include "FSNavigator.h"
+#include "utils/shader/ShaderLoader.h"
 #include <filesystem>
 #include <fstream>
 
-#include "Debug.h"
-
-#include "utils/shader/ShaderReflect.h"
-#include "FSNavigator.h"
-#include "ConfigSystem.h"
-
 namespace {
-    utl::ConfigValueRef<std::string> cfg_shaderDir("renderer.shader_directory", "shaders/SPIRV");
+    utl::ConfigValueRef<std::string> cfg_spirvDir("assets.shader_spirv_directory", "assets/shaders/SPIRV");
 }
 
 std::vector<uint32_t> imp::gfx::ShaderLoader::readFile(const std::string& filePath)
@@ -84,13 +80,14 @@ vk::raii::ShaderModule imp::gfx::ShaderLoader::CreateShaderModule(const vk::raii
         Debug::FatalError("Unknown shader stage");
     }
     
-    std::filesystem::path filePath(cfg_shaderDir.get());
+    std::filesystem::path filePath(cfg_spirvDir.get());
     filePath /= (shaderName);
     filePath += stageExtension;
     //std::cout << "Reading shader from: " << filePath << std::endl; // Debug statement
 
-    if (!std::filesystem::exists(filePath)) {
-        Debug::Throw("Shader file not found: {}", filePath.string());
+    if (!std::filesystem::exists(filePath)) {        
+        std::string filePathStr = filePath.string();
+        Debug::Throw("Shader file not found: {}", filePathStr);
     }
     const auto code = readFile(filePath.string());
     return CreateShaderModule(code, device);

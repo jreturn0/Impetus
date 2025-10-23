@@ -5,16 +5,16 @@
 
 namespace imp::gfx {
     class Buffer;
-
+    // Structure representing a shader surface material 
     struct Material
     {
 
-        std::string name;
+        std::string name{};
         vk::Pipeline pipeline{ nullptr };
         vk::PipelineLayout pipelineLayout{ nullptr };
         vk::raii::DescriptorSet set{ nullptr };
-        MaterialPass passType;
-        std::shared_ptr<Buffer> buffer;
+        MaterialPass passType{};
+        std::shared_ptr<Buffer> buffer{ nullptr };
 
 
         Material(vk::Pipeline pipeline, vk::raii::DescriptorSet& set, MaterialPass passType, std::shared_ptr<Buffer> buffer) :
@@ -27,7 +27,7 @@ namespace imp::gfx {
         Material()
         {
             pipeline = nullptr;
-            passType = MaterialPass::MainColor;
+            passType = MaterialPass::Opaque;
         }
         Material(const Material&) = delete;
         Material& operator=(const Material&) = delete;

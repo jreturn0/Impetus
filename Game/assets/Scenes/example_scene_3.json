@@ -1,0 +1,330 @@
+{
+    "Entities": {
+        "value0": 3,
+        "value1": 3,
+        "value2": 0,
+        "value3": 1,
+        "value4": 2
+    },
+    "ActiveCamera": {
+        "value0": 1,
+        "value1": 1
+    },
+    "Enemy": {
+        "value0": 0
+    },
+    "Player": {
+        "value0": 0
+    },
+    "Projectile": {
+        "value0": 0
+    },
+    "struct AimTargetComponent": {
+        "value0": 0
+    },
+    "struct AttackComponent": {
+        "value0": 0
+    },
+    "struct CameraControllerComponent": {
+        "value0": 1,
+        "value1": 1,
+        "value2": {
+            "pitch": -0.18700695037841798,
+            "yaw": -0.8052530288696289,
+            "smooth": true,
+            "smoothSpeed": 5.0,
+            "targetPitch": -0.186735138297081,
+            "targetYaw": -0.8054726123809815,
+            "moveSpeed": 5.0,
+            "moveBoostSpeed": 50.0
+        }
+    },
+    "struct CameraFollowComponent": {
+        "value0": 0
+    },
+    "struct DamageComponent": {
+        "value0": 0
+    },
+    "struct EnemySpawnPointComponent": {
+        "value0": 0
+    },
+    "struct HealthComponent": {
+        "value0": 0
+    },
+    "struct MoveDirectionComponent": {
+        "value0": 0
+    },
+    "struct ProjectileWeaponComponent": {
+        "value0": 0
+    },
+    "struct RenderSceneDataComponent": {
+        "value0": 1,
+        "value1": 1,
+        "value2": {
+            "ambientColor": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0,
+                "w": 1.0
+            },
+            "sunlightColor": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0,
+                "w": 4.0
+            },
+            "sunlightDirection": {
+                "x": 1.0,
+                "y": 0.0,
+                "z": 0.0,
+                "w": 0.0
+            },
+            "computePush1": {
+                "x": 1.0,
+                "y": 0.0,
+                "z": 0.0,
+                "w": 1.0
+            },
+            "computePush2": {
+                "x": 0.0,
+                "y": 1.0,
+                "z": 0.0,
+                "w": 1.0
+            }
+        }
+    },
+    "struct SpeedComponent": {
+        "value0": 0
+    },
+    "struct TargetComponent": {
+        "value0": 0
+    },
+    "struct imp::CameraComponent": {
+        "value0": 1,
+        "value1": 1,
+        "value2": {
+            "fov": 85.0,
+            "nearPlane": 0.009999999776482582,
+            "farPlane": 1000.0,
+            "type": 1
+        }
+    },
+    "struct imp::CameraLookAtComponent": {
+        "value0": 0
+    },
+    "struct imp::CollisionInfoComponent": {
+        "value0": 0
+    },
+    "struct imp::LightComponent": {
+        "value0": 0
+    },
+    "struct imp::ModelComponent": {
+        "value0": 1,
+        "value1": 2,
+        "value2": {
+            "gltf": "structure.glb",
+            "name": "Root",
+            "materialOverrideName": "",
+            "localTransform": {
+                "value0": {
+                    "x": 1.0,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "w": 0.0
+                },
+                "value1": {
+                    "x": 0.0,
+                    "y": 1.0,
+                    "z": 0.0,
+                    "w": 0.0
+                },
+                "value2": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 1.0,
+                    "w": 0.0
+                },
+                "value3": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "w": 1.0
+                }
+            },
+            "visible": true
+        }
+    },
+    "struct imp::PhysicsBodyComponent": {
+        "value0": 0
+    },
+    "struct imp::RelationshipComponent": {
+        "value0": 0
+    },
+    "struct imp::TransformComponent": {
+        "value0": 1,
+        "value1": 1,
+        "value2": {
+            "position": {
+                "x": -6.795809268951416,
+                "y": 1.6925487518310547,
+                "z": 86.5362548828125
+            },
+            "rotation": {
+                "x": -0.0859011709690094,
+                "y": -0.39012452960014346,
+                "z": -0.036584679037332538,
+                "w": 0.9160160422325134
+            },
+            "scale": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
+            },
+            "dirty": false
+        }
+    },
+    "SystemManager": {
+        "systems": [
+            {
+                "value0": true,
+                "value1": "imp::InputSystem"
+            },
+            {
+                "value0": true,
+                "value1": "imp::ResourceSystem"
+            },
+            {
+                "value0": true,
+                "value1": "imp::TransformSystem"
+            },
+            {
+                "value0": true,
+                "value1": "imp::CameraSystem"
+            },
+            {
+                "value0": true,
+                "value1": "CameraControllerSystem"
+            },
+            {
+                "value0": true,
+                "value1": "ComputeShaderSystem"
+            },
+            {
+                "value0": true,
+                "value1": "imp::RenderSystem"
+            },
+            {
+                "value0": true,
+                "value1": "EditorGuiSystem"
+            },
+            {
+                "value0": true,
+                "value1": "imp::EndRenderSystem"
+            }
+        ],
+        "preFixedSystems": [
+            {
+                "value0": true,
+                "value1": "imp::PrePhysicsSystem"
+            }
+        ],
+        "fixedSystems": [
+            {
+                "value0": true,
+                "value1": "imp::PhysicsSystem"
+            }
+        ],
+        "postFixedSystems": [
+            {
+                "value0": true,
+                "value1": "imp::PostPhysicsSystem"
+            }
+        ],
+        "systemMetaMap": [
+            {
+                "key": "imp::TransformSystem",
+                "value": {
+                    "value0": 2,
+                    "value1": 0
+                }
+            },
+            {
+                "key": "imp::InputSystem",
+                "value": {
+                    "value0": 0,
+                    "value1": 0
+                }
+            },
+            {
+                "key": "imp::RenderSystem",
+                "value": {
+                    "value0": 6,
+                    "value1": 0
+                }
+            },
+            {
+                "key": "imp::ResourceSystem",
+                "value": {
+                    "value0": 1,
+                    "value1": 0
+                }
+            },
+            {
+                "key": "imp::EndRenderSystem",
+                "value": {
+                    "value0": 8,
+                    "value1": 0
+                }
+            },
+            {
+                "key": "imp::CameraSystem",
+                "value": {
+                    "value0": 3,
+                    "value1": 0
+                }
+            },
+            {
+                "key": "CameraControllerSystem",
+                "value": {
+                    "value0": 4,
+                    "value1": 0
+                }
+            },
+            {
+                "key": "EditorGuiSystem",
+                "value": {
+                    "value0": 7,
+                    "value1": 0
+                }
+            },
+            {
+                "key": "imp::PrePhysicsSystem",
+                "value": {
+                    "value0": 0,
+                    "value1": 2
+                }
+            },
+            {
+                "key": "ComputeShaderSystem",
+                "value": {
+                    "value0": 5,
+                    "value1": 0
+                }
+            },
+            {
+                "key": "imp::PhysicsSystem",
+                "value": {
+                    "value0": 0,
+                    "value1": 1
+                }
+            },
+            {
+                "key": "imp::PostPhysicsSystem",
+                "value": {
+                    "value0": 0,
+                    "value1": 3
+                }
+            }
+        ]
+    }
+}

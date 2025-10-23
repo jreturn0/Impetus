@@ -1,36 +1,34 @@
-﻿#include "VKRenderer.h"
-#include <memory>
-#include "core/ComputeEffect.h"
+﻿#include "core/ComputeEffect.h"
 #include "core/ComputePipeline.h"
 #include "core/FrameData.h"
 #include "core/Image.h"
 #include "core/SwapChain.h"
+#include "Debug.h"
 #include "geometry//Mesh.h"
 #include "gpudata/GPUDrawPushConstants.h"
 #include "materials/MetallicRoughness.h"
 #include "nodes/Node.h"
+#include "rendercontext/DrawContext.h"
+#include "rendercontext/RenderObject.h"
 #include "TimerStats.h"
 #include "utils/descriptor/DescriptorLayoutBuilder.h"
 #include "utils/GUI.h"
-#include "utils/MeshLoader.h"
-#include "utils/shader/ShaderCompiler.h"
-#include "rendercontext/DrawContext.h"
-#include "rendercontext/RenderObject.h"
 #include "utils/LoadedGLTF.h"
+#include "utils/MeshLoader.h"
+#include "utils/ResourceCache.h"
+#include "utils/shader/ShaderCompiler.h"
+#include "utils/VKUtils.h"
+#include "VKRenderer.h"
 #include <algorithm>
+#include <ConfigSystem.h>
 #include <execution>
 #include <glm/packing.hpp>
+#include <memory>
 #include <mutex>
-#include "Debug.h"
-#include "utils/ResourceCache.h"
-#include "utils/VKUtils.h"
 
 
-#ifdef GLM_FORCE_DEPTH_ZERO_TO_ONE
-#pragma message("GLM_FORCE_DEPTH_ZERO_TO_ONE is defined!")
-#else
-#pragma message("GLM_FORCE_DEPTH_ZERO_TO_ONE is NOT defined!")
-#endif
+
+
 
 using namespace utl::hashLiterals;
 
@@ -117,7 +115,7 @@ namespace {
     auto CreateColorImage(const imp::gfx::VulkanContext& context, imp::gfx::ResourceCache& resourceCache, vk::Format format, std::string_view name, const T& data)
     {
         auto bytes = std::as_bytes(std::span{ &data, 1 });
-        auto image = CreateSampledSharedImage(context, { bytes, { 1,1 } }, format, vk::ImageUsageFlagBits::eSampled, false);
+        auto image = imp::gfx::vkutil::CreateSampledSharedImage(context, { bytes, { 1,1 } }, format, vk::ImageUsageFlagBits::eSampled, false);
         resourceCache.addImage(name, image);
         return image;
     }
@@ -137,7 +135,7 @@ namespace {
             extent = vk::Extent2D{ static_cast<uint32_t>(N), 1 };
         }
 
-        auto image = CreateSampledSharedImage(context, { bytes, { extent.width,extent.height } }, format, vk::ImageUsageFlagBits::eSampled, false);
+        auto image = imp::gfx::vkutil::CreateSampledSharedImage(context, { bytes, { extent.width,extent.height } }, format, vk::ImageUsageFlagBits::eSampled, false);
         resourceCache.addImage(name, image);
         return image;
     }
@@ -172,11 +170,14 @@ namespace {
     {
         imp::gfx::DescriptorLayoutBuilder builder;
 
-        builder.addBinding(0, vk::DescriptorType::eUniformBuffer);
+        builder.addBinding(0, vk::DescriptorType::eUniformBuffer); // Scene UBO
+        builder.addBinding(1, vk::DescriptorType::eStorageBuffer); // Light SSBO
 
         return builder.build(device, vk::ShaderStageFlagBits::eVertex | vk::ShaderStageFlagBits::eFragment);
 
     }
+
+
 
     bool isBoundingBoxVisible(const imp::gfx::RenderObject& obj, const glm::mat4& viewProj)
     {
@@ -229,7 +230,7 @@ void imp::gfx::VKRenderer::recreate()
 
 imp::gfx::SharedMaterial imp::gfx::VKRenderer::createDefaultMaterial()
 {
-    auto defaultImage = m_resourceCache->getImage(vkutil::WHITE_IMAGE_HASH);
+    auto defaultImage = m_resourceCache->getImage(vkutil::GREY_IMAGE_HASH);
     auto defaultSampler = m_resourceCache->getDefaultSamplerLinear();
 
     MetallicRoughness::MaterialResources materialResources;
@@ -250,26 +251,59 @@ imp::gfx::SharedMaterial imp::gfx::VKRenderer::createDefaultMaterial()
     materialResources.dataBuffer = std::move(materialConstants);
     materialResources.dataOffset = 0;
     materialConstants = nullptr;
-    return m_metallicRoughnessPBR->writeMaterial(m_context->getDevice(), MaterialPass::MainColor, materialResources, *m_globalDescriptorAllocator);
+    return m_metallicRoughnessPBR->writeMaterial(m_context->getDevice(), MaterialPass::Opaque, materialResources, *m_globalDescriptorAllocator);
+}
+
+void imp::gfx::VKRenderer::reloadAllShaders()
+{
+    // Coalesce if a reload is already queued
+    if (m_shaderReloadQueued) {
+        Debug::Info("Shader reload already queued.");
+        return;
+    }
+    m_shaderReloadQueued = true;
+    Debug::Info("Queueing shader reload...");
+
+    m_pendingFunctions.emplace([this]() {
+        Debug::Info("Reloading all shaders (deferred)...");
+        ShaderCompiler::Instance().CheckCompileAll();
+        auto& device = m_context->getDevice();
+        device.waitIdle();
+        try {
+            for (auto& compute : m_computePipelines) {
+                compute->recreate(device, *m_drawImage, *m_globalDescriptorAllocator);
+            }
+            m_metallicRoughnessPBR->recreate(device, *m_gpuSceneDataDescriptorLayout,
+                m_drawImage->getFormat(), m_depthImage->getFormat());
+            m_resourceCache->forEachMaterial([this](imp::gfx::Material& material) {
+                m_metallicRoughnessPBR->updateMaterialPipelines(material);
+                });
+
+            Debug::Info("Shader reload completed.");
+        }
+        catch (const std::exception& e) {
+            Debug::Exception("Failed to reload shaders: {}", e.what());
+        }
+        m_shaderReloadQueued = false;
+        });
 }
 
 
 imp::gfx::VKRenderer::VKRenderer(std::string_view windowTitle) :
-    m_window(std::make_shared<Window>(windowTitle)),
+    m_window( std::make_shared<Window>(windowTitle)),
     m_context(std::make_unique<VulkanContext>(*m_window)),
     m_swapChain(std::make_unique<SwapChain>(*m_context, *m_window)),
     m_globalDescriptorAllocator(std::make_unique<DescriptorAllocatorGrowable>(m_context->getDevice(), 10, std::vector<DescriptorAllocatorGrowable::PoolSizeRatio>{
-        { vk::DescriptorType::eUniformBuffer, 2.0f },
+        { vk::DescriptorType::eUniformBuffer, 3.0f },
         { vk::DescriptorType::eCombinedImageSampler, 4.0f },
-        { vk::DescriptorType::eSampledImage,         4.0f }, // optional if you use separate image bindings
+        { vk::DescriptorType::eSampledImage,         4.0f },
         { vk::DescriptorType::eStorageImage,         2.0f }})),
     m_resourceCache(std::make_unique<ResourceCache>(m_context->getDevice())),
-    m_frames(CreateFrameDataArray(m_context->getDevice(), m_context->getVmaAllocator(), *m_swapChain, m_context->getGraphicsCommandPool())),
+    m_gpuSceneDataDescriptorLayout(CreateGPUSceneDescriptorLayout(m_context->getDevice())),
+    m_frames(CreateFrameDataArray(m_context->getDevice(), m_context->getVmaAllocator(), *m_swapChain, m_context->getGraphicsCommandPool(),m_gpuSceneDataDescriptorLayout)),
     m_drawImage(CreateDrawImage(*m_context, m_swapChain->getExtent())),
     m_depthImage(CreateDepthImage(*m_context, m_swapChain->getExtent())),
     m_gui(std::make_unique<GUI>(*m_context, *m_window, imp::gfx::vkutil::PickDrawImageFormat(m_context->getPhysicalDevice()))),
-    //default data and pipelines
-    m_gpuSceneDataDescriptorLayout(CreateGPUSceneDescriptorLayout(m_context->getDevice())),
     m_metallicRoughnessPBR(std::make_unique<MetallicRoughness>(m_context->getDevice(), m_gpuSceneDataDescriptorLayout, m_drawImage->getFormat(), m_depthImage->getFormat())),
     m_whiteImage(CreateWhiteImage(*m_context, *m_resourceCache, m_swapChain->getSurfaceFormat().format)),
     m_greyImage(CreateGreyImage(*m_context, *m_resourceCache, m_swapChain->getSurfaceFormat().format)),
@@ -291,9 +325,12 @@ imp::gfx::VKRenderer::VKRenderer(std::string_view windowTitle) :
                        VMA_MEMORY_USAGE_CPU_TO_GPU),0
     };
 
-    auto errorMaterial = m_metallicRoughnessPBR->writeMaterial(m_context->getDevice(), MaterialPass::MainColor, materialResources
+    auto errorMaterial = m_metallicRoughnessPBR->writeMaterial(m_context->getDevice(), MaterialPass::Opaque, materialResources
         , m_resourceCache->getMaterialDescriptorAllocator());
-    m_resourceCache->addMaterial("error_material", errorMaterial);
+    bool added = m_resourceCache->addMaterial("error_material", errorMaterial);
+    if (!added) {
+        Debug::Error("Failed to add error material to resource cache");
+    }
 
 }
 
@@ -328,10 +365,13 @@ void imp::gfx::VKRenderer::loadGLTF(std::filesystem::path filePath)
 
     auto gltf = MeshLoader::LoadGltf(filePath.string(), *m_context, *m_resourceCache, *m_metallicRoughnessPBR);
     if (!gltf.has_value()) {
-        Debug::FatalError("Failed to load gltf file");
+        Debug::Error("Failed to load gltf file");
         return;
     }
-    m_resourceCache->addGLTF(filePath.filename().string(), gltf.value());
+    bool added = m_resourceCache->addGLTF(filePath.filename().string(), gltf.value());
+    if (!added) {
+        Debug::Error("Failed to add gltf to resource cache");
+    }
 }
 
 std::shared_ptr<imp::gfx::Node> imp::gfx::VKRenderer::getLoadedGltfNode(std::string_view gltfFilename, std::string_view nodeName)
@@ -359,14 +399,19 @@ void imp::gfx::VKRenderer::beginFrame()
 {
     m_frameStartTime = std::chrono::high_resolution_clock::now();
     RENDERSTATS_SCOPED_TIMER(m_stats, "beginFrame");
-    auto&& frame = getCurrentFrameData();
-    const vk::CommandBuffer& cmd = frame.getCommandBuffer();
-    vk::Device device = m_context->getDevice();
-    m_drawExtent.height = static_cast<uint32_t>(std::min(m_swapChain->getExtent().height, m_drawImage->getExtent().height) * m_renderScale);
-    m_drawExtent.width = static_cast<uint32_t>(std::min(m_swapChain->getExtent().width, m_drawImage->getExtent().width) * m_renderScale);
-
-    imp::gfx::vkutil::CheckResult(device.waitForFences(frame.getInFlightFence(), vk::True, std::numeric_limits<uint64_t>::max()));
-    vk::Result result = device.acquireNextImageKHR(m_swapChain->getSwapChain(), std::numeric_limits<uint64_t>::max(), frame.getImageAvailableSemaphore(), {}, &m_imageIndex);
+    auto& frame = getCurrentFrameData();
+    const auto& cmd = frame.getCommandBuffer();
+    const auto& device = m_context->getDevice();
+    m_drawExtent.setHeight(static_cast<uint32_t>(std::min(m_swapChain->getExtent().height, m_drawImage->getExtent().height) * m_renderScale))
+        .setWidth(static_cast<uint32_t>(std::min(m_swapChain->getExtent().width, m_drawImage->getExtent().width) * m_renderScale));
+    try {
+        device.waitForFences(frame.getInFlightFence(), vk::True, std::numeric_limits<uint64_t>::max());
+    }
+    catch (const vk::SystemError& e) {
+        Debug::Exception("Error waiting for fence in beginFrame: {}", e.what());
+    }
+    auto [result, imageIndex] = m_swapChain->getSwapChain().acquireNextImage(std::numeric_limits<uint64_t>::max(), m_swapChain->getPresentCompleteSemaphore(m_semaphoreIndex), nullptr);
+    m_imageIndex = imageIndex;
     if (result == vk::Result::eErrorOutOfDateKHR) {
         recreate();
         m_isWindowResized = false;
@@ -447,29 +492,32 @@ void imp::gfx::VKRenderer::drawGeometry()
             }
             });
     }
-    vk::DescriptorSet sceneDataDescriptorSet{ nullptr };
+
     {
         RENDERSTATS_SCOPED_TIMER(m_stats, "updateSceneData");
-        //frameData.getSceneDataBuffer().
-       // frameData.setSceneDataBuffer({ m_context->getVmaAllocator(), sizeof(GPUSceneData), vk::BufferUsageFlagBits::eUniformBuffer, VMA_MEMORY_USAGE_CPU_TO_GPU });
         auto& gpuSceneDataBuffer = frameData.getSceneDataBuffer();
 
         GPUSceneData* sceneUniformData = static_cast<GPUSceneData*>(gpuSceneDataBuffer.getAllocationInfo().pMappedData);
         *sceneUniformData = m_sceneData;
-        for (int i = 0; i < 4; ++i) {
-            std::cout << "| ";
-            for (int j = 0; j < 4; ++j) {
-                std::cout << sceneUniformData->proj[j][i] << " ";
+        size_t index = 0;
+        for (auto& light : m_drawContext->lights) {
+            if (index >= GPULightData::MaxLights) {
+                break;
             }
-            std::cout << "|\n";
+            m_lightData.lights[index] = light;
+            ++index;         
         }
+        m_drawContext->lights.clear();
+        m_lightData.lightCount = static_cast<uint32_t>(index);
+        auto& gpuLightDataBuffer = frameData.getLightDataBuffer();
+        GPULightData* lightData = static_cast<GPULightData*>(gpuLightDataBuffer.getAllocationInfo().pMappedData);
+        *lightData = m_lightData;
+        DescriptorWriter writer{};
+        // Correct order: size then offset
+        writer.writeBuffer(0, frameData.getSceneDataBuffer().getBuffer(), sizeof(GPUSceneData), 0, vk::DescriptorType::eUniformBuffer);
+        writer.writeBuffer(1, gpuLightDataBuffer.getBuffer(), sizeof(GPULightData), 0, vk::DescriptorType::eStorageBuffer);
+        writer.updateSet(m_context->getDevice(), frameData.getSceneDataDescriptorSet());
 
-        frameData.createNewSceneDataDescriptorSet(m_context->getDevice(), *m_gpuSceneDataDescriptorLayout);
-        sceneDataDescriptorSet = frameData.getSceneDataDescriptorSet();
-
-        DescriptorWriter writer;
-        writer.writeBuffer(0, gpuSceneDataBuffer.getBuffer(), sizeof(GPUSceneData), 0, vk::DescriptorType::eUniformBuffer);
-        writer.updateSet(*m_context->getDevice(), sceneDataDescriptorSet);
     }
     {
         RENDERSTATS_SCOPED_TIMER(m_stats, "drawingGeo");
@@ -486,7 +534,7 @@ void imp::gfx::VKRenderer::drawGeometry()
                     //	std::cout << "swapping pipelines\n";
                     lastPipeline = robj.material->pipeline;
                     cmd.bindPipeline(vk::PipelineBindPoint::eGraphics, robj.material->pipeline);
-                    cmd.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, robj.material->pipelineLayout, 0, sceneDataDescriptorSet, {});
+                    cmd.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, robj.material->pipelineLayout, 0, frameData.getSceneDataDescriptorSet(), {});
                     SetViewportAndScissors(cmd, m_drawExtent);
                 }
                 cmd.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, robj.material->pipelineLayout, 1, *robj.material->set, {});
@@ -541,6 +589,7 @@ std::shared_ptr<imp::gfx::Mesh> imp::gfx::VKRenderer::uploadMesh(const std::stri
 {
     return std::make_shared<Mesh>(name, *m_context, surfaces, indices, vertices);
 }
+
 void imp::gfx::VKRenderer::endFrame()
 {
     RENDERSTATS_SCOPED_TIMER(m_stats, "endFrame");
@@ -548,22 +597,22 @@ void imp::gfx::VKRenderer::endFrame()
     auto& frame = m_frames[m_currentFrame];
 
     m_drawImage->transitionImageLayout(cmd, vk::ImageLayout::eColorAttachmentOptimal, vk::ImageLayout::eTransferSrcOptimal);
-    TransitionImageLayout(cmd, m_swapChain->getImages()[m_imageIndex], vk::ImageLayout::eUndefined, vk::ImageLayout::eTransferDstOptimal);
-    CopyImageToSwapChain(cmd, *m_drawImage, *m_swapChain, m_imageIndex);
-    TransitionImageLayout(cmd, m_swapChain->getImages()[m_imageIndex], vk::ImageLayout::eTransferDstOptimal, vk::ImageLayout::ePresentSrcKHR);
+    vkutil::TransitionImageLayout(cmd, m_swapChain->getImages()[m_imageIndex], vk::ImageLayout::eUndefined, vk::ImageLayout::eTransferDstOptimal);
+    vkutil::CopyImageToSwapChain(cmd, *m_drawImage, *m_swapChain, m_imageIndex);
+    vkutil::TransitionImageLayout(cmd, m_swapChain->getImages()[m_imageIndex], vk::ImageLayout::eTransferDstOptimal, vk::ImageLayout::ePresentSrcKHR);
     cmd.end();
     // Submit the command buffer for execution
     vk::PipelineStageFlags2 waitStage = vk::PipelineStageFlagBits2::eColorAttachmentOutput;
-    vk::SemaphoreSubmitInfo waitSemaphoreInfo(frame->getImageAvailableSemaphore(), 0, waitStage);
+    vk::SemaphoreSubmitInfo waitSemaphoreInfo(m_swapChain->getPresentCompleteSemaphore(m_semaphoreIndex), 0, waitStage);
     vk::CommandBufferSubmitInfo commandBufferInfo(frame->getCommandBuffer());
 
-    vk::SemaphoreSubmitInfo signalSemaphoreInfo(frame->getRenderFinishedSemaphore(), 0, vk::PipelineStageFlagBits2::eBottomOfPipe);
+    vk::SemaphoreSubmitInfo signalSemaphoreInfo(m_swapChain->getRenderFinishedSemaphore(m_imageIndex), 0, vk::PipelineStageFlagBits2::eBottomOfPipe);
     vk::SubmitInfo2 submitInfo2({}, waitSemaphoreInfo, commandBufferInfo, signalSemaphoreInfo);
 
     m_context->getGraphicsQueue().submit2(submitInfo2, frame->getInFlightFence());
 
-    // array or vector of vk::results to capture results present 
-    vk::PresentInfoKHR presentInfo{ frame->getRenderFinishedSemaphore(),*m_swapChain->getSwapChain(),m_imageIndex };
+    auto renderFinishedSemaphore = m_swapChain->getRenderFinishedSemaphore(m_imageIndex);
+    vk::PresentInfoKHR presentInfo{ renderFinishedSemaphore,*m_swapChain->getSwapChain(),m_imageIndex };
 
 
     vk::Queue queue = m_context->getGraphicsQueue();
@@ -575,10 +624,9 @@ void imp::gfx::VKRenderer::endFrame()
     else if (result != vk::Result::eSuccess) {
         throw std::runtime_error("Failed to present swap chain image!");
     }
-
     ++m_frameNumber;
-    m_currentFrame = (m_currentFrame + 1) % imp::gfx::vkutil::MAX_FRAMES_IN_FLIGHT;
-    //m_context->getDevice().waitIdle();
+    m_currentFrame = (m_currentFrame + 1u) % static_cast<uint32_t>(imp::gfx::vkutil::MAX_FRAMES_IN_FLIGHT);
+    m_semaphoreIndex = (m_semaphoreIndex + 1u) % static_cast<uint32_t>(m_swapChain->getImageCount());
     getCurrentFrameData().flushDeletions();
 
     while (!m_pendingFunctions.empty()) {
@@ -601,7 +649,8 @@ int imp::gfx::VKRenderer::getComputeEffectsSize()
 void imp::gfx::VKRenderer::draw(std::string_view gltfFilename, std::string_view nodeName, const glm::mat4& transform, std::string_view materialName)
 {
     if (!m_resourceCache->hasGLTF(gltfFilename)) {
-        Debug::Warning("GLTF ( {} ) does not exist", gltfFilename);
+        if (!gltfFilename.empty())
+            Debug::Warning("GLTF ( {} ) does not exist", gltfFilename);
         return;
     }
     const auto& gltfNode = m_resourceCache->getGLTF(gltfFilename);
@@ -635,6 +684,11 @@ void imp::gfx::VKRenderer::draw(std::string_view gltfFilename, const glm::mat4& 
     draw(gltfFilename, "Root", transform, "");
 }
 
+void imp::gfx::VKRenderer::drawLight(GPULight light)
+{
+    m_drawContext->lights.push_back(light);
+}
+
 void imp::gfx::VKRenderer::draw(std::string_view nodeName, std::string_view gltfFilename, std::string_view materialName, const glm::mat4& transform)
 {
     draw(gltfFilename, nodeName, transform, materialName);
@@ -647,11 +701,12 @@ void imp::gfx::VKRenderer::windowResized()
     m_window->onResize();
 }
 
-void imp::gfx::VKRenderer::reloadShader(std::string_view filename)
+void imp::gfx::VKRenderer::reloadComputeShader(std::string_view filename)
 {
+    using namespace utl::hashLiterals;
     //TODO: this may break, I'm not sure if the string_view will be valid when the deferred function is called
     m_pendingFunctions.emplace([this, filename]() {
-        ShaderCompiler::Instance().CheckCompileAll();
+        ShaderCompiler::Instance().CheckCompileAll(utl::ConfigSystem::instance().getGlobalConfigFile().getValueCopyOrDefault<std::string>("assets.shader_directory"_hash, "assets/shaders"));
         auto shader = std::ranges::find_if(m_computePipelines, [filename](const auto& pipeline) {return pipeline->getName() == filename; });
         m_context->getDevice().waitIdle();
         shader->get()->recreate(m_context->getDevice(), *m_drawImage, *m_globalDescriptorAllocator);
@@ -682,7 +737,8 @@ const std::vector<std::string>& imp::gfx::VKRenderer::getLoadedGLTFNodeNames(std
 {
     if (!m_resourceCache->hasGLTF(gltfFilename)) {
         static const std::vector<std::string>& emptyReturn{};
-        Debug::Warning("GLTF ( {} ) does not exist", gltfFilename);
+        if (!gltfFilename.empty())
+            Debug::Warning("GLTF ( {} ) does not exist", gltfFilename);
         return emptyReturn;
     }
     return m_resourceCache->getGLTF(gltfFilename)->nodeNames;

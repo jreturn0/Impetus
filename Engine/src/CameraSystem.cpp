@@ -1,116 +1,113 @@
-﻿#include "CoreSystems/CameraSystem.h"
-#include <Components/CameraComponent.h>
-
-#include "ComponentInfoRegistry.h"
-#include "CtxRef.h"
-#include "Renderer.h"
+﻿#include "ComponentInfoRegistry.h"
 #include "Components/Tags.h"
 #include "Components/TransformComponent.h"
+#include "CoreSystems/CameraSystem.h"
+#include "CtxRef.h"
+#include "Debug.h"
+#include "Renderer.h"
 #include "window/Window.h"
-
-
+#include <Components/CameraComponent.h>
+#include <Components/CameraLookAtComponent.h>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtx/quaternion.hpp>
 
 
 void imp::CameraSystem::OnActiveCameraTagCreate(entt::registry& registry, entt::entity entity)
 {
-	auto camTags = registry.view<imp::ActiveCameraTag>();
-	std::vector<entt::entity> entities;
-	for (auto&& [otherEntity] : camTags.each()) {
-		if (entity != otherEntity) {
-			entities.push_back(otherEntity);
-		}
-	}
-	for (auto otherEntity : entities) {
-		registry.remove<imp::ActiveCameraTag>(otherEntity);
-	}
+    auto camTags = registry.view<imp::ActiveCameraTag>();
+    std::vector<entt::entity> entities;
+    for (auto&& [otherEntity] : camTags.each()) {
+        if (entity != otherEntity) {
+            entities.push_back(otherEntity);
+        }
+    }
+    for (auto otherEntity : entities) {
+        registry.remove<imp::ActiveCameraTag>(otherEntity);
+    }
 }
 
 void imp::CameraSystem::initialize(entt::registry& registry)
 {
-	registry.on_construct<ActiveCameraTag>().connect<&imp::CameraSystem::OnActiveCameraTagCreate>(*this);
-	if (registry.view<imp::CameraComponent>().empty()) {
+    registry.on_construct<ActiveCameraTag>().connect<&imp::CameraSystem::OnActiveCameraTagCreate>(*this);
 
-		Debug::Info("Creating Camera");
-		const auto cameraEntity = registry.create();
-		registry.emplace<imp::TransformComponent>(cameraEntity, glm::vec3{ 0.f,0.f,-15.f }, glm::quat{ 0.f,0.f,0.f,0.f }, glm::vec3{ 1.f,1.f,1.f });
-		registry.emplace<imp::CameraComponent>(cameraEntity);
-		registry.emplace<ActiveCameraTag>(cameraEntity);
-	}
+    auto& renderer = registry.ctx().get<CtxRef<imp::gfx::Renderer>>().get();
+    const auto& window = renderer.getWindow();
+    const auto width = window.getWidth();
+    const auto height = window.getHeight();
+    const float ratio = static_cast<float>(width) / static_cast<float>(height);
+    auto&& view = registry.view<imp::CameraComponent>();
+    entt::entity cameraEntity{};
+    if (view.empty()) {
+
+        Debug::Info("Creating Camera");
+        cameraEntity = registry.create();
+        registry.emplace<imp::TransformComponent>(cameraEntity, glm::vec3{ 0.f,0.f,15.f }, glm::quat{ 1.f,0.f,0.f,0.f }, glm::vec3{ 1.f,1.f,1.f });
+        registry.emplace<imp::CameraComponent>(cameraEntity);
+        registry.emplace<ActiveCameraTag>(cameraEntity);
+    }
+    else {
+        cameraEntity = *view.begin();
+        if (!registry.any_of<ActiveCameraTag>(cameraEntity)) {
+            registry.emplace<ActiveCameraTag>(cameraEntity);
+        }
+    }
+
+    auto& cam = registry.get<imp::CameraComponent>(cameraEntity);
+    renderer.getSceneData().proj = glm::perspective(glm::radians(cam.fov), ratio, cam.nearPlane, cam.farPlane);
 }
-glm::mat4 InterpolateMatrices(const glm::mat4& start, const glm::mat4& end, float t)
-{
-	// Extract translation
-	glm::vec3 startTranslation = glm::vec3(start[3]);
-	glm::vec3 endTranslation = glm::vec3(end[3]);
 
-	// Interpolate translation
-	glm::vec3 interpolatedTranslation = glm::mix(startTranslation, endTranslation, t);
-
-	// Extract rotation
-	glm::quat startRotation = glm::quat_cast(start);
-	glm::quat endRotation = glm::quat_cast(end);
-
-	// Interpolate rotation
-	glm::quat interpolatedRotation = glm::slerp(startRotation, endRotation, t);
-
-	// Construct the interpolated matrix
-	glm::mat4 rotationMatrix = glm::mat4_cast(interpolatedRotation);
-	rotationMatrix[3] = glm::vec4(interpolatedTranslation, 1.0f);
-
-	return rotationMatrix;
-}
 void imp::CameraSystem::update(entt::registry& registry, const float deltaTime)
 {
-
-	{
-		const auto camTags = registry.group<>(entt::get< imp::CameraComponent, imp::TransformComponent, imp::ActiveCameraTag>);
-		if (camTags.empty()) {
-			Debug::Error("No active camera");
-			return;
-		}
-		const auto entity = camTags.front();
-		auto&& [cam, transform] = camTags.get<CameraComponent, TransformComponent>(entity);
-		// Update the view matrix
-		auto& renderer = registry.ctx().get<CtxRef<imp::gfx::Renderer>>().get();
-		auto& sceneData = renderer.getSceneData();
-
-		const auto& window = renderer.getWindow();
-		const auto width = window.getWidth();
-		const auto height = window.getHeight();
-		const float ratio = static_cast<float>(width) / static_cast<float>(height);
-		auto&& lookAtTags = registry.group<CameraLookAtTag>(entt::get< TransformComponent>);
-
-
-		if (!lookAtTags.empty()) {
-			auto&& target = lookAtTags.get<TransformComponent>(lookAtTags.front());
-			sceneData.view = glm::lookAt(transform.position, target.position, glm::vec3{ 0.f,1.f,0.f });			
-		} else {
-			sceneData.view = glm::lookAt(transform.position, transform.position + GetTransformForward(transform), GetTransformUp(transform));
-
-		}
+    const auto camTags = registry.group<>(entt::get< imp::CameraComponent, imp::TransformComponent, imp::ActiveCameraTag>);
+    if (camTags.empty()) {
+        Debug::Error("No active camera");
+        return;
+    }
+    const auto entity = camTags.front();
+    auto&& [cam, transform] = camTags.get<CameraComponent, TransformComponent>(entity);
+    auto& renderer = registry.ctx().get<CtxRef<imp::gfx::Renderer>>().get();
+    auto& sceneData = renderer.getSceneData();
+    const auto& window = renderer.getWindow();
+    const auto width = window.getWidth();
+    const auto height = window.getHeight();
+    const float ratio = static_cast<float>(width) / static_cast<float>(height);
+    auto&& lookAtTags = registry.group<CameraLookAtComponent>(entt::get< TransformComponent>);
 
 
 
-		// Construct the projection matrix
-		if (cam.type == imp::CameraType::Orthographic) {
-			// Orthographic camera settings
-			const float left = -cam.fov * ratio;
-			const float right = cam.fov * ratio;
-			const float bottom = -cam.fov;
-			const float top = cam.fov;
-			sceneData.proj = glm::ortho(left, right, bottom, top, cam.nearPlane, cam.farPlane);
-			sceneData.proj[1][1] *= -1; // Invert Y for Vulkan-style NDC
+    glm::vec3 up{};
+    glm::vec3 targetPos{};
+    if (!lookAtTags.empty()) {
+        auto&& [lookAt, transform] = lookAtTags.get<CameraLookAtComponent, TransformComponent>(lookAtTags.front());
+        if (lookAt.smoothing> 0.01f) {
+            targetPos = glm::mix(lookAt.previousTargetPosition, transform.position, glm::clamp(lookAt.smoothing * deltaTime, 0.0f, 1.0f));
+        }
+        else {
+            targetPos = transform.position;
+        }
+        up = GetWorldUp();
+    }
+    else {
+        targetPos = transform.position + GetTransformForward(transform);
+        up = GetTransformUp(transform);
+    }
+    sceneData.inverseView = glm::lookAt(transform.position, targetPos, up);
+    //TODO: caching would be good here
+    if (cam.type == imp::CameraType::Orthographic) {
+        const float left = -cam.fov * ratio;
+        const float right = cam.fov * ratio;
+        const float bottom = -cam.fov;
+        const float top = cam.fov;
+        sceneData.proj = glm::ortho(left, right, bottom, top, cam.nearPlane, cam.farPlane);
+        sceneData.proj[1][1] *= -1; // Invert Y for Vulkan-style NDC
 
-		} else {
-			sceneData.proj = glm::perspective(glm::radians(cam.fov), ratio, cam.nearPlane, cam.farPlane);
-			sceneData.proj[1][1] *= -1; // Invert Y for Vulkan-style NDC
-		}
+    }
+    else {
+        sceneData.proj = glm::perspective(glm::radians(cam.fov), ratio, cam.nearPlane, cam.farPlane);
+        sceneData.proj[1][1] *= -1; // Invert Y for Vulkan-style NDC
+    }
 
-		sceneData.viewproj = sceneData.proj * sceneData.view;
-
-	}
-
+    sceneData.viewproj = sceneData.proj * sceneData.inverseView;
+    sceneData.inverseView = glm::inverse(sceneData.inverseView); 
 }
 
-void imp::CameraSystem::cleanup(entt::registry& registry)
-{}

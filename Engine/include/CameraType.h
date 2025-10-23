@@ -1,4 +1,5 @@
 ﻿#pragma once
+#include <string_view>
 namespace imp {
 	enum class CameraType
 	{

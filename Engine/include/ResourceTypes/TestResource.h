@@ -1,8 +1,10 @@
 #pragma once
-#include <memory>
 #include "ResourceRegistry.h"
 #include <Debug.h>
+#include <memory>
 
+
+// Test/Example resource type that would work with the Resource System
 
 struct TestResource
 {

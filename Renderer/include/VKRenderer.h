@@ -22,8 +22,7 @@ namespace imp::gfx
 namespace imp::gfx {
     struct LoadedGLTF;
 
-    //using UniqueCommandBuffer = std::unique_ptr<class CommandBuffer>;
-
+    // Vulkan implementation of the Renderer interface
     class VKRenderer final : public Renderer
     {
     public:
@@ -53,7 +52,7 @@ namespace imp::gfx {
 
 
 
-
+        // Mesthods
       
         std::shared_ptr<imp::gfx::Mesh> uploadMesh(const std::string& name, std::span<GeoSurface> surfaces, std::span<uint32_t> indices, std::span<Vertex> vertices) const;
         
@@ -82,7 +81,10 @@ namespace imp::gfx {
         void draw(std::string_view nodeName, std::string_view gltfFilename, std::string_view materialName, const glm::mat4& transform) override;
         void draw(std::string_view gltfFilename, const glm::mat4& transform) override;
 
-        void reloadShader(std::string_view filename) override;
+        void drawLight(GPULight light) override;
+
+        void reloadComputeShader(std::string_view filename) override;
+        void reloadAllShaders() override;
 
         void beginFrame() override;
         void drawCompute() override;
@@ -91,57 +93,37 @@ namespace imp::gfx {
         void endDrawGui() override;
         void endFrame() override;
     private:
-        //Core:
-
-        SharedWindow m_window;
-        std::unique_ptr<VulkanContext> m_context;
-        std::unique_ptr<SwapChain> m_swapChain;
-        UniqueDescriptorAllocatorGrowable m_globalDescriptorAllocator;
-        std::unique_ptr<ResourceCache> m_resourceCache;
-        //Per Frame:
-
-        std::array<UniqueFrameData, vkutil::MAX_FRAMES_IN_FLIGHT> m_frames;
-        //Images:
-
-        UniqueImage m_drawImage;
-        UniqueImage m_depthImage;
-        //GUI:
-
-        UniqueGUI m_gui;
-
-        //Default Data:
-
-        vk::raii::DescriptorSetLayout m_gpuSceneDataDescriptorLayout;
-        UniqueMetallicRoughness m_metallicRoughnessPBR;
-        SharedImage m_whiteImage;
-        SharedImage m_greyImage;
-        SharedImage m_blackImage;
-        SharedImage m_errorImage;
-        vk::raii::Sampler m_defaultSamplerLinear;
-        vk::raii::Sampler m_defaultSamplerNearest;
-        SharedMaterial m_defaultMaterial;
-        //Draw Context:
-
-        std::unique_ptr< DrawContext > m_drawContext;
-        //Compute Pipelines:
-
-        std::vector<SharedComputePipeline> m_computePipelines;
-        //Renderer Data:
-
-        vk::Extent2D m_drawExtent{ 0,0 };
-
+        SharedWindow m_window{nullptr};
+        std::unique_ptr<VulkanContext> m_context{ nullptr };
+        std::unique_ptr<SwapChain> m_swapChain{ nullptr };
+        UniqueDescriptorAllocatorGrowable m_globalDescriptorAllocator{ nullptr };
+        std::unique_ptr<ResourceCache> m_resourceCache{ nullptr };
+        vk::raii::DescriptorSetLayout m_gpuSceneDataDescriptorLayout{ nullptr };
+        std::array<UniqueFrameData, vkutil::MAX_FRAMES_IN_FLIGHT> m_frames{};
+        UniqueImage m_drawImage{ nullptr };
+        UniqueImage m_depthImage{ nullptr };
+        UniqueGUI m_gui{ nullptr };
+        UniqueMetallicRoughness m_metallicRoughnessPBR{ nullptr };
+        SharedImage m_whiteImage{ nullptr };
+        SharedImage m_greyImage{ nullptr };
+        SharedImage m_blackImage{ nullptr };
+        SharedImage m_errorImage{ nullptr };
+        vk::raii::Sampler m_defaultSamplerLinear{ nullptr };
+        vk::raii::Sampler m_defaultSamplerNearest{ nullptr };
+        SharedMaterial m_defaultMaterial{ nullptr };
+        std::unique_ptr< DrawContext > m_drawContext{ nullptr };
+        std::vector<SharedComputePipeline> m_computePipelines{};
+        vk::Extent2D m_drawExtent{};
         std::chrono::time_point<std::chrono::high_resolution_clock> m_frameStartTime = std::chrono::high_resolution_clock::now();
+        std::queue < std::function<void()>> m_pendingFunctions{};
+        uint32_t m_semaphoreIndex{};
+        bool m_shaderReloadQueued{};
 
-        std::queue < std::function<void()>> m_pendingFunctions;
-
-
+        // Private Methods
 
         FrameData& getCurrentFrameData() { return *m_frames[m_currentFrame]; }
-
         void recreate() override;
-
         SharedMaterial createDefaultMaterial();
 
-    public:
     };
 }

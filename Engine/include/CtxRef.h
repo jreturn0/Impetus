@@ -1,18 +1,15 @@
 #pragma once
 #include <mutex>
 
+// A simple wrapper to store references in the entt system locator 
 template<typename T>
 struct CtxRef
 {
 private:
-	//std::mutex mtx;
 	T* value;
 public:
 	CtxRef(T* value) : value(value) {}
 	CtxRef(T& value) : value(&value) {}
-
-//	void lock() { mtx.lock(); }
-	//void unlock() { mtx.unlock(); }
 
 	T& get() { return *value; }
 

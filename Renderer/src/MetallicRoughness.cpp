@@ -1,14 +1,18 @@
-﻿#include "materials/MetallicRoughness.h"
-
-#include "VKRenderer.h"
-#include "utils/descriptor//DescriptorLayoutBuilder.h"
-#include "gpudata/GPUDrawPushConstants.h"
-#include "utils/PipelineBuilder.h"
-#include "utils/descriptor/DescriptorAllocatorGrowable.h"
+﻿#include "ConfigSystem.h"
 #include "core/Buffer.h"
 #include "core/Image.h"
+#include "gpudata/GPUDrawPushConstants.h"
 #include "materials/Material.h"
+#include "materials/MetallicRoughness.h"
+#include "utils/descriptor//DescriptorLayoutBuilder.h"
+#include "utils/descriptor/DescriptorAllocatorGrowable.h"
+#include "utils/PipelineBuilder.h"
 #include "utils/shader/ShaderLoader.h"
+#include "VKRenderer.h"
+namespace {
+    auto cfg_metallicRoughnessVertShader = utl::ConfigValueRef("renderer.metallicRoughness_vert", "mesh_material");
+    auto cfg_metallicRoughnessFragShader = utl::ConfigValueRef("renderer.metallicRoughness_frag", "mesh_material");
+}
 
 imp::gfx::MetallicRoughness::MetallicRoughness(const vk::raii::Device& device, vk::DescriptorSetLayout sceneDataLayout, vk::Format drawFormat, vk::Format depthFormat)
 {
@@ -17,10 +21,6 @@ imp::gfx::MetallicRoughness::MetallicRoughness(const vk::raii::Device& device, v
     layoutBuilder.addBinding(0, vk::DescriptorType::eUniformBuffer);
     layoutBuilder.addBinding(1, vk::DescriptorType::eCombinedImageSampler);
     layoutBuilder.addBinding(2, vk::DescriptorType::eCombinedImageSampler);
-
-    pipelineBuilder.setInputTopology(vk::PrimitiveTopology::eTriangleList)
-        .setPolygonMode(vk::PolygonMode::eFill)
-        .setMultisampling(vk::SampleCountFlagBits::e1);
 
     materialLayout = layoutBuilder.build(device, vk::ShaderStageFlagBits::eVertex | vk::ShaderStageFlagBits::eFragment);
 
@@ -35,8 +35,8 @@ void imp::gfx::MetallicRoughness::recreate(const vk::raii::Device& device, vk::D
 void imp::gfx::MetallicRoughness::buildPipelines(const vk::raii::Device& device, vk::DescriptorSetLayout sceneDataLayout, vk::Format drawFormat, vk::Format depthFormat)
 {
     constexpr vk::PushConstantRange matrixRange{ vk::ShaderStageFlagBits::eVertex,0 ,sizeof(GPUDrawPushConstants) };
-    auto vertModule = ShaderLoader::CreateShaderModule(device, "mesh_material", vkutil::ShaderStage::Vertex);
-    auto fragModule = ShaderLoader::CreateShaderModule(device, "mesh_material", vkutil::ShaderStage::Fragment);
+    auto vertModule = ShaderLoader::CreateShaderModule(device, cfg_metallicRoughnessVertShader.get(), vkutil::ShaderStage::Vertex);
+    auto fragModule = ShaderLoader::CreateShaderModule(device, cfg_metallicRoughnessFragShader.get(), vkutil::ShaderStage::Fragment);
     std::vector layouts = {
         sceneDataLayout,*materialLayout
     };
@@ -50,8 +50,11 @@ void imp::gfx::MetallicRoughness::buildPipelines(const vk::raii::Device& device,
         .setPushConstantRanges(matrixRange);
 
     pipelineLayout = device.createPipelineLayout(pipelineCreateInfo);
-
-    opaquePipeline = pipelineBuilder.setShaderStages(*vertModule, *fragModule)
+    pipelineBuilder.clear();
+    opaquePipeline = pipelineBuilder.setInputTopology(vk::PrimitiveTopology::eTriangleList)
+        .setPolygonMode(vk::PolygonMode::eFill)
+        .setMultisampling(vk::SampleCountFlagBits::e1)
+        .setShaderStages(*vertModule, *fragModule)
         .setCullMode(vk::CullModeFlagBits::eBack, vk::FrontFace::eCounterClockwise)
         .setDepthTest(true, true, vk::CompareOp::eLessOrEqual)
         .setBlendingMode(PipelineBuilder::BlendingMode::None)
@@ -59,7 +62,7 @@ void imp::gfx::MetallicRoughness::buildPipelines(const vk::raii::Device& device,
         .setDepthFormat(depthFormat)
         .buildPipeline(device, *pipelineLayout);
 
-    transparentPipeline= pipelineBuilder.setDepthTest(true,false,vk::CompareOp::eLess)
+    transparentPipeline = pipelineBuilder.setDepthTest(true, false, vk::CompareOp::eLess)
         .setCullMode(vk::CullModeFlagBits::eNone, vk::FrontFace::eClockwise)
         .setBlendingMode(PipelineBuilder::BlendingMode::Additive)
         .buildPipeline(device, *pipelineLayout);
@@ -85,6 +88,26 @@ std::shared_ptr<imp::gfx::Material> imp::gfx::MetallicRoughness::writeMaterial(c
 
     material->buffer = resources.dataBuffer;
     return material;
+}
+
+void imp::gfx::MetallicRoughness::updateMaterialPipelines(Material& material) const
+{
+    switch (material.passType)
+    {
+
+    case MaterialPass::Opaque:
+        material.pipeline = opaquePipeline;
+        material.pipelineLayout = pipelineLayout;
+        break;
+    case MaterialPass::Transparent:
+        material.pipeline = transparentPipeline;
+        material.pipelineLayout = pipelineLayout;
+        break;
+    default:
+        Debug::Throw("Unsupported material pass type");
+        break;
+
+    }
 }
 
 

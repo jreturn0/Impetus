@@ -2,36 +2,48 @@
 #include <window/Window.h>
 #include "utils/VKUtils.h"
 namespace {
-    vk::SwapchainCreateInfoKHR getSwapChainCreateInfo(SwapChainSupportDetails& details, const vk::SurfaceFormatKHR& surfaceFormat, const vk::Extent2D& extent, const imp::gfx::VulkanContext& context)
+
+
+
+    vk::SwapchainCreateInfoKHR getSwapChainCreateInfo(SwapChainSupportDetails& details, const vk::SurfaceFormatKHR& surfaceFormat, const vk::Extent2D& extent, vk::PresentModeKHR presentMode, const imp::gfx::VulkanContext& context)
     {
         auto minImageCount = std::max(imp::gfx::vkutil::MIN_IMAGE_COUNT, details.capabilities.minImageCount);
-
         minImageCount = (details.capabilities.maxImageCount > 0 && minImageCount > details.capabilities.maxImageCount) ? details.capabilities.maxImageCount : minImageCount;
         uint32_t imageCount = details.capabilities.minImageCount + 1;
         if (details.capabilities.maxImageCount > 0 && imageCount > details.capabilities.
             maxImageCount) {
             imageCount = details.capabilities.maxImageCount;
         }
+
+
+        static std::array<uint32_t, 2> indices{}; // hacky way to avoid returning a reference to a local variable
         const auto& queueFamilyIndices = context.getQueueFamilyIndices();
-        const std::array<uint32_t, 2> indices = { queueFamilyIndices.graphicsFamily.value(),queueFamilyIndices.presentFamily.value() };
+        if (!queueFamilyIndices.isComplete2()) {
+            Debug::FatalError("Queue family indices are not complete!");
+        }
+        indices = { queueFamilyIndices.graphicsFamily.value(),queueFamilyIndices.presentFamily.value() };
         const bool sameQueueFamily = queueFamilyIndices.graphicsFamily == queueFamilyIndices.presentFamily;
+        if (!sameQueueFamily) 
+            Debug::Info("Using concurrent sharing mode for swapchain");
         const auto swapchainCreateInfo = vk::SwapchainCreateInfoKHR{}
             .setSurface(context.getSurface())
-            .setMinImageCount(minImageCount)
+            .setMinImageCount(imageCount)
             .setImageFormat(surfaceFormat.format)
             .setImageColorSpace(surfaceFormat.colorSpace)
             .setImageExtent(extent)
             .setImageArrayLayers(1)
             .setImageUsage(vk::ImageUsageFlagBits::eColorAttachment | vk::ImageUsageFlagBits::eTransferDst)
-            .setImageSharingMode(sameQueueFamily ?  vk::SharingMode::eExclusive : vk::SharingMode::eConcurrent )
+            .setImageSharingMode(sameQueueFamily ? vk::SharingMode::eExclusive : vk::SharingMode::eConcurrent)
             .setQueueFamilyIndexCount(sameQueueFamily ? 0u : static_cast<uint32_t>(indices.size()))
             .setPQueueFamilyIndices(sameQueueFamily ? nullptr : indices.data())
             .setPreTransform(details.capabilities.currentTransform)
             .setCompositeAlpha(vk::CompositeAlphaFlagBitsKHR::eOpaque)
-            .setPresentMode(vk::PresentModeKHR::eMailbox)
+            .setPresentMode(presentMode)
             .setClipped(vk::True);
         return swapchainCreateInfo;
     }
+
+
 }
 
 imp::gfx::SwapChain::SwapChain(const VulkanContext& context, const Window& window) :
@@ -39,12 +51,18 @@ imp::gfx::SwapChain::SwapChain(const VulkanContext& context, const Window& windo
     m_surfaceFormat(chooseSwapSurfaceFormat(m_supportDetails.formats)),
     m_presentMode(chooseSwapPresentMode(m_supportDetails.presentModes, vk::PresentModeKHR::eMailbox)),
     m_extent(chooseSwapExtent(m_supportDetails.capabilities, window)),
-    m_swapChain(context.getDevice(), getSwapChainCreateInfo(m_supportDetails, m_surfaceFormat, m_extent, context)),
+    m_swapChain(context.getDevice(), getSwapChainCreateInfo(m_supportDetails, m_surfaceFormat, m_extent, m_presentMode, context)),
     m_images(m_swapChain.getImages()),
     m_imageViews(),
-    m_framebuffers()
+    m_framebuffers(),
+    m_presentCompleteSemaphores(),
+    m_renderFinishedSemaphores()
 {
     createImageViews(context.getDevice());
+    for (size_t i = 0; i < m_images.size(); i++) {
+        m_presentCompleteSemaphores.emplace_back(context.getDevice(), vk::SemaphoreCreateInfo{});
+        m_renderFinishedSemaphores.emplace_back(context.getDevice(), vk::SemaphoreCreateInfo{});
+    }
 }
 
 void imp::gfx::SwapChain::createSwapChain(const VulkanContext& context, const Window& window)
@@ -55,23 +73,25 @@ void imp::gfx::SwapChain::createSwapChain(const VulkanContext& context, const Wi
     m_surfaceFormat = chooseSwapSurfaceFormat(m_supportDetails.formats);
     m_presentMode = chooseSwapPresentMode(m_supportDetails.presentModes, vk::PresentModeKHR::eMailbox);
     m_extent = chooseSwapExtent(m_supportDetails.capabilities, window);
-    auto createInfo = getSwapChainCreateInfo(m_supportDetails, m_surfaceFormat, m_extent, context);
+    auto createInfo = getSwapChainCreateInfo(m_supportDetails, m_surfaceFormat, m_extent, m_presentMode, context);
     m_swapChain = vk::raii::SwapchainKHR(device, createInfo);
     m_images = m_swapChain.getImages();
+
 
 }
 
 void imp::gfx::SwapChain::createImageViews(const vk::raii::Device& device)
 {
     m_imageViews.clear();
-    vk::ImageViewCreateInfo imageViewCreateInfo{
-        {},
-        {},
-        vk::ImageViewType::e2D,
-        m_surfaceFormat.format,
-        {},
-        { vk::ImageAspectFlagBits::eColor, 0, 1, 0, 1 } // Ascpect mask, base mip level, level count, base array layer, layer count
-    };
+    auto imageViewCreateInfo = vk::ImageViewCreateInfo{}
+        .setViewType(vk::ImageViewType::e2D)
+        .setFormat(m_surfaceFormat.format)
+        .setSubresourceRange(vk::ImageSubresourceRange{}
+            .setAspectMask(vk::ImageAspectFlagBits::eColor)
+            .setBaseMipLevel(0)
+            .setLevelCount(1)
+            .setBaseArrayLayer(0)
+            .setLayerCount(1));
 
     m_imageViews.reserve(m_images.size());
     for (auto& image : m_images) {
@@ -96,7 +116,6 @@ vk::SurfaceFormatKHR imp::gfx::SwapChain::chooseSwapSurfaceFormat(const std::vec
         }
 
     }
-    fmt::println(stderr, "Preferred format not found, using first available format");
     Debug::Error("Preferred format not found, using first available format");
     return formats[0];
 }

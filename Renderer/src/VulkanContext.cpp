@@ -1,16 +1,15 @@
 
 #define GLFW_INCLUDE_VULKAN
-#include <GLFW/glfw3.h>
-#include <map>
-#include <unordered_set>
-//#include <WinUser.h>
-#include <sstream>
-#include <format>
-#include <glm/vec3.hpp>
-#include "core/VulkanContext.h"
+#include "ConfigSystem.h"
 #include "core/QueueFamilyIndices.h"
 #include "core/SwapChainSupportDetails.h"
-#include "ConfigSystem.h"
+#include "core/VulkanContext.h"
+#include <format>
+#include <GLFW/glfw3.h>
+#include <glm/vec3.hpp>
+#include <map>
+#include <sstream>
+#include <unordered_set>
 #include <utils/VKUtils.h>
 VULKAN_HPP_DEFAULT_DISPATCH_LOADER_DYNAMIC_STORAGE
 
@@ -63,7 +62,7 @@ namespace {
         return extensions;
     }
 
-    auto s_appName = utl::ConfigValueRef<std::string>("render.app_name", "Impetus Application");
+    auto cfg_appName = utl::ConfigValueRef<std::string>("renderer.app_name", "Impetus Application");
 
     vk::raii::Instance CreateInstance(const vk::raii::Context& context)
     {
@@ -81,7 +80,7 @@ namespace {
             .setApiVersion(vk::ApiVersion14)
             .setApplicationVersion(vk::makeApiVersion(0, 1, 0, 0))
             .setEngineVersion(vk::makeApiVersion(0, 1, 0, 0))
-            .setPApplicationName(s_appName.get().c_str())
+            .setPApplicationName(cfg_appName.get().c_str())
             .setPEngineName("Impetus");
 
 
@@ -107,10 +106,10 @@ namespace {
         vk::DebugUtilsMessengerCallbackDataEXT const* pCallbackData,
         void* /*pUserData*/)
     {
+        std::string message;
+        message.reserve(1024);
 
-
-
-        std::string message = std::format(
+        std::format_to(std::back_inserter(message),
             "{}: {}:\n"
             "\tmessageIDName   = <{}>\n"
             "\tmessageIdNumber = {}\n"
@@ -125,36 +124,40 @@ namespace {
         if (pCallbackData->queueLabelCount > 0) {
             message += "\tQueue Labels:\n";
             for (uint32_t i = 0; i < pCallbackData->queueLabelCount; ++i) {
-                message += std::format("\t\tlabelName = <{}>\n", pCallbackData->pQueueLabels[i].pLabelName);
+                std::format_to(std::back_inserter(message), "\t\tlabelName = <{}>\n", pCallbackData->pQueueLabels[i].pLabelName);
             }
         }
 
         if (pCallbackData->cmdBufLabelCount > 0) {
             message += "\tCommandBuffer Labels:\n";
             for (uint32_t i = 0; i < pCallbackData->cmdBufLabelCount; ++i) {
-                message += std::format("\t\tlabelName = <{}>\n", pCallbackData->pCmdBufLabels[i].pLabelName);
+                std::format_to(std::back_inserter(message), "\t\tlabelName = <{}>\n", pCallbackData->pCmdBufLabels[i].pLabelName);
             }
         }
 
         if (pCallbackData->objectCount > 0) {
             message += "\tObjects:\n";
             for (uint32_t i = 0; i < pCallbackData->objectCount; ++i) {
-                message += std::format("\t\tObject {}\n", i);
-                message += std::format("\t\t\tobjectType   = {}\n", vk::to_string(pCallbackData->pObjects[i].objectType));
-                message += std::format("\t\t\tobjectHandle = {}\n", pCallbackData->pObjects[i].objectHandle);
+                std::format_to(std::back_inserter(message), "\t\tObject {}\n\t\t\tobjectType   = {}\n\t\t\tobjectHandle = {}\n", i, vk::to_string(pCallbackData->pObjects[i].objectType), pCallbackData->pObjects[i].objectHandle);
                 if (pCallbackData->pObjects[i].pObjectName) {
-                    message += std::format("\t\t\tobjectName   = <{}>\n", pCallbackData->pObjects[i].pObjectName);
+                    std::format_to(std::back_inserter(message), "\t\t\tobjectName   = <{}>\n", pCallbackData->pObjects[i].pObjectName);
                 }
             }
         }
-
-        //#ifdef _WIN32
-        //        MessageBoxA(NULL, message.c_str(), "Alert", MB_OK);
-        //#else
-        Debug::Info("{}", message);
-        //#endif
-        if (messageSeverity >= vk::DebugUtilsMessageSeverityFlagBitsEXT::eError) {
-            Debug::Info("{}", "uh oh, error");
+        switch (messageSeverity) {
+        case vk::DebugUtilsMessageSeverityFlagBitsEXT::eVerbose:
+        case vk::DebugUtilsMessageSeverityFlagBitsEXT::eInfo:
+            Debug::Info("{}", message);
+            break;
+        case vk::DebugUtilsMessageSeverityFlagBitsEXT::eWarning:
+            Debug::Warning("{}", message);
+            break;
+        case vk::DebugUtilsMessageSeverityFlagBitsEXT::eError:
+            Debug::Error("{}", message);
+            break;
+        default:
+            Debug::Info("{}", message);
+            break;
         }
         return VK_FALSE;
     }
@@ -299,7 +302,7 @@ namespace {
             .setPNext(&enabledFeatures14);
 
         auto enabledFeatures12 = vk::PhysicalDeviceVulkan12Features{}
-        .setBufferDeviceAddress(vk::True)
+            .setBufferDeviceAddress(vk::True)
             .setPNext(enabledFeatures13);
 
         auto enabledFeatures = vk::PhysicalDeviceFeatures2{}
@@ -348,7 +351,7 @@ imp::gfx::VulkanContext::VulkanContext(Window& window) :
     m_vmaAllocator(CreateVmaAllocator(m_instance, m_physicalDevice, m_device)),
     m_graphicsQueue(m_device.getQueue(*m_queueFamilyIndices.graphicsFamily, 0)),
     m_graphicsCommandPool(m_device, vk::CommandPoolCreateInfo{ vk::CommandPoolCreateFlagBits::eResetCommandBuffer, *m_queueFamilyIndices.graphicsFamily }),
-    m_graphicsImmediateCommands(m_device, *m_queueFamilyIndices.graphicsFamily)
+    m_graphicsImmediateCommands(m_device,m_graphicsQueue, *m_queueFamilyIndices.graphicsFamily)
 
 {
 }

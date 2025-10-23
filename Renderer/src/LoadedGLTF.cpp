@@ -36,8 +36,3 @@ void imp::gfx::LoadedGLTF::draw(const glm::mat4& topMatrix, DrawContext& ctx, Sh
     }
 }
 
-void imp::gfx::LoadedGLTF::clearAll()
-{
-
-
-}

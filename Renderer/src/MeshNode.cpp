@@ -11,7 +11,6 @@
 void imp::gfx::MeshNode::draw(const glm::mat4& topMatrix, DrawContext& ctx)
 {
 	const glm::mat4 nodeMatrix = topMatrix * worldTransform;
-	//std::cout << "Drawing: " << mesh->name << "\n";
 	for (auto& s : mesh->surfaces) {
 
 		RenderObject def{s.count,s.startIndex,mesh->meshBuffer->getIndexBuffer().getBuffer(),s.material,s.bounds,nodeMatrix,mesh->meshBuffer->getVertexAddress()};
@@ -21,7 +20,6 @@ void imp::gfx::MeshNode::draw(const glm::mat4& topMatrix, DrawContext& ctx)
 			ctx.opaque.push_back(def);
 		}
 	}
-
 	// recurse down
 	Node::draw(topMatrix, ctx);
 }
@@ -30,7 +28,6 @@ void imp::gfx::MeshNode::draw(const glm::mat4& topMatrix, DrawContext& ctx,
 	std::shared_ptr<Material>& materialOverride)
 {
 	const glm::mat4 nodeMatrix = topMatrix * worldTransform;
-	//std::cout << "Drawing: " << mesh->name << "\n";
 	for (auto& s : mesh->surfaces) {
 
 		RenderObject def{ s.count,s.startIndex,mesh->meshBuffer->getIndexBuffer().getBuffer(),materialOverride,s.bounds,nodeMatrix,mesh->meshBuffer->getVertexAddress() };
@@ -40,7 +37,6 @@ void imp::gfx::MeshNode::draw(const glm::mat4& topMatrix, DrawContext& ctx,
 			ctx.opaque.push_back(def);
 		}
 	}
-
 	// recurse down
 	Node::draw(topMatrix, ctx);
 }

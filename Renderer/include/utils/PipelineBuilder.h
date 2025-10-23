@@ -1,9 +1,10 @@
 ﻿#pragma once
-#include "utils/VKCommon.hpp"
 #include "utils/QuickMacros.h"
+#include "utils/VKCommon.hpp"
 
 namespace imp::gfx
 {
+    // Builder class for creating Vulkan graphics pipelines
     class PipelineBuilder
     {
     public:
@@ -16,14 +17,14 @@ namespace imp::gfx
 
 
         PipelineBuilder();
+        ~PipelineBuilder() = default;
         PipelineBuilder(const PipelineBuilder&) = delete;
         PipelineBuilder& operator=(const PipelineBuilder&) = delete;
         PipelineBuilder(PipelineBuilder&&) = delete;
         PipelineBuilder& operator=(PipelineBuilder&&) = delete;
 
-        vk::raii::Pipeline buildPipeline(const vk::raii::Device& device, vk::PipelineLayout layout) const;
+        // Setters
 
-        void clear();
         PipelineBuilder& setBlendingMode(BlendingMode mode);
         PipelineBuilder& setShaderStages(vk::ShaderModule vertex, vk::ShaderModule fragment);
         PipelineBuilder& setInputTopology(vk::PrimitiveTopology topology);
@@ -34,7 +35,9 @@ namespace imp::gfx
         PipelineBuilder& setDepthFormat(vk::Format format);
         PipelineBuilder& setDepthTest(bool depthTestEnable, bool depthWriteEnable, vk::CompareOp op);
 
-
+        // Methods
+        vk::raii::Pipeline buildPipeline(const vk::raii::Device& device, vk::PipelineLayout layout) const;
+        void clear();
     private:
 
         std::vector<vk::PipelineShaderStageCreateInfo> m_shaderStages;

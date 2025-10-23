@@ -1,8 +1,7 @@
 #pragma once
+#include "UpdateType.h"
 #include <string>
 #include <vector>
-
-#include "UpdateType.h"
 
 struct SystemStatusEvent
 {
@@ -12,7 +11,7 @@ struct SystemStatusEvent
 
 struct SystemsReorderedEvent
 {
-
+	
 	std::vector<std::pair<std::string, bool>> variable, preFixed, fixed, postFixed;
 };
 

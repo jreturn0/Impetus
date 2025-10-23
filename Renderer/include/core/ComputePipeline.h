@@ -1,18 +1,19 @@
 ﻿
 #pragma once
+#include "core/ComputeEffect.h"
+#include "utils/Forwards.h"
+#include "utils/QuickMacros.h"
+#include "utils/VKCommon.hpp"
+#include <array>
 #include <glm/vec4.hpp>
 #include <memory>
-#include <array>
 #include <string>
-#include "utils/VKCommon.hpp"
-#include "utils/QuickMacros.h"
-#include "core/ComputeEffect.h"
 
-#include "utils/Forwards.h"
 namespace imp::gfx {
 
     using UniqueComputePipeline = std::unique_ptr<class ComputePipeline>;
 
+    // Simple implementation of ComputeEffect in Vulkan using a compute pipeline
     class ComputePipeline : public ComputeEffect
     {
     public:
@@ -22,10 +23,10 @@ namespace imp::gfx {
 
         // Getters
 
-        vk::DescriptorSet getDescriptorSet() const noexcept { return m_descriptorSet; };
-        vk::DescriptorSetLayout getDescriptorSetLayout()const noexcept { return m_descriptorSetLayout; };
-        vk::PipelineLayout getPipelineLayout()const noexcept { return m_pipelineLayout; };
-        vk::Pipeline getPipeline() const noexcept { return m_pipeline; };
+        inline vk::DescriptorSet getDescriptorSet() const noexcept { return m_descriptorSet; };
+        inline vk::DescriptorSetLayout getDescriptorSetLayout()const noexcept { return m_descriptorSetLayout; };
+        inline vk::PipelineLayout getPipelineLayout()const noexcept { return m_pipelineLayout; };
+        inline vk::Pipeline getPipeline() const noexcept { return m_pipeline; };
 
 
         // Methods
@@ -38,8 +39,6 @@ namespace imp::gfx {
         vk::raii::DescriptorSetLayout m_descriptorSetLayout{ nullptr };
         vk::raii::PipelineLayout m_pipelineLayout{ nullptr };
         vk::raii::Pipeline m_pipeline{ nullptr };
-
-
     };
 
 

@@ -9,13 +9,12 @@ namespace imp::gfx {
 
     struct RenderObject
     {
-        uint32_t indexCount;
-        uint32_t firstIndex;
-        vk::Buffer indexBuffer;
-       // std::string materialName;
-        std::shared_ptr<Material> material;
-        Bounds bounds;
-        glm::mat4 transform;
-        vk::DeviceAddress vertexBufferAddress;
+        uint32_t indexCount{};
+        uint32_t firstIndex{};
+        vk::Buffer indexBuffer{nullptr};
+        std::shared_ptr<Material> material{ nullptr };
+        Bounds bounds{};
+        glm::mat4 transform{};
+        vk::DeviceAddress vertexBufferAddress{};
     };
 }

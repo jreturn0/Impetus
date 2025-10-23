@@ -1,10 +1,9 @@
 ﻿#pragma once
 #include <functional>
-
 #include <Jolt/Jolt.h>
 #include <Jolt/Physics/Body/BodyID.h>
 
-namespace imp::Phys
+namespace imp::phys
 {
 	//JPH::BodyID custom hash function
 	struct BodyIDHash

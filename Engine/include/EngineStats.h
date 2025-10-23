@@ -1,8 +1,9 @@
 ﻿#pragma once
+#include "StringHash.h"
+#include "TimerStats.h"
+#include <ranges>
 #include <string>
 #include <unordered_map>
-#include "TimerStats.h"
-#include "StringHash.h"
 
 #ifndef IMP_ENABLE_PROFILING
 #ifdef _DEBUG
@@ -11,14 +12,11 @@
 #endif
 
 namespace imp {
-    //Statistics for a single frame stored in microseconds
-
-
     struct EngineStats
     {
         std::unordered_map<utl::StringHash, utl::TimerStats, utl::StringHashOp> timeStatsMap{};
         inline void reset() noexcept {
-            for (auto& [_, stats] : timeStatsMap) {
+            for (auto& stats : timeStatsMap | std::views::values) {
                 stats.reset();
             }
         }

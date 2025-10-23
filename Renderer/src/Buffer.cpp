@@ -9,14 +9,11 @@ imp::gfx::Buffer::Buffer(VmaAllocator allocator, vk::DeviceSize size,
     VmaAllocationCreateInfo allocCreateInfo = {};
     allocCreateInfo.usage = memoryUsage;
     allocCreateInfo.flags = VMA_ALLOCATION_CREATE_MAPPED_BIT;
-
-    VkBufferCreateInfo bufferInfo = { .sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO };
-    bufferInfo.pNext = nullptr;
-    bufferInfo.size = size;
-    bufferInfo.usage = static_cast<VkBufferUsageFlags>(usage);
+    const auto bufferInfo = vk::BufferCreateInfo{}
+        .setSize(size)
+        .setUsage(usage);
     VkBuffer _buffer;
-
-    if (vmaCreateBuffer(allocator, &bufferInfo, &allocCreateInfo, &_buffer, &m_allocation, &m_allocationInfo) != VK_SUCCESS) {
+    if (vmaCreateBuffer(allocator, &*bufferInfo, &allocCreateInfo, &_buffer, &m_allocation, &m_allocationInfo) != VK_SUCCESS) {
         throw std::runtime_error("failed to allocate buffer memory!");
     }
     m_buffer = vk::Buffer{ _buffer };
@@ -65,6 +62,8 @@ void imp::gfx::Buffer::destroy()
 {
     if (m_buffer && m_allocation) {
         vmaDestroyBuffer(m_allocator, m_buffer, m_allocation);
+        m_buffer = nullptr;
+        m_allocation = nullptr;
     }
 }
 

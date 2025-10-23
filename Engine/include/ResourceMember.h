@@ -1,6 +1,6 @@
 #pragma once
-#include <string>
 #include <entt/resource/resource.hpp>
+#include <string>
 enum ResourceType
 {
 	Texture,

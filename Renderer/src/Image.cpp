@@ -1,11 +1,11 @@
-#include "core/Image.h"
-#include "core/VulkanContext.h"
 #include "core/Buffer.h"
-#include <Debug.h>
+#include "core/Image.h"
 #include "core/ImmediateCommands.h"
 #include "core/SwapChain.h"
+#include "core/VulkanContext.h"
 #include "utils/VKUtils.h"
 #include <concepts>
+#include <Debug.h>
 namespace {
 
     uint32_t CalculateMipLevels(vk::Extent2D extent) {
@@ -113,7 +113,7 @@ namespace {
                 imageSize = halfSize;
             }
         }
-        imp::gfx::TransitionImageLayout(cmd, image, vk::ImageLayout::eTransferSrcOptimal, vk::ImageLayout::eShaderReadOnlyOptimal);
+        imp::gfx::vkutil::TransitionImageLayout(cmd, image, vk::ImageLayout::eTransferSrcOptimal, vk::ImageLayout::eShaderReadOnlyOptimal);
 
     }
 
@@ -151,9 +151,9 @@ namespace {
 
 
 
-        transferCommands.submit(context.getGraphicsQueue(), [&](const vk::CommandBuffer& cmd) {
+        transferCommands.submit([&](const vk::CommandBuffer& cmd) {
             // Transition image to transfer destination layout
-            imp::gfx::TransitionImageLayout(cmd, newImage->getImage(), vk::ImageLayout::eUndefined, vk::ImageLayout::eTransferDstOptimal);
+            imp::gfx::vkutil::TransitionImageLayout(cmd, newImage->getImage(), vk::ImageLayout::eUndefined, vk::ImageLayout::eTransferDstOptimal);
             vk::BufferImageCopy copyRegion{};
             copyRegion.setBufferOffset(0)
                 .setBufferRowLength(0)
@@ -165,7 +165,7 @@ namespace {
             if (mipmapped) 
                 GenerateMipmaps(cmd, newImage->getImage(), { size.x, size.y });
             else 
-                imp::gfx::TransitionImageLayout(cmd, newImage->getImage(), vk::ImageLayout::eTransferDstOptimal, vk::ImageLayout::eShaderReadOnlyOptimal);
+                imp::gfx::vkutil::TransitionImageLayout(cmd, newImage->getImage(), vk::ImageLayout::eTransferDstOptimal, vk::ImageLayout::eShaderReadOnlyOptimal);
             
 
             });
@@ -175,7 +175,7 @@ namespace {
 
 imp::gfx::Image::Image(const VulkanContext& context, vk::Extent2D extent, vk::Format format, vk::ImageUsageFlags usage, vk::ImageAspectFlags aspectFlags, bool mipmap) :
     m_raw(CreateRawImage(context, extent, format, usage, mipmap ? CalculateMipLevels(extent) : 1)),
-    view(CreateImageView(context.getDevice(),m_raw.image,format,aspectFlags,m_raw.mipLevels))
+    m_view(CreateImageView(context.getDevice(),m_raw.image,format,aspectFlags,m_raw.mipLevels))
 {
 
 }
@@ -188,21 +188,21 @@ imp::gfx::Image::~Image() {
 
 void imp::gfx::Image::transitionImageLayout(const vk::CommandBuffer& cmd, const vk::ImageLayout& oldLayout, const vk::ImageLayout& newLayout)
 {
-    TransitionImageLayout(cmd, m_raw.image, oldLayout, newLayout);
+    vkutil::TransitionImageLayout(cmd, m_raw.image, oldLayout, newLayout);
 }
 
-imp::gfx::UniqueImage imp::gfx::CreateSampledImage(const VulkanContext& context, Bitmap data, vk::Format format, vk::ImageUsageFlags usage, bool mipmapped)
+imp::gfx::UniqueImage imp::gfx::vkutil::CreateSampledImage(const VulkanContext& context, Bitmap data, vk::Format format, vk::ImageUsageFlags usage, bool mipmapped)
 {
     return CreateImage<imp::gfx::UniqueImage>(context, data, format, usage, vk::ImageAspectFlagBits::eColor, mipmapped);
 }
 
 
-imp::gfx::SharedImage imp::gfx::CreateSampledSharedImage(const VulkanContext& context, Bitmap data, vk::Format format, vk::ImageUsageFlags usage, bool mipmapped)
+imp::gfx::SharedImage imp::gfx::vkutil::CreateSampledSharedImage(const VulkanContext& context, Bitmap data, vk::Format format, vk::ImageUsageFlags usage, bool mipmapped)
 {
     return CreateImage<imp::gfx::SharedImage>(context, data, format, usage, vk::ImageAspectFlagBits::eColor, mipmapped);
 }
 
-void imp::gfx::CopyImageToImage(const vk::CommandBuffer cmd, const vk::Image src, const vk::Extent2D srcExtent, const vk::Image dst, const  vk::Extent2D dstExtent)
+void imp::gfx::vkutil::CopyImageToImage(const vk::CommandBuffer cmd, const vk::Image src, const vk::Extent2D srcExtent, const vk::Image dst, const  vk::Extent2D dstExtent)
 {
     vk::ImageBlit2 blitRegion{};
 
@@ -238,19 +238,19 @@ void imp::gfx::CopyImageToImage(const vk::CommandBuffer cmd, const vk::Image src
     cmd.blitImage2(blitInfo);
 }
 
-void imp::gfx::CopyImageToImage(const vk::CommandBuffer cmd, Image& src, Image& dst)
+void imp::gfx::vkutil::CopyImageToImage(const vk::CommandBuffer cmd, Image& src, Image& dst)
 {
     CopyImageToImage(cmd, src.getImage(), src.getExtent(), dst.getImage(), dst.getExtent());
 }
 
 
 
-void imp::gfx::CopyImageToSwapChain(const vk::CommandBuffer cmd, Image& src, const SwapChain& swapChain, uint32_t imageIndex)
+void imp::gfx::vkutil::CopyImageToSwapChain(const vk::CommandBuffer cmd, Image& src, const SwapChain& swapChain, uint32_t imageIndex)
 {
     CopyImageToImage(cmd, src.getImage(), src.getExtent(), swapChain.getImages()[imageIndex], swapChain.getExtent());
 }
 
-void imp::gfx::TransitionImageLayout(const vk::CommandBuffer cmd, const vk::Image image, const vk::ImageLayout oldLayout, const vk::ImageLayout newLayout)
+void imp::gfx::vkutil::TransitionImageLayout(const vk::CommandBuffer cmd, const vk::Image image, const vk::ImageLayout oldLayout, const vk::ImageLayout newLayout)
 {
     vk::ImageMemoryBarrier2 imageBarrier{};
     imageBarrier.setSrcStageMask(vk::PipelineStageFlagBits2::eAllCommands)

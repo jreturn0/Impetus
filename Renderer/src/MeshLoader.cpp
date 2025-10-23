@@ -1,27 +1,27 @@
-﻿#include "utils/MeshLoader.h"
-#include <glm/gtc/quaternion.hpp>
+﻿#include "core/Image.h"
+#include "Debug.h"
 #include "geometry/Mesh.h"
-#include <glm/gtx/quaternion.hpp>
+#include "geometry/Vertex.h"
+#include "materials/MetallicRoughness.h"
+#include "nodes/MeshNode.h"
+#include "utils/LoadedGLTF.h"
+#include "utils/MeshLoader.h"
+#include "utils/ResourceCache.h"
+#include "utils/VKUtils.h"
+#include "VKRenderer.h"
+#include <execution>
+#include <fastgltf/core.hpp>
 #include <fastgltf/glm_element_traits.hpp>
 #include <fastgltf/tools.hpp>
-#include <fastgltf/core.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/quaternion.hpp>
+#include <glm/gtx/quaternion.hpp>
 #include <glm/mat4x4.hpp>
 #include <glm/matrix.hpp>
-#include "VKRenderer.h"
-#include "materials/MetallicRoughness.h"
-#include "geometry/Vertex.h"
-#include "utils/LoadedGLTF.h"
+#include <semaphore>
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
-#include "utils/VKUtils.h"
-#include "Debug.h"
-#include "nodes/MeshNode.h"
 #include <utils/descriptor/DescriptorAllocatorGrowable.h>
-#include "utils/ResourceCache.h"
-#include "core/Image.h"
-#include <execution>
-#include <semaphore>
 namespace {
     static vk::Filter ExtractFilter(fastgltf::Filter filter)
     {
@@ -75,7 +75,7 @@ static std::optional<imp::gfx::SharedImage> LoadImage(const imp::gfx::VulkanCont
         }
 
         std::span<std::byte> byteData(reinterpret_cast<std::byte*>(data), static_cast<size_t>(width) * height * numChannels); // We force 4 channels in stbi load
-        newImage = imp::gfx::CreateSampledSharedImage(context, { byteData, {width,height} }, imageFormat, vk::ImageUsageFlagBits::eSampled, true);
+        newImage = imp::gfx::vkutil::CreateSampledSharedImage(context, { byteData, {width,height} }, imageFormat, vk::ImageUsageFlagBits::eSampled, true);
         if (!resourceHandler.addImage(image.name, newImage)) {
             Debug::Warning("Image with name {} already exists in resource cache, ignored", image.name);
         }
@@ -251,6 +251,7 @@ std::optional<std::shared_ptr<imp::gfx::LoadedGLTF>> imp::gfx::MeshLoader::LoadG
 
     auto& whiteImage = cache.getImageRef(vkutil::WHITE_IMAGE_HASH);
     auto& greyImage = cache.getImageRef(vkutil::GREY_IMAGE_HASH);
+    auto& blackImage = cache.getImageRef(vkutil::BLACK_IMAGE_HASH);
     const auto& defaultSampler = cache.getDefaultSamplerNearest();
     for (fastgltf::Material& mat : gltf.materials) {
 
@@ -266,7 +267,7 @@ std::optional<std::shared_ptr<imp::gfx::LoadedGLTF>> imp::gfx::MeshLoader::LoadG
         // write material parameters to buffer
         sceneMaterialConstants[data_index] = constants;
 
-        MaterialPass passType = MaterialPass::MainColor;
+        MaterialPass passType = MaterialPass::Opaque;
         if (mat.alphaMode == fastgltf::AlphaMode::Blend) {
             Debug::Info("Material {} is transparent", mat.name.c_str());
             passType = MaterialPass::Transparent;
@@ -275,9 +276,9 @@ std::optional<std::shared_ptr<imp::gfx::LoadedGLTF>> imp::gfx::MeshLoader::LoadG
 
         MetallicRoughness::MaterialResources materialResources;
         // default the material textures
-        materialResources.colorImage = whiteImage;
+        materialResources.colorImage = greyImage;
         materialResources.colorSampler = defaultSampler;
-        materialResources.metalRoughImage = greyImage;
+        materialResources.metalRoughImage = blackImage;
         materialResources.metalRoughSampler = defaultSampler;
 
         // set the uniform buffer for the material data

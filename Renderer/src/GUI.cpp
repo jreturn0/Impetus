@@ -1,8 +1,7 @@
-﻿#include "utils/GUI.h"
-
-#include "imgui.h"
+﻿#include "imgui.h"
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_vulkan.h"
+#include "utils/GUI.h"
 #include <core/VulkanContext.h>
 #include <window/Window.h>
 

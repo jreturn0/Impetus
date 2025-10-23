@@ -1,9 +1,8 @@
 ﻿#pragma once
-#include <unordered_map>
-#include <unordered_map>
-#include "TimerStats.h"
 #include "StringHash.h"
 #include "StringUtils.h"
+#include "TimerStats.h"
+#include <unordered_map>
 
 #ifndef IMP_ENABLE_PROFILING
 #ifdef _DEBUG
@@ -13,12 +12,15 @@
 
 
 namespace imp::gfx {
+    // Structure to hold rendering statistics
     struct RenderStats
     {
-        uint64_t triangleCount{ 0 };
-        uint64_t drawCallCount{ 0 };
-
+        uint64_t triangleCount{};
+        uint64_t drawCallCount{};
         std::unordered_map<utl::StringHash, utl::TimerStats, utl::StringHashOp> timeStatsMap{};
+
+        // Methods
+
         inline void reset() noexcept {
             triangleCount = 0;
             drawCallCount = 0;

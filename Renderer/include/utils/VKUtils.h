@@ -4,6 +4,7 @@
 
 namespace imp::gfx {
     class CommandPool;
+    // Utility functions for Vulkan operations
     namespace vkutil {
 
         void CopyBuffer(const vk::raii::Device& device,

@@ -127,6 +127,7 @@ imp::gfx::PipelineBuilder& imp::gfx::PipelineBuilder::setDepthTest(bool depthTes
 
 imp::gfx::PipelineBuilder& imp::gfx::PipelineBuilder::setShaderStages(vk::ShaderModule vertex, vk::ShaderModule fragment)
 {
+    m_shaderStages.clear();
     auto vertexStage = vk::PipelineShaderStageCreateInfo{}
         .setStage(vk::ShaderStageFlagBits::eVertex)
         .setModule(vertex)

@@ -1,14 +1,12 @@
-﻿#include "utils/shader/ShaderCompiler.h"
-#include "utils/shader/ShaderReflect.h"
-
+﻿#include "Debug.h"
+#include "FSNavigator.h"
+#include "utils/shader/ShaderCompiler.h"
 #include <bitset>
+#include <fstream>
 #include <iostream>
 #include <shaderc/shaderc.hpp>
-#include <fstream>
 #include <unordered_map>
 
-#include "Debug.h"
-#include "FSNavigator.h"
 namespace {
     class FileSystemIncluder : public shaderc::CompileOptions::IncluderInterface
     {
@@ -18,22 +16,15 @@ namespace {
             const char* requesting_source,
             size_t include_depth) override
         {
-            //std::cout << "GetInclude called for: " << requested_source << " from: " << requesting_source << std::endl;
-
             std::string resolved_path = ResolvePath(requested_source, requesting_source);
-            //std::cout << "Resolved include path: " << resolved_path << std::endl;
-
             std::ifstream file(resolved_path);
             if (!file.is_open()) {
-                Debug::FatalError("Failed to open include file: {}", resolved_path);
+                Debug::Error("Failed to open include file: {}", resolved_path);
                 return CreateShadercIncludeResult(requested_source, "", "File not found");
             }
-
             std::stringstream buffer;
             buffer << file.rdbuf();
             std::string content = buffer.str();
-            //std::cout << "Including file content: " << std::endl << content << std::endl;
-
             return CreateShadercIncludeResult(resolved_path, content);
         }
 
@@ -135,119 +126,132 @@ std::vector<uint32_t> imp::gfx::ShaderCompiler::CompileShader(const std::filesys
     options.SetIncluder(std::make_unique<FileSystemIncluder>());
     auto path = file.string() + file.filename().string();
     //std::cout << path;
-    auto fileSource = readFile(file.string());  // Use readFile to read the content of the shader source file
-    // Compile the shader
+    bool compiled = false;
+    shaderc::SpvCompilationResult result;
+    do {
+        auto fileSource = readFile(file.string());  // Use readFile to read the content of the shader source file
+        // Compile the shader
 
-    const shaderc::SpvCompilationResult result = compiler.CompileGlslToSpv(fileSource, static_cast<shaderc_shader_kind>(kind), file.filename().string().c_str(), options);
-    try {
+
+        result = compiler.CompileGlslToSpv(fileSource, static_cast<shaderc_shader_kind>(kind), file.filename().string().c_str(), options);
+
         if (result.GetCompilationStatus() != shaderc_compilation_status_success) {
-            std::cerr << result.GetErrorMessage();
-            throw std::runtime_error(result.GetErrorMessage());
-        }
-    }
-    catch (const std::exception& e) {
-        std::cerr << e.what();
-    }
-
-
-    // Return the compiled SPIR-V bytecode as a vector of uint32_t
-    return { result.cbegin(), result.cend() };
-}
-
-void imp::gfx::ShaderCompiler::SaveShader(const std::vector<uint32_t>& spvCode, const std::string& filePath)
-{
-    std::ofstream outFile(filePath, std::ios::binary | std::ios::out | std::ios::trunc);
-    if (!outFile.is_open()) {
-        throw std::runtime_error("Failed to open file for writing: " + filePath);
-    }
-
-    outFile.write(reinterpret_cast<const char*>(spvCode.data()), spvCode.size() * sizeof(uint32_t));
-}
-
-
-
-
-static imp::gfx::vkutil::ShaderStage GetStage(const std::filesystem::path& path)
-{
-    std::string extension = path.extension().string();
-
-    if (extension == ".vert") {
-        return imp::gfx::vkutil::ShaderStage::Vertex;
-    }  if (extension == ".frag") {
-        return imp::gfx::vkutil::ShaderStage::Fragment;
-    }  if (extension == ".comp") {
-        return imp::gfx::vkutil::ShaderStage::Compute;
-    }  if (extension == ".geom") {
-        return imp::gfx::vkutil::ShaderStage::Geometry;
-    }
-    return imp::gfx::vkutil::ShaderStage::None;
-}
-
-
-
-void imp::gfx::ShaderCompiler::CheckCompileAll(const std::string& dir)
-{
-    FSNavigator fileDir(dir);
-    if (!fileDir.containsFolder("SPIRV")) {
-        std::filesystem::create_directory(fileDir.getCurrentPath() / "SPIRV");
-        fileDir.update();
-    }
-
-    for (const auto& file : fileDir.getFiles()) {
-        auto file_ = fileDir.getCurrentPath() / file;
-        vkutil::ShaderStage stage = GetStage(file);
-        //std::cout << file.string() << std::endl;
-        if (stage == vkutil::ShaderStage::None)
-            continue;
-        std::string nameSPIRV = std::string((fileDir.getCurrentPath() / std::string("SPIRV/") / file.filename()).string()).append(".spv");
-        if (ShouldCompileSPIRV(fileDir, file_)) {
-            auto spvCode = CompileShader(file_, stage);
-            // Ensure the path is correctly constructed
-            std::filesystem::path savePath = fileDir.getCurrentPath() / "SPIRV" / file.filename();
-            std::string savePathStr = savePath.string() + ".spv";
-
-            SaveShader(spvCode, savePathStr);
-            //Debug::Info("Compiled and saved to SPIRV folder: {}", savePathStr);
-            //std::cout << file.filename().string() + " compiled and saved to SPIRV folder.\n";
+#ifdef _DEBUG
+            std::cout << "Error compiling shader " << file.string() << ": " << result.GetErrorMessage() << std::endl;
+            std::cout << "Press 'r' to retry, any other key to abort: ";
+            char choice;
+            std::cin >> choice;
+            if (choice == 'r' || choice == 'R') {
+                compiled = false;
+                continue; // Retry compilation
+            }
+            else {
+                Debug::Throw("Error compiling shader {}: {}", file.string(), result.GetErrorMessage());
+            }
+#else
+            Debug::Throw("Error compiling shader {}: {}", file.string(), result.GetErrorMessage());
+#endif
         }
         else {
-            //std::cout << file.filename().string() + " is up to date.\n";
+            compiled = true;
+        }
+    } while (!compiled);
+
+
+        // Return the compiled SPIR-V bytecode as a vector of uint32_t
+        return { result.cbegin(), result.cend() };
+    }
+
+    void imp::gfx::ShaderCompiler::SaveShader(const std::vector<uint32_t>&spvCode, const std::string & filePath)
+    {
+        std::ofstream outFile(filePath, std::ios::binary | std::ios::out | std::ios::trunc);
+        if (!outFile.is_open()) {
+            throw std::runtime_error("Failed to open file for writing: " + filePath);
         }
 
-        ReflectShader(readSPVFile(nameSPIRV));
-    }
-}
-
-
-
-void imp::gfx::ShaderCompiler::CheckCompileShader(const std::string& name, const std::string& dir)
-{
-    FSNavigator fileDir(dir);
-    if (!fileDir.containsFolder("SPIRV")) {
-        std::filesystem::create_directory(fileDir.getCurrentPath() / "SPIRV");
-        fileDir.update();
-    }
-
-    std::bitset<4> compileFlags;
-
-    std::string filename = name + ".vert";
-    if (ShouldCompileSPIRV(fileDir, filename)) {
-        compileFlags.set(0);
-        //Debug::Info("{} is out of date", filename );
-        //std::cout << filename << " is out of date\n";
-    }
-    else {
-        //std::cout << filename << " is up to date\n";
-    }
-
-    filename = name + ".frag";
-    if (ShouldCompileSPIRV(fileDir, filename)) {
-        compileFlags.set(1);
-        //std::cout << filename << " is out of date\n";
-    }
-    else {
-        //std::cout << filename << " is up to date\n";
+        outFile.write(reinterpret_cast<const char*>(spvCode.data()), spvCode.size() * sizeof(uint32_t));
     }
 
 
-}
+
+
+    static imp::gfx::vkutil::ShaderStage GetStage(const std::filesystem::path & path)
+    {
+        std::string extension = path.extension().string();
+
+        if (extension == ".vert") {
+            return imp::gfx::vkutil::ShaderStage::Vertex;
+        }  if (extension == ".frag") {
+            return imp::gfx::vkutil::ShaderStage::Fragment;
+        }  if (extension == ".comp") {
+            return imp::gfx::vkutil::ShaderStage::Compute;
+        }  if (extension == ".geom") {
+            return imp::gfx::vkutil::ShaderStage::Geometry;
+        }
+        return imp::gfx::vkutil::ShaderStage::None;
+    }
+
+
+
+    void imp::gfx::ShaderCompiler::CheckCompileAll(const std::string & dir)
+    {
+        FSNavigator fileDir(dir);
+        if (!fileDir.containsFolder("SPIRV")) {
+            std::filesystem::create_directory(fileDir.getCurrentPath() / "SPIRV");
+            fileDir.update();
+        }
+
+        for (const auto& file : fileDir.getFiles()) {
+            auto file_ = fileDir.getCurrentPath() / file;
+            vkutil::ShaderStage stage = GetStage(file);
+            //std::cout << file.string() << std::endl;
+            if (stage == vkutil::ShaderStage::None)
+                continue;
+            std::string nameSPIRV = std::string((fileDir.getCurrentPath() / std::string("SPIRV/") / file.filename()).string()).append(".spv");
+            if (ShouldCompileSPIRV(fileDir, file_)) {
+                auto spvCode = CompileShader(file_, stage);
+                // Ensure the path is correctly constructed
+                std::filesystem::path savePath = fileDir.getCurrentPath() / "SPIRV" / file.filename();
+                std::string savePathStr = savePath.string() + ".spv";
+
+                SaveShader(spvCode, savePathStr);
+                Debug::Info("Compiled and saved to SPIRV folder: {}", savePathStr);
+            }
+
+
+        }
+    }
+
+
+
+    void imp::gfx::ShaderCompiler::CheckCompileShader(const std::string & name, const std::string & dir)
+    {
+        FSNavigator fileDir(dir);
+        if (!fileDir.containsFolder("SPIRV")) {
+            std::filesystem::create_directory(fileDir.getCurrentPath() / "SPIRV");
+            fileDir.update();
+        }
+
+        std::bitset<4> compileFlags;
+
+        std::string filename = name + ".vert";
+        if (ShouldCompileSPIRV(fileDir, filename)) {
+            compileFlags.set(0);
+            //Debug::Info("{} is out of date", filename );
+            //std::cout << filename << " is out of date\n";
+        }
+        else {
+            //std::cout << filename << " is up to date\n";
+        }
+
+        filename = name + ".frag";
+        if (ShouldCompileSPIRV(fileDir, filename)) {
+            compileFlags.set(1);
+            //std::cout << filename << " is out of date\n";
+        }
+        else {
+            //std::cout << filename << " is up to date\n";
+        }
+
+
+    }
