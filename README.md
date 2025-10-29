@@ -4,7 +4,6 @@ Engine/Framework made with C++/Vulkan
 #### Description/History
 Made originally as a capstone project in 2024. Picked back up in 2025 to clean up it up what already exists.
 
-
 #### Recent Major changes
 Removed a lot of redundant code and tried my best to optimize things. 
 - The save/load "scene" format was changed to be more stable. Adding and removing components from being serialized should no longer break loads with different sets of serialized components. Default values are used on fields where they do not match or exist in the original serialized data
@@ -24,6 +23,37 @@ Removed a lot of redundant code and tried my best to optimize things.
 I tried to get some form of interpolation working, but what I could come up with at the time without breaking other implementation did not work. Running the fixed and variable fps at the same target does deal with the jitter but obviously isn't a good or final solution. 
 #### Transform System
 No hierarchy. It had started to be implemented but wasn't finished. Full implementation would require some restructuring and likely unifying with the renderer's nodes
+
+### Indefinite feature list
+ - Vulkan Renderer
+	- Gltf/glb file loading
+	- Metallic Roughness based PBR pipelines 
+	- Simple compute shaders 
+	- Multi point/directional lighting system
+ - Engine	
+	- Entity Component System 
+	- Physics 
+	- System manager for dynamic control over systems
+ 	- Component serialization and deserialization
+	- Save/Load scene system for components and systems
+	- Event system
+ 	- Service Locator
+ - Editor
+	- Entity Component Editor
+		- Create/Delete/Duplicate entities 
+		- Add/Remove/Edit components
+		- Optional custom component widgets 
+	- System Editor
+		- Add/Remove
+		- Activate/Deactive
+		- Change order
+	- Save/Load file view for "scenes"
+	- Live profiling view
+	- Edit configuration settings
+	- Resource view of loaded renderer resources	
+ - Shared Utils
+	- Debug/Logging system		
+	- Global configuration system based on .ini 
 
 - - -
 ##### Note
